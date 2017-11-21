@@ -39,7 +39,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.penapereira.cipher.model.data.EncryptedDataInterface;
 import com.penapereira.cipher.model.data.v1.EncryptedData;
-import com.penapereira.cipher.model.keypair.KeyPairData;
 
 public class Helper {
 	private long fileSize = 0;
