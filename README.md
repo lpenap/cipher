@@ -6,6 +6,7 @@ Java RSA Cipher Example to Load/Save a single text document using a key pair.
 * Load existing RSA key pairs or creates a new one.
 * Encryp(Save) and Decrypt(Load) a single text document. Once encrypted, the document is saved in the specified binary file.
 * Basic java-swing UI to write the text document.
+* The *Encrypt & Save* button on the UI will attempt to encrypt the text written, save the results to disk, then load them again, decrypt and compare both texts to verify the contents.
 
 # Configuration via XML file
 ```xml
