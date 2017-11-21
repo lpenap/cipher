@@ -1,4 +1,4 @@
-package com.penapereira.cipher;
+package com.penapereira.cipher.conf;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -37,10 +37,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.penapereira.cipher.conf.Constants;
-import com.penapereira.cipher.data.EncryptedDataInterface;
-import com.penapereira.cipher.data.KeyPairData;
-import com.penapereira.cipher.data.v1.EncryptedData;
+import com.penapereira.cipher.model.data.EncryptedDataInterface;
+import com.penapereira.cipher.model.data.v1.EncryptedData;
+import com.penapereira.cipher.model.keypair.KeyPairData;
 
 public class Helper {
 	private long fileSize = 0;
@@ -227,14 +226,13 @@ public class Helper {
 			iv);
 	}
 
-	public KeyPairData loadKeys()
+	public KeyPair loadKeys()
 		throws FileNotFoundException, ClassNotFoundException, IOException {
 		return this.loadKeys(publicKeyFile, privateKeyFile);
 	}
 
-	public KeyPairData loadKeys(String publicKeyFile, String privateKeyFile)
+	public KeyPair loadKeys(String publicKeyFile, String privateKeyFile)
 		throws FileNotFoundException, IOException, ClassNotFoundException {
-		KeyPairData result = null;
 		ObjectInputStream inputStream = null;
 
 		System.out.print("Loading public key...");
@@ -251,8 +249,7 @@ public class Helper {
 		inputStream.close();
 		System.out.println("Done");
 
-		result = new KeyPairData(privateKey, publicKey);
-		return result;
+		return new KeyPair(publicKey, privateKey);
 	}
 
 	public static byte[] serialize(Object obj) throws IOException {

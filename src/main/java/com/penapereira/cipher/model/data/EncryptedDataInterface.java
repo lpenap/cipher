@@ -1,4 +1,4 @@
-package com.penapereira.cipher.data;
+package com.penapereira.cipher.model.data;
 
 public interface EncryptedDataInterface {
 

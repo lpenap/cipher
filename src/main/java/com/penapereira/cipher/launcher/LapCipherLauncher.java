@@ -4,9 +4,9 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
-import com.penapereira.cipher.Helper;
-import com.penapereira.cipher.PrefsLoader;
 import com.penapereira.cipher.conf.Constants;
+import com.penapereira.cipher.conf.Helper;
+import com.penapereira.cipher.conf.PrefsLoader;
 import com.penapereira.cipher.ui.Main;
 
 public class LapCipherLauncher {

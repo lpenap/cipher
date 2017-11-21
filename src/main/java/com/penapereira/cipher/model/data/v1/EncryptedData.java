@@ -1,8 +1,8 @@
-package com.penapereira.cipher.data.v1;
+package com.penapereira.cipher.model.data.v1;
 
 import java.io.Serializable;
 
-import com.penapereira.cipher.data.EncryptedDataInterface;
+import com.penapereira.cipher.model.data.EncryptedDataInterface;
 
 public class EncryptedData implements Serializable, EncryptedDataInterface {
 	protected static final long serialVersionUID = 1L;

@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -28,19 +29,18 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
-import com.penapereira.cipher.Helper;
-import com.penapereira.cipher.data.EncryptedDataInterface;
-import com.penapereira.cipher.data.KeyPairData;
+import com.penapereira.cipher.conf.Helper;
+import com.penapereira.cipher.model.data.EncryptedDataInterface;
 
 public class Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 	protected JTextPane textPane = null;
 	private Helper helper;
-	private KeyPairData cipherData;
+	private KeyPair keyPair;
 	protected boolean checkAfterSaving = true;
 
-	public static void showMessage(Component parent, String text, String title,
-			int msgType) {
+	public static void showMessage(Component parent, String text,
+		String title, int msgType) {
 		JOptionPane.showMessageDialog(parent, text, title, msgType);
 	}
 
@@ -63,47 +63,59 @@ public class Main extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (textPane.getText().equals("")) {
 					System.out.println("Empty text, skipping.");
-					JOptionPane.showMessageDialog((Component) e.getSource(),
-							"Nothing to save.", "",
-							JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(
+						(Component) e.getSource(),
+						"Nothing to save.", "",
+						JOptionPane.INFORMATION_MESSAGE);
 				} else {
-					System.out.println("-----------------------------------");
+					System.out.println(
+						"-----------------------------------");
 					System.out.println("Encrypting "
-							+ textPane.getText().getBytes().length + " bytes");
+						+ textPane.getText().getBytes().length
+						+ " bytes");
 					System.out.flush();
-					EncryptedDataInterface crypted = encrypt(textPane.getText(),
-							cipherData.getPublicKey());
+					EncryptedDataInterface crypted = encrypt(
+						textPane.getText(), keyPair.getPublic());
 
-					if (writeFile(crypted, helper.getDocumentFile())) {
+					if (writeFile(crypted,
+						helper.getDocumentFile())) {
 						if (checkAfterSaving) {
 							try {
-								if (checkFile(helper.getDocumentFile(),
-										textPane.getText(), privateKey)) {
-									JOptionPane.showMessageDialog(
-											(Component) e.getSource(),
+								if (checkFile(
+									helper.getDocumentFile(),
+									textPane.getText(),
+									privateKey)) {
+									JOptionPane
+										.showMessageDialog(
+											(Component) e
+												.getSource(),
 											"File encrypted, saved & verified!",
 											"Success",
 											JOptionPane.INFORMATION_MESSAGE);
-									System.out
-											.println("File encrypted, saved & "
-													+ "verified!");
+									System.out.println(
+										"File encrypted, saved & "
+											+ "verified!");
 
 								}
 							} catch (Exception e1) {
 								e1.printStackTrace();
-								System.out.println("--- End of trace");
+								System.out.println(
+									"--- End of trace");
 								JOptionPane.showMessageDialog(
-										(Component) e.getSource(),
-										"Error verifying encrypted file!\n"
-												+ "Check console log for details.",
-										"Warning", JOptionPane.WARNING_MESSAGE);
+									(Component) e.getSource(),
+									"Error verifying encrypted file!\n"
+										+ "Check console log for details.",
+									"Warning",
+									JOptionPane.WARNING_MESSAGE);
 							}
 						} else {
 							JOptionPane.showMessageDialog(
-									(Component) e.getSource(),
-									"File encrypted and saved! (not verified)",
-									"Success", JOptionPane.INFORMATION_MESSAGE);
-							System.out.println("File encrypted and saved!"
+								(Component) e.getSource(),
+								"File encrypted and saved! (not verified)",
+								"Success",
+								JOptionPane.INFORMATION_MESSAGE);
+							System.out.println(
+								"File encrypted and saved!"
 									+ "(not verified)");
 						}
 					}
@@ -115,18 +127,20 @@ public class Main extends JFrame {
 		StyledDocument doc = textPane.getStyledDocument();
 		textPane.setFont(new Font("Courier", Font.PLAIN, 14));
 		try {
-			doc.insertString(doc.getLength(), text, doc.getStyle("regular"));
+			doc.insertString(doc.getLength(), text,
+				doc.getStyle("regular"));
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 			System.out.println("--- End of trace");
 			System.out.println("Could not insert text into text pane"
-					+ "terminating to prevent damaging the file.");
+				+ "terminating to prevent damaging the file.");
 			if (JOptionPane.showConfirmDialog(this,
-					"Could not insert the file content into main window\n"
-							+ "Check console log for details.\n"
-							+ "Do you wish to exit the program to prevent"
-							+ "damaging the file?", "Error",
-					JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
+				"Could not insert the file content into main window\n"
+					+ "Check console log for details.\n"
+					+ "Do you wish to exit the program to prevent"
+					+ "damaging the file?",
+				"Error",
+				JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
 				System.exit(1);
 			}
 		}
@@ -145,33 +159,33 @@ public class Main extends JFrame {
 		add(scroll, c);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize((int) screenSize.getWidth() / 2,
-				(int) screenSize.getHeight() - 100);
+			(int) screenSize.getHeight() - 100);
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		setVisible(true);
 		textPane.requestFocus();
 
 		if (text.equals("") && helper.getFileSize() != 0) {
-			JOptionPane.showMessageDialog(
-					this,
-					"WARNING! The encrypted file size is "
-							+ helper.getFileSize()
-							+ " bytes\nBut the decrypted text is "
-							+ "empty!\nIf you save, the file will be "
-							+ "overwritten.", "Warning",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this,
+				"WARNING! The encrypted file size is "
+					+ helper.getFileSize()
+					+ " bytes\nBut the decrypted text is "
+					+ "empty!\nIf you save, the file will be "
+					+ "overwritten.",
+				"Warning", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
 	protected boolean checkFile(String fileName, String text,
-			PrivateKey privateKey) throws InvalidKeyException,
-			NoSuchAlgorithmException, NoSuchPaddingException,
-			IllegalBlockSizeException, BadPaddingException,
-			InvalidParameterSpecException, InvalidAlgorithmParameterException,
-			ClassNotFoundException, IOException {
+		PrivateKey privateKey) throws InvalidKeyException,
+		NoSuchAlgorithmException, NoSuchPaddingException,
+		IllegalBlockSizeException, BadPaddingException,
+		InvalidParameterSpecException, InvalidAlgorithmParameterException,
+		ClassNotFoundException, IOException {
 		return helper.checkFile(fileName, text, privateKey);
 	}
 
-	protected boolean writeFile(EncryptedDataInterface crypted, String fileName) {
+	protected boolean writeFile(EncryptedDataInterface crypted,
+		String fileName) {
 		boolean result = true;
 		try {
 			helper.writeFile(crypted, fileName);
@@ -179,26 +193,29 @@ public class Main extends JFrame {
 			System.out.println("Error saving file");
 			e.printStackTrace();
 			System.out.println("--- End of trace.");
-			JOptionPane.showMessageDialog(this, "Error saving file.\n"
-					+ "Check console log for full details.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this,
+				"Error saving file.\n"
+					+ "Check console log for full details.",
+				"Error", JOptionPane.ERROR_MESSAGE);
 			result = false;
 		}
 		return result;
 	}
 
-	protected EncryptedDataInterface encrypt(String text, PublicKey publicKey) {
+	protected EncryptedDataInterface encrypt(String text,
+		PublicKey publicKey) {
 		EncryptedDataInterface crypted = null;
 
 		try {
 			crypted = helper.encryptAes(textPane.getText(),
-					cipherData.getPublicKey());
+				keyPair.getPublic());
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("--- End of Exception.");
-			JOptionPane.showMessageDialog(this, "Error encrypting file!"
-					+ "check console log for details.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this,
+				"Error encrypting file!"
+					+ "check console log for details.",
+				"Error", JOptionPane.ERROR_MESSAGE);
 		}
 
 		return crypted;
@@ -207,21 +224,22 @@ public class Main extends JFrame {
 	public void checkKeys() {
 		try {
 			if (!helper.areKeysPresent()) {
-				System.out.println("Keys not present, will generate new pair.");
-				switch (JOptionPane.showConfirmDialog(
-						this,
-						"Keys not found :\n" + "private key : "
-								+ helper.getPrivateKeyFile() + "\n"
-								+ "public key : " + helper.getPublicKeyFile()
-								+ "\n\n"
-								+ "Do you want to generate a new pair?:\n"
-								+ "Yes : Generate keys in those files.\n"
-								+ "No : Will EXIT de program.\n"
-								+ "Cancel : Do nothing and continue! "
-								+ "(I know what I'm doing!)", "Warning",
-						JOptionPane.WARNING_MESSAGE)) {
+				System.out.println(
+					"Keys not present, will generate new pair.");
+				switch (JOptionPane.showConfirmDialog(this,
+					"Keys not found :\n" + "private key : "
+						+ helper.getPrivateKeyFile() + "\n"
+						+ "public key : "
+						+ helper.getPublicKeyFile() + "\n\n"
+						+ "Do you want to generate a new pair?:\n"
+						+ "Yes : Generate keys in those files.\n"
+						+ "No : Will EXIT de program.\n"
+						+ "Cancel : Do nothing and continue! "
+						+ "(I know what I'm doing!)",
+					"Warning", JOptionPane.WARNING_MESSAGE)) {
 				case JOptionPane.YES_OPTION:
-					System.out.println("Going to generate a new key pair");
+					System.out.println(
+						"Going to generate a new key pair");
 					helper.generateKey();
 					break;
 				case JOptionPane.NO_OPTION:
@@ -229,7 +247,8 @@ public class Main extends JFrame {
 					System.exit(0);
 					break;
 				default:
-					System.out.println("Doing nothing, brace yourselves.");
+					System.out.println(
+						"Doing nothing, brace yourselves.");
 				}
 			} else {
 				System.out.println("Key files found:");
@@ -240,25 +259,27 @@ public class Main extends JFrame {
 			e.printStackTrace();
 			System.out.println("--- End of trace");
 			JOptionPane.showMessageDialog(this, "Error accessing and/or "
-					+ "generating key pair files! :\n" + "private key : "
-					+ helper.getPrivateKeyFile() + "\n" + "public key : "
-					+ helper.getPublicKeyFile() + "\n"
-					+ "Will EXIT the program now.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+				+ "generating key pair files! :\n" + "private key : "
+				+ helper.getPrivateKeyFile() + "\n" + "public key : "
+				+ helper.getPublicKeyFile() + "\n"
+				+ "Will EXIT the program now.", "Error",
+				JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			System.out.println("--- End of trace");
-			JOptionPane.showMessageDialog(this, "RSA Algorithm not found "
-					+ "in the JVM!\n" + "Please check your java installation"
-					+ "and try again\n" + "Will EXIT the program now.",
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this,
+				"RSA Algorithm not found " + "in the JVM!\n"
+					+ "Please check your java installation"
+					+ "and try again\n"
+					+ "Will EXIT the program now.",
+				"Error", JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 	}
 
-	public KeyPairData loadKeys() {
-		KeyPairData result = null;
+	public KeyPair loadKeys() {
+		KeyPair result = null;
 		String message = null;
 		try {
 			result = helper.loadKeys();
@@ -267,10 +288,10 @@ public class Main extends JFrame {
 			System.out.println("--- End of trace.");
 		} catch (ClassNotFoundException e) {
 			JOptionPane.showMessageDialog(this,
-					"Unrecoverablex program error!\n"
-							+ "Check your installation or jar file\n"
-							+ "Will EXIT the program", "Error",
-					JOptionPane.ERROR_MESSAGE);
+				"Unrecoverablex program error!\n"
+					+ "Check your installation or jar file\n"
+					+ "Will EXIT the program",
+				"Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 			System.out.println("--- End of trace.");
 			System.exit(1);
@@ -280,20 +301,20 @@ public class Main extends JFrame {
 		}
 		if (result == null) {
 			message = "Keys could not be loaded!\n"
-					+ "Check the configuration and/or key files.\n"
-					+ "Will EXIT the program.";
-		} else if (result.getPrivateKey() == null) {
+				+ "Check the configuration and/or key files.\n"
+				+ "Will EXIT the program.";
+		} else if (result.getPrivate() == null) {
 			message = "Private key could not be loaded!\n"
-					+ "Check the configuration and/or key files.\n"
-					+ "Will EXIT the program.";
-		} else if (result.getPublicKey() == null) {
+				+ "Check the configuration and/or key files.\n"
+				+ "Will EXIT the program.";
+		} else if (result.getPublic() == null) {
 			message = "Public key could not be loaded!\n"
-					+ "Check the configuration and/or key files.\n"
-					+ "Will EXIT the program.";
+				+ "Check the configuration and/or key files.\n"
+				+ "Will EXIT the program.";
 		}
 		if (message != null) {
 			JOptionPane.showMessageDialog(this, message, "Error",
-					JOptionPane.ERROR_MESSAGE);
+				JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 		return result;
@@ -304,54 +325,58 @@ public class Main extends JFrame {
 		try {
 			data = helper.readFile(helper.getDocumentFile());
 		} catch (FileNotFoundException ex) {
-			System.out.println("File not found: " + helper.getDocumentFile());
-			System.out.println("Will use file: " + helper.getDocumentFile()
-					+ " for saving.");
+			System.out
+				.println("File not found: " + helper.getDocumentFile());
+			System.out.println("Will use file: "
+				+ helper.getDocumentFile() + " for saving.");
 			JOptionPane.showMessageDialog(this,
-					"File not found: " + helper.getDocumentFile() + "\n"
-							+ "Will use this filename for saving.",
-					"File not found", JOptionPane.WARNING_MESSAGE);
+				"File not found: " + helper.getDocumentFile() + "\n"
+					+ "Will use this filename for saving.",
+				"File not found", JOptionPane.WARNING_MESSAGE);
 			// return here to not enter IOException block bellow
 			return null;
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			System.out.println("--- End of stack trace");
-			System.out.println("Error reading file: "
-					+ helper.getDocumentFile());
-			if (JOptionPane.showConfirmDialog(this, "Error reading file: "
-					+ helper.getDocumentFile() + "\n"
+			System.out.println(
+				"Error reading file: " + helper.getDocumentFile());
+			if (JOptionPane.showConfirmDialog(this,
+				"Error reading file: " + helper.getDocumentFile() + "\n"
 					+ "Click \"Yes\" if you wish to exit the program to "
-					+ "prevent damaging the file?", "Error",
-					JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
+					+ "prevent damaging the file?",
+				"Error",
+				JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
 				System.exit(1);
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			System.out.println("--- End of stack trace");
 			System.out.println("Can not find class EncryptedData Object "
-					+ "while reading document file.");
-			JOptionPane.showMessageDialog(this, "Internal Error!\n"
-					+ "A class could not be found\n"
+				+ "while reading document file.");
+			JOptionPane.showMessageDialog(this,
+				"Internal Error!\n" + "A class could not be found\n"
 					+ "Check console log for details.\n"
-					+ "Will EXIT the program now", "Error",
-					JOptionPane.ERROR_MESSAGE);
+					+ "Will EXIT the program now",
+				"Error", JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 		if (data == null) {
-			System.out.println("Error reading file: "
-					+ helper.getDocumentFile());
-			if (JOptionPane.showConfirmDialog(this, "Error reading file: "
-					+ helper.getDocumentFile() + "\n"
+			System.out.println(
+				"Error reading file: " + helper.getDocumentFile());
+			if (JOptionPane.showConfirmDialog(this,
+				"Error reading file: " + helper.getDocumentFile() + "\n"
 					+ "Click \"Yes\" if you wish to exit the program to "
-					+ "prevent damaging the file?", "Error",
-					JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
+					+ "prevent damaging the file?",
+				"Error",
+				JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
 				System.exit(1);
 			}
 		}
 		return data;
 	}
 
-	public String decrypt(EncryptedDataInterface data, PrivateKey privateKey) {
+	public String decrypt(EncryptedDataInterface data,
+		PrivateKey privateKey) {
 		String result = null;
 		try {
 			result = helper.decryptAes(data, privateKey);
@@ -359,40 +384,43 @@ public class Main extends JFrame {
 			e.printStackTrace();
 			System.out.flush();
 			System.out.println("--- End of trace.");
-			System.out.println("Error decrypting file: "
-					+ helper.getDocumentFile());
+			System.out.println(
+				"Error decrypting file: " + helper.getDocumentFile());
 			System.out.println("Maybe the KEYs are wrong or the file is"
-					+ " corrupted. Either way, it is recommended "
-					+ "to terminate the program and prevent "
-					+ "damaging the file.");
-			if (JOptionPane.showConfirmDialog(this, "Error decrypting file: \n"
-					+ helper.getDocumentFile()
+				+ " corrupted. Either way, it is recommended "
+				+ "to terminate the program and prevent "
+				+ "damaging the file.");
+			if (JOptionPane.showConfirmDialog(this,
+				"Error decrypting file: \n" + helper.getDocumentFile()
 					+ "\nMaybe the KEYs are wrong or the file is corrupted\n"
 					+ "Click \"Yes\" to exit the program and prevent\n"
-					+ "damaging the file", "Error", JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
+					+ "damaging the file",
+				"Error",
+				JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
 				System.exit(1);
 			}
 		}
 		if (helper.getDecryptMessage() != null) {
-			JOptionPane.showMessageDialog(this, helper.getDecryptMessage(),
-					"Warning", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this,
+				helper.getDecryptMessage(), "Warning",
+				JOptionPane.WARNING_MESSAGE);
 		}
 		return result;
 	}
 
 	public void initWindow() {
 		checkKeys();
-		cipherData = loadKeys();
+		keyPair = loadKeys();
 		String text = "";
 
 		EncryptedDataInterface data = readFile();
 		if (data != null) {
-			text = decrypt(data, cipherData.getPrivateKey());
+			text = decrypt(data, keyPair.getPrivate());
 		}
 		data = null;
 		System.gc();
 
-		showMainWindow(text, cipherData.getPrivateKey());
+		showMainWindow(text, keyPair.getPrivate());
 
 	}
 }

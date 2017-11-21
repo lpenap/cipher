@@ -1,4 +1,4 @@
-package com.penapereira.cipher;
+package com.penapereira.cipher.conf;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

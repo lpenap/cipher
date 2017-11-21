@@ -1,4 +1,4 @@
-package com.penapereira.cipher.data;
+package com.penapereira.cipher.model.keypair;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
