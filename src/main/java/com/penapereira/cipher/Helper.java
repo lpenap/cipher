@@ -38,7 +38,9 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.penapereira.cipher.conf.Constants;
-import com.penapereira.cipher.data.CipherData;
+import com.penapereira.cipher.data.EncryptedDataInterface;
+import com.penapereira.cipher.data.KeyPairData;
+import com.penapereira.cipher.data.v1.EncryptedData;
 
 public class Helper {
 	private long fileSize = 0;
@@ -50,18 +52,19 @@ public class Helper {
 	public Helper(Properties p) {
 		p = (p == null) ? new Properties() : p;
 		documentFile = p.getProperty(Constants.PROPERTIES_DEFAULT_FILE,
-				Constants.DEFAULT_FILE);
+			Constants.DEFAULT_FILE);
 		privateKeyFile = p.getProperty(Constants.PROPERTIES_PRIVATE_KEY,
-				Constants.DEFAULT_PRIVATE_KEY_FILE);
+			Constants.DEFAULT_PRIVATE_KEY_FILE);
 		publicKeyFile = p.getProperty(Constants.PROPERTIES_PUBLIC_KEY,
-				Constants.DEFAULT_PUBLIC_KEY_FILE);
+			Constants.DEFAULT_PUBLIC_KEY_FILE);
 	}
 
-	public String decryptAes(CipherResult cryptedData, PrivateKey rsaPrivateKey)
-			throws NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, IllegalBlockSizeException,
-			BadPaddingException, InvalidParameterSpecException,
-			InvalidAlgorithmParameterException, IOException {
+	public String decryptAes(EncryptedDataInterface cryptedData,
+		PrivateKey rsaPrivateKey)
+		throws NoSuchAlgorithmException, NoSuchPaddingException,
+		InvalidKeyException, IllegalBlockSizeException, BadPaddingException,
+		InvalidParameterSpecException, InvalidAlgorithmParameterException,
+		IOException {
 		decryptMessage = null;
 		byte[] decryptedText = null;
 		ByteArrayOutputStream out = null;
@@ -71,18 +74,20 @@ public class Helper {
 		// Decrypt the session key with the RSA private key
 		Cipher rsaCipher = Cipher.getInstance("RSA");
 		rsaCipher.init(Cipher.DECRYPT_MODE, rsaPrivateKey);
-		byte[] decryptedSessionKey = rsaCipher.doFinal(cryptedData
-				.getEncryptedSessionKey());
-		SecretKey sessionKey = new SecretKeySpec(decryptedSessionKey, "AES");
+		byte[] decryptedSessionKey = rsaCipher
+			.doFinal(cryptedData.getSessionKey());
+		SecretKey sessionKey = new SecretKeySpec(decryptedSessionKey,
+			"AES");
 
 		// init cipher to decrypt the data using the session key
 		final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		AlgorithmParameters params = AlgorithmParameters.getInstance("AES");
-		params.init(new IvParameterSpec(cryptedData.getIvVector()));
+		params.init(
+			new IvParameterSpec(cryptedData.getInitializationVector()));
 		cipher.init(Cipher.DECRYPT_MODE, sessionKey, params);
 
 		out = new ByteArrayOutputStream();
-		inA = new ByteArrayInputStream(cryptedData.getEncryptedData());
+		inA = new ByteArrayInputStream(cryptedData.getBytes());
 		in = new CipherInputStream(inA, cipher);
 
 		byte[] data = new byte[Constants.KB];
@@ -113,9 +118,9 @@ public class Helper {
 			} catch (UnsupportedEncodingException e) {
 				result = new String(decryptedText);
 				decryptMessage = "The system does not support UTF-8 !\n"
-						+ "The decrypted text has been encoded using\n"
-						+ "the default charset: "
-						+ Charset.defaultCharset().toString();
+					+ "The decrypted text has been encoded using\n"
+					+ "the default charset: "
+					+ Charset.defaultCharset().toString();
 			}
 		}
 		return result;
@@ -123,7 +128,7 @@ public class Helper {
 
 	public void generateKey() throws NoSuchAlgorithmException, IOException {
 		final KeyPairGenerator keyGen = KeyPairGenerator
-				.getInstance(Constants.RSA);
+			.getInstance(Constants.RSA);
 		keyGen.initialize(Constants.RSA_KEY_SIZE);
 		final KeyPair key = keyGen.generateKeyPair();
 
@@ -143,13 +148,13 @@ public class Helper {
 
 		// Saving the Public key in a file
 		ObjectOutputStream publicKeyOS = new ObjectOutputStream(
-				new FileOutputStream(publicKeyFile));
+			new FileOutputStream(publicKeyFile));
 		publicKeyOS.writeObject(key.getPublic());
 		publicKeyOS.close();
 
 		// Saving the Private key in a file
 		ObjectOutputStream privateKeyOS = new ObjectOutputStream(
-				new FileOutputStream(privateKeyFile));
+			new FileOutputStream(privateKeyFile));
 		privateKeyOS.writeObject(key.getPrivate());
 		privateKeyOS.close();
 	}
@@ -165,11 +170,11 @@ public class Helper {
 		return false;
 	}
 
-	public CipherResult encryptAes(String text, PublicKey rsaPublicKey)
-			throws NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, IllegalBlockSizeException,
-			BadPaddingException, InvalidParameterSpecException, IOException {
-		CipherResult result = null;
+	public EncryptedDataInterface encryptAes(String text,
+		PublicKey rsaPublicKey)
+		throws NoSuchAlgorithmException, NoSuchPaddingException,
+		InvalidKeyException, IllegalBlockSizeException, BadPaddingException,
+		InvalidParameterSpecException, IOException {
 		CipherOutputStream cos = null;
 		ByteArrayInputStream bais = null;
 		ByteArrayOutputStream baos = null;
@@ -184,7 +189,8 @@ public class Helper {
 
 		Cipher rsaCipher = Cipher.getInstance("RSA");
 		rsaCipher.init(Cipher.ENCRYPT_MODE, rsaPublicKey);
-		byte[] encryptedSessionKey = rsaCipher.doFinal(sessionKey.getEncoded());
+		byte[] encryptedSessionKey = rsaCipher
+			.doFinal(sessionKey.getEncoded());
 
 		// 3. Encrypt the data using the session key (unencrypted)
 		Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -195,7 +201,7 @@ public class Helper {
 
 		// 4. saving parameter spec to save initialization vector
 		byte[] iv = aesCipher.getParameters()
-				.getParameterSpec(IvParameterSpec.class).getIV();
+			.getParameterSpec(IvParameterSpec.class).getIV();
 
 		byte[] data = new byte[Constants.KB];
 		int read = bais.read(data, 0, Constants.KB);
@@ -217,34 +223,35 @@ public class Helper {
 		if (bais != null) {
 			bais.close();
 		}
-		result = new CipherResult(baos.toByteArray(), encryptedSessionKey, iv);
-
-		return result;
+		return new EncryptedData(baos.toByteArray(), encryptedSessionKey,
+			iv);
 	}
 
-	public CipherData loadKeys() throws FileNotFoundException,
-			ClassNotFoundException, IOException {
+	public KeyPairData loadKeys()
+		throws FileNotFoundException, ClassNotFoundException, IOException {
 		return this.loadKeys(publicKeyFile, privateKeyFile);
 	}
 
-	public CipherData loadKeys(String publicKeyFile, String privateKeyFile)
-			throws FileNotFoundException, IOException, ClassNotFoundException {
-		CipherData result = null;
+	public KeyPairData loadKeys(String publicKeyFile, String privateKeyFile)
+		throws FileNotFoundException, IOException, ClassNotFoundException {
+		KeyPairData result = null;
 		ObjectInputStream inputStream = null;
 
 		System.out.print("Loading public key...");
-		inputStream = new ObjectInputStream(new FileInputStream(publicKeyFile));
+		inputStream = new ObjectInputStream(
+			new FileInputStream(publicKeyFile));
 		PublicKey publicKey = (PublicKey) inputStream.readObject();
 		inputStream.close();
 		System.out.println("Done");
 
 		System.out.print("Loading private key...");
-		inputStream = new ObjectInputStream(new FileInputStream(privateKeyFile));
+		inputStream = new ObjectInputStream(
+			new FileInputStream(privateKeyFile));
 		PrivateKey privateKey = (PrivateKey) inputStream.readObject();
 		inputStream.close();
 		System.out.println("Done");
 
-		result = new CipherData(privateKey, publicKey);
+		result = new KeyPairData(privateKey, publicKey);
 		return result;
 	}
 
@@ -257,62 +264,51 @@ public class Helper {
 		return b.toByteArray();
 	}
 
-	public static Object deserialize(byte[] bytes) throws IOException,
-			ClassNotFoundException {
+	public static Object deserialize(byte[] bytes)
+		throws IOException, ClassNotFoundException {
 		ByteArrayInputStream b = new ByteArrayInputStream(bytes);
 		ObjectInputStream o = new ObjectInputStream(b);
 		return o.readObject();
 	}
 
-	public CipherResult readFile(String aInputFileName)
-			throws ClassNotFoundException, IOException {
+	public EncryptedDataInterface readFile(String aInputFileName)
+		throws ClassNotFoundException, IOException {
 		fileSize = 0;
 		System.out.println("Reading binary file: " + aInputFileName);
 		File file = new File(aInputFileName);
 		fileSize = file.length();
 		System.out.println("File size: " + file.length() + " bytes");
+		
 		byte[] resultBytes = new byte[(int) file.length()];
-		CipherResult result = null;
-
 		InputStream input = null;
 		try {
 			int totalBytesRead = 0;
 			input = new BufferedInputStream(new FileInputStream(file));
 			while (totalBytesRead < resultBytes.length) {
-				int bytesRemaining = resultBytes.length - totalBytesRead;
-				// input.read() returns -1, 0, or more :
+				int bytesRemaining = resultBytes.length
+					- totalBytesRead;
 				int bytesRead = input.read(resultBytes, totalBytesRead,
-						bytesRemaining);
+					bytesRemaining);
+				// input.read() returns -1, 0, or more :
 				if (bytesRead > 0) {
 					totalBytesRead = totalBytesRead + bytesRead;
 				}
 			}
-			// System.out.println("Num bytes read: " + totalBytesRead);
-			// } catch (ClassNotFoundException e) {
-			// fileFound = false;
-			// System.out.println("Can not fin class CipherResult Object "
-			// + "while reading file.");
-			// JOptionPane.showMessageDialog(null, "Could not read object"
-			// + " from file!\nCheck log for details.");
 		} finally {
-			// System.out.println("Closing input stream.");
 			if (input != null) {
 				input.close();
 			}
 		}
-		result = (CipherResult) deserialize(resultBytes);
-
-		return result;
+		return (EncryptedDataInterface) deserialize(resultBytes);
 	}
 
-	public void writeFile(CipherResult data, String aOutputFileName)
-			throws IOException {
+	public void writeFile(EncryptedDataInterface data, String aOutputFileName)
+		throws IOException {
 		System.out.println("Writing binary file: " + getDocumentFile());
-
-		OutputStream output = null;
+			OutputStream output = null;
 		try {
-			output = new BufferedOutputStream(new FileOutputStream(
-					aOutputFileName));
+			output = new BufferedOutputStream(
+				new FileOutputStream(aOutputFileName));
 			output.write(serialize(data));
 			output.flush();
 		} finally {
@@ -320,15 +316,14 @@ public class Helper {
 				output.close();
 			}
 		}
-
 	}
 
 	public boolean checkFile(String file, String text, PrivateKey privateKey)
-			throws InvalidKeyException, NoSuchAlgorithmException,
-			NoSuchPaddingException, IllegalBlockSizeException,
-			BadPaddingException, InvalidParameterSpecException,
-			InvalidAlgorithmParameterException, ClassNotFoundException,
-			IOException {
+		throws InvalidKeyException, NoSuchAlgorithmException,
+		NoSuchPaddingException, IllegalBlockSizeException,
+		BadPaddingException, InvalidParameterSpecException,
+		InvalidAlgorithmParameterException, ClassNotFoundException,
+		IOException {
 		System.out.println("Verifying file...");
 		return decryptAes(readFile(file), privateKey).equals(text);
 	}

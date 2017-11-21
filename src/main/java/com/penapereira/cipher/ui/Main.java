@@ -28,15 +28,15 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
-import com.penapereira.cipher.CipherResult;
 import com.penapereira.cipher.Helper;
-import com.penapereira.cipher.data.CipherData;
+import com.penapereira.cipher.data.EncryptedDataInterface;
+import com.penapereira.cipher.data.KeyPairData;
 
 public class Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 	protected JTextPane textPane = null;
 	private Helper helper;
-	private CipherData cipherData;
+	private KeyPairData cipherData;
 	protected boolean checkAfterSaving = true;
 
 	public static void showMessage(Component parent, String text, String title,
@@ -60,7 +60,6 @@ public class Main extends JFrame {
 		JButton save = new JButton("Encrypt & Save");
 		save.addActionListener(new ActionListener() {
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (textPane.getText().equals("")) {
 					System.out.println("Empty text, skipping.");
@@ -72,7 +71,7 @@ public class Main extends JFrame {
 					System.out.println("Encrypting "
 							+ textPane.getText().getBytes().length + " bytes");
 					System.out.flush();
-					CipherResult crypted = encrypt(textPane.getText(),
+					EncryptedDataInterface crypted = encrypt(textPane.getText(),
 							cipherData.getPublicKey());
 
 					if (writeFile(crypted, helper.getDocumentFile())) {
@@ -172,7 +171,7 @@ public class Main extends JFrame {
 		return helper.checkFile(fileName, text, privateKey);
 	}
 
-	protected boolean writeFile(CipherResult crypted, String fileName) {
+	protected boolean writeFile(EncryptedDataInterface crypted, String fileName) {
 		boolean result = true;
 		try {
 			helper.writeFile(crypted, fileName);
@@ -188,8 +187,8 @@ public class Main extends JFrame {
 		return result;
 	}
 
-	protected CipherResult encrypt(String text, PublicKey publicKey) {
-		CipherResult crypted = null;
+	protected EncryptedDataInterface encrypt(String text, PublicKey publicKey) {
+		EncryptedDataInterface crypted = null;
 
 		try {
 			crypted = helper.encryptAes(textPane.getText(),
@@ -258,8 +257,8 @@ public class Main extends JFrame {
 		}
 	}
 
-	public CipherData loadKeys() {
-		CipherData result = null;
+	public KeyPairData loadKeys() {
+		KeyPairData result = null;
 		String message = null;
 		try {
 			result = helper.loadKeys();
@@ -300,8 +299,8 @@ public class Main extends JFrame {
 		return result;
 	}
 
-	public CipherResult readFile() {
-		CipherResult data = null;
+	public EncryptedDataInterface readFile() {
+		EncryptedDataInterface data = null;
 		try {
 			data = helper.readFile(helper.getDocumentFile());
 		} catch (FileNotFoundException ex) {
@@ -329,7 +328,7 @@ public class Main extends JFrame {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			System.out.println("--- End of stack trace");
-			System.out.println("Can not find class CipherResult Object "
+			System.out.println("Can not find class EncryptedData Object "
 					+ "while reading document file.");
 			JOptionPane.showMessageDialog(this, "Internal Error!\n"
 					+ "A class could not be found\n"
@@ -352,7 +351,7 @@ public class Main extends JFrame {
 		return data;
 	}
 
-	public String decrypt(CipherResult data, PrivateKey privateKey) {
+	public String decrypt(EncryptedDataInterface data, PrivateKey privateKey) {
 		String result = null;
 		try {
 			result = helper.decryptAes(data, privateKey);
@@ -386,7 +385,7 @@ public class Main extends JFrame {
 		cipherData = loadKeys();
 		String text = "";
 
-		CipherResult data = readFile();
+		EncryptedDataInterface data = readFile();
 		if (data != null) {
 			text = decrypt(data, cipherData.getPrivateKey());
 		}

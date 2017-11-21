@@ -9,7 +9,7 @@ import com.penapereira.cipher.PrefsLoader;
 import com.penapereira.cipher.conf.Constants;
 import com.penapereira.cipher.ui.Main;
 
-public class LapCipher {
+public class LapCipherLauncher {
 
 	public Properties loadPrefs(String file) {
 		System.out.println("Loading properties: " + file);
@@ -45,7 +45,7 @@ public class LapCipher {
 	}
 
 	public static void main(String[] args) {
-		LapCipher main = new LapCipher();
+		LapCipherLauncher main = new LapCipherLauncher();
 		String propertiesFile = main.checkParams(args);
 		Properties p = main.loadPrefs(propertiesFile);
 		if (p == null) {

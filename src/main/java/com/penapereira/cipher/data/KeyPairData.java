@@ -3,16 +3,16 @@ package com.penapereira.cipher.data;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-public class CipherData {
+public class KeyPairData {
 	private PrivateKey privateKey = null;
 
 	private PublicKey publicKey = null;
 
-	public CipherData() {
+	public KeyPairData() {
 
 	}
 
-	public CipherData(PrivateKey privateKey, PublicKey publicKey) {
+	public KeyPairData(PrivateKey privateKey, PublicKey publicKey) {
 		this.privateKey = privateKey;
 		this.publicKey = publicKey;
 	}
