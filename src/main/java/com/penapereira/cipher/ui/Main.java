@@ -29,18 +29,22 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
-import com.penapereira.cipher.conf.Helper;
+import com.penapereira.cipher.conf.Configuration;
+import com.penapereira.cipher.conf.Constants;
 import com.penapereira.cipher.model.data.EncryptedDataInterface;
+import com.penapereira.cipher.model.keypair.KeyPairManager;
 
 public class Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 	protected JTextPane textPane = null;
-	private Helper helper;
+	private Configuration config;
 	private KeyPair keyPair;
 	protected boolean checkAfterSaving = true;
+	protected KeyPairManager keysManager;
 
 	public static void showMessage(Component parent, String text,
 		String title, int msgType) {
+		System.out.println("showMessage: "+text);
 		JOptionPane.showMessageDialog(parent, text, title, msgType);
 	}
 
@@ -51,9 +55,11 @@ public class Main extends JFrame {
 		System.out.println("  prop : properties file to use.");
 	}
 
-	public Main(Helper helper, String title) {
-		super(title);
-		this.helper = helper;
+	public Main(Configuration config, KeyPairManager keysManager) {
+		super("Editing: "
+			+ config.getProperty(Constants.PROPERTIES_DEFAULT_FILE));
+		this.keysManager = keysManager;
+		this.config = config;
 	}
 
 	protected void showMainWindow(String text, final PrivateKey privateKey) {
@@ -78,11 +84,11 @@ public class Main extends JFrame {
 						textPane.getText(), keyPair.getPublic());
 
 					if (writeFile(crypted,
-						helper.getDocumentFile())) {
+						config.getDocumentFile())) {
 						if (checkAfterSaving) {
 							try {
 								if (checkFile(
-									helper.getDocumentFile(),
+									config.getDocumentFile(),
 									textPane.getText(),
 									privateKey)) {
 									JOptionPane
@@ -164,10 +170,10 @@ public class Main extends JFrame {
 		setVisible(true);
 		textPane.requestFocus();
 
-		if (text.equals("") && helper.getFileSize() != 0) {
+		if (text.equals("") && config.getFileSize() != 0) {
 			JOptionPane.showMessageDialog(this,
 				"WARNING! The encrypted file size is "
-					+ helper.getFileSize()
+					+ config.getFileSize()
 					+ " bytes\nBut the decrypted text is "
 					+ "empty!\nIf you save, the file will be "
 					+ "overwritten.",
@@ -181,14 +187,14 @@ public class Main extends JFrame {
 		IllegalBlockSizeException, BadPaddingException,
 		InvalidParameterSpecException, InvalidAlgorithmParameterException,
 		ClassNotFoundException, IOException {
-		return helper.checkFile(fileName, text, privateKey);
+		return config.checkFile(fileName, text, privateKey);
 	}
 
 	protected boolean writeFile(EncryptedDataInterface crypted,
 		String fileName) {
 		boolean result = true;
 		try {
-			helper.writeFile(crypted, fileName);
+			config.writeFile(crypted, fileName);
 		} catch (Exception e) {
 			System.out.println("Error saving file");
 			e.printStackTrace();
@@ -207,7 +213,7 @@ public class Main extends JFrame {
 		EncryptedDataInterface crypted = null;
 
 		try {
-			crypted = helper.encryptAes(textPane.getText(),
+			crypted = config.encryptAes(textPane.getText(),
 				keyPair.getPublic());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -223,14 +229,14 @@ public class Main extends JFrame {
 
 	public void checkKeys() {
 		try {
-			if (!helper.areKeysPresent()) {
+			if (!keysManager.areKeysPresent()) {
 				System.out.println(
 					"Keys not present, will generate new pair.");
 				switch (JOptionPane.showConfirmDialog(this,
 					"Keys not found :\n" + "private key : "
-						+ helper.getPrivateKeyFile() + "\n"
+						+ config.getPrivateKeyFile() + "\n"
 						+ "public key : "
-						+ helper.getPublicKeyFile() + "\n\n"
+						+ config.getPublicKeyFile() + "\n\n"
 						+ "Do you want to generate a new pair?:\n"
 						+ "Yes : Generate keys in those files.\n"
 						+ "No : Will EXIT de program.\n"
@@ -240,7 +246,7 @@ public class Main extends JFrame {
 				case JOptionPane.YES_OPTION:
 					System.out.println(
 						"Going to generate a new key pair");
-					helper.generateKey();
+					keysManager.generateKeyPair();
 					break;
 				case JOptionPane.NO_OPTION:
 					System.out.println("Exiting.");
@@ -252,16 +258,16 @@ public class Main extends JFrame {
 				}
 			} else {
 				System.out.println("Key files found:");
-				System.out.println("  " + helper.getPublicKeyFile());
-				System.out.println("  " + helper.getPrivateKeyFile());
+				System.out.println("  " + config.getPublicKeyFile());
+				System.out.println("  " + config.getPrivateKeyFile());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("--- End of trace");
 			JOptionPane.showMessageDialog(this, "Error accessing and/or "
 				+ "generating key pair files! :\n" + "private key : "
-				+ helper.getPrivateKeyFile() + "\n" + "public key : "
-				+ helper.getPublicKeyFile() + "\n"
+				+ config.getPrivateKeyFile() + "\n" + "public key : "
+				+ config.getPublicKeyFile() + "\n"
 				+ "Will EXIT the program now.", "Error",
 				JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
@@ -282,7 +288,7 @@ public class Main extends JFrame {
 		KeyPair result = null;
 		String message = null;
 		try {
-			result = helper.loadKeys();
+			result = keysManager.loadKeys();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println("--- End of trace.");
@@ -323,14 +329,14 @@ public class Main extends JFrame {
 	public EncryptedDataInterface readFile() {
 		EncryptedDataInterface data = null;
 		try {
-			data = helper.readFile(helper.getDocumentFile());
+			data = config.readFile(config.getDocumentFile());
 		} catch (FileNotFoundException ex) {
 			System.out
-				.println("File not found: " + helper.getDocumentFile());
+				.println("File not found: " + config.getDocumentFile());
 			System.out.println("Will use file: "
-				+ helper.getDocumentFile() + " for saving.");
+				+ config.getDocumentFile() + " for saving.");
 			JOptionPane.showMessageDialog(this,
-				"File not found: " + helper.getDocumentFile() + "\n"
+				"File not found: " + config.getDocumentFile() + "\n"
 					+ "Will use this filename for saving.",
 				"File not found", JOptionPane.WARNING_MESSAGE);
 			// return here to not enter IOException block bellow
@@ -339,9 +345,9 @@ public class Main extends JFrame {
 			ex.printStackTrace();
 			System.out.println("--- End of stack trace");
 			System.out.println(
-				"Error reading file: " + helper.getDocumentFile());
+				"Error reading file: " + config.getDocumentFile());
 			if (JOptionPane.showConfirmDialog(this,
-				"Error reading file: " + helper.getDocumentFile() + "\n"
+				"Error reading file: " + config.getDocumentFile() + "\n"
 					+ "Click \"Yes\" if you wish to exit the program to "
 					+ "prevent damaging the file?",
 				"Error",
@@ -362,9 +368,9 @@ public class Main extends JFrame {
 		}
 		if (data == null) {
 			System.out.println(
-				"Error reading file: " + helper.getDocumentFile());
+				"Error reading file: " + config.getDocumentFile());
 			if (JOptionPane.showConfirmDialog(this,
-				"Error reading file: " + helper.getDocumentFile() + "\n"
+				"Error reading file: " + config.getDocumentFile() + "\n"
 					+ "Click \"Yes\" if you wish to exit the program to "
 					+ "prevent damaging the file?",
 				"Error",
@@ -379,19 +385,19 @@ public class Main extends JFrame {
 		PrivateKey privateKey) {
 		String result = null;
 		try {
-			result = helper.decryptAes(data, privateKey);
+			result = config.decryptAes(data, privateKey);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.flush();
 			System.out.println("--- End of trace.");
 			System.out.println(
-				"Error decrypting file: " + helper.getDocumentFile());
+				"Error decrypting file: " + config.getDocumentFile());
 			System.out.println("Maybe the KEYs are wrong or the file is"
 				+ " corrupted. Either way, it is recommended "
 				+ "to terminate the program and prevent "
 				+ "damaging the file.");
 			if (JOptionPane.showConfirmDialog(this,
-				"Error decrypting file: \n" + helper.getDocumentFile()
+				"Error decrypting file: \n" + config.getDocumentFile()
 					+ "\nMaybe the KEYs are wrong or the file is corrupted\n"
 					+ "Click \"Yes\" to exit the program and prevent\n"
 					+ "damaging the file",
@@ -400,9 +406,9 @@ public class Main extends JFrame {
 				System.exit(1);
 			}
 		}
-		if (helper.getDecryptMessage() != null) {
+		if (config.getDecryptMessage() != null) {
 			JOptionPane.showMessageDialog(this,
-				helper.getDecryptMessage(), "Warning",
+				config.getDecryptMessage(), "Warning",
 				JOptionPane.WARNING_MESSAGE);
 		}
 		return result;

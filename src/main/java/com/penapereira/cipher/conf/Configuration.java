@@ -18,12 +18,12 @@ import java.nio.charset.Charset;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidParameterSpecException;
+import java.util.Enumeration;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
 import javax.crypto.BadPaddingException;
@@ -40,21 +40,18 @@ import javax.crypto.spec.SecretKeySpec;
 import com.penapereira.cipher.model.data.EncryptedDataInterface;
 import com.penapereira.cipher.model.data.v1.EncryptedData;
 
-public class Helper {
+public class Configuration {
 	private long fileSize = 0;
-	protected String publicKeyFile = null;
-	protected String privateKeyFile = null;
 	protected String documentFile = null;
 	protected String decryptMessage = null;
 
-	public Helper(Properties p) {
-		p = (p == null) ? new Properties() : p;
-		documentFile = p.getProperty(Constants.PROPERTIES_DEFAULT_FILE,
-			Constants.DEFAULT_FILE);
-		privateKeyFile = p.getProperty(Constants.PROPERTIES_PRIVATE_KEY,
-			Constants.DEFAULT_PRIVATE_KEY_FILE);
-		publicKeyFile = p.getProperty(Constants.PROPERTIES_PUBLIC_KEY,
-			Constants.DEFAULT_PUBLIC_KEY_FILE);
+	protected String publicKeyFile = null;
+	protected String privateKeyFile = null;
+
+	Properties properties = null;
+	protected String propertiesFilename;
+
+	public Configuration() {
 	}
 
 	public String decryptAes(EncryptedDataInterface cryptedData,
@@ -124,50 +121,6 @@ public class Helper {
 		return result;
 	}
 
-	public void generateKey() throws NoSuchAlgorithmException, IOException {
-		final KeyPairGenerator keyGen = KeyPairGenerator
-			.getInstance(Constants.RSA);
-		keyGen.initialize(Constants.RSA_KEY_SIZE);
-		final KeyPair key = keyGen.generateKeyPair();
-
-		File privateKeyFile = new File(this.privateKeyFile);
-		File publicKeyFile = new File(this.publicKeyFile);
-
-		// Create files to store public and private key
-		if (privateKeyFile.getParentFile() != null) {
-			privateKeyFile.getParentFile().mkdirs();
-		}
-		privateKeyFile.createNewFile();
-
-		if (publicKeyFile.getParentFile() != null) {
-			publicKeyFile.getParentFile().mkdirs();
-		}
-		publicKeyFile.createNewFile();
-
-		// Saving the Public key in a file
-		ObjectOutputStream publicKeyOS = new ObjectOutputStream(
-			new FileOutputStream(publicKeyFile));
-		publicKeyOS.writeObject(key.getPublic());
-		publicKeyOS.close();
-
-		// Saving the Private key in a file
-		ObjectOutputStream privateKeyOS = new ObjectOutputStream(
-			new FileOutputStream(privateKeyFile));
-		privateKeyOS.writeObject(key.getPrivate());
-		privateKeyOS.close();
-	}
-
-	public boolean areKeysPresent() {
-
-		File privateKey = new File(privateKeyFile);
-		File publicKey = new File(publicKeyFile);
-
-		if (privateKey.exists() && publicKey.exists()) {
-			return true;
-		}
-		return false;
-	}
-
 	public EncryptedDataInterface encryptAes(String text,
 		PublicKey rsaPublicKey)
 		throws NoSuchAlgorithmException, NoSuchPaddingException,
@@ -225,32 +178,6 @@ public class Helper {
 			iv);
 	}
 
-	public KeyPair loadKeys()
-		throws FileNotFoundException, ClassNotFoundException, IOException {
-		return this.loadKeys(publicKeyFile, privateKeyFile);
-	}
-
-	public KeyPair loadKeys(String publicKeyFile, String privateKeyFile)
-		throws FileNotFoundException, IOException, ClassNotFoundException {
-		ObjectInputStream inputStream = null;
-
-		System.out.print("Loading public key...");
-		inputStream = new ObjectInputStream(
-			new FileInputStream(publicKeyFile));
-		PublicKey publicKey = (PublicKey) inputStream.readObject();
-		inputStream.close();
-		System.out.println("Done");
-
-		System.out.print("Loading private key...");
-		inputStream = new ObjectInputStream(
-			new FileInputStream(privateKeyFile));
-		PrivateKey privateKey = (PrivateKey) inputStream.readObject();
-		inputStream.close();
-		System.out.println("Done");
-
-		return new KeyPair(publicKey, privateKey);
-	}
-
 	public static byte[] serialize(Object obj) throws IOException {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		ObjectOutputStream o = new ObjectOutputStream(b);
@@ -274,7 +201,7 @@ public class Helper {
 		File file = new File(aInputFileName);
 		fileSize = file.length();
 		System.out.println("File size: " + file.length() + " bytes");
-		
+
 		byte[] resultBytes = new byte[(int) file.length()];
 		InputStream input = null;
 		try {
@@ -301,7 +228,7 @@ public class Helper {
 	public void writeFile(EncryptedDataInterface data, String aOutputFileName)
 		throws IOException {
 		System.out.println("Writing binary file: " + getDocumentFile());
-			OutputStream output = null;
+		OutputStream output = null;
 		try {
 			output = new BufferedOutputStream(
 				new FileOutputStream(aOutputFileName));
@@ -332,16 +259,8 @@ public class Helper {
 		return publicKeyFile;
 	}
 
-	public void setPublicKeyFile(String publicKeyFile) {
-		this.publicKeyFile = publicKeyFile;
-	}
-
 	public String getPrivateKeyFile() {
 		return privateKeyFile;
-	}
-
-	public void setPrivateKeyFile(String privateKeyFile) {
-		this.privateKeyFile = privateKeyFile;
 	}
 
 	public String getDocumentFile() {
@@ -354,6 +273,80 @@ public class Helper {
 
 	public String getDecryptMessage() {
 		return decryptMessage;
+	}
+
+	public boolean loadConfiguration(String[] args) {
+		try {
+			properties = loadProperties(getPropertiesPath(args));
+			documentFile = properties.getProperty(
+				Constants.PROPERTIES_DEFAULT_FILE,
+				Constants.DEFAULT_FILE);
+			privateKeyFile = properties.getProperty(
+				Constants.PROPERTIES_PRIVATE_KEY,
+				Constants.DEFAULT_PRIVATE_KEY_FILE);
+			publicKeyFile = properties.getProperty(
+				Constants.PROPERTIES_PUBLIC_KEY,
+				Constants.DEFAULT_PUBLIC_KEY_FILE);
+		} catch (InvalidPropertiesFormatException e) {
+			System.out.println(
+				"Invalid Properties file, please check your file.");
+		} catch (FileNotFoundException e) {
+			System.out.println("Could not find Properties file.");
+		} catch (IOException e) {
+			System.out.println("IO Error loading Properties file.");
+		}
+		return properties != null;
+	}
+
+	protected String getPropertiesPath(String[] args) {
+		propertiesFilename = Constants.DEFAULT_PROPERTIES_FILE;
+		if (args.length >= 1) {
+			System.out.println(
+				"Will attempt to use properties file: " + args[0]);
+			propertiesFilename = args[0];
+		} else {
+			System.out.println("Using default properties file: "
+				+ Constants.DEFAULT_PROPERTIES_FILE);
+		}
+		return propertiesFilename;
+	}
+
+	protected Properties loadProperties(String file)
+		throws InvalidPropertiesFormatException, FileNotFoundException,
+		IOException {
+		Properties properties = null;
+
+		properties = new Properties();
+		properties.loadFromXML(new FileInputStream(file));
+
+		Enumeration<Object> enuKeys = properties.keys();
+		System.out.println("-------- Properties --------");
+		while (enuKeys.hasMoreElements()) {
+			String key = (String) enuKeys.nextElement();
+			String value = properties.getProperty(key);
+			System.out.println("  " + key + ": " + value);
+		}
+		System.out.println("----------------------------");
+
+		return properties;
+	}
+
+	public void loadDefaults() {
+		properties = new Properties();
+		properties.setProperty(Constants.PROPERTIES_DEFAULT_FILE,
+			Constants.DEFAULT_FILE);
+		properties.setProperty(Constants.PROPERTIES_PRIVATE_KEY,
+			Constants.DEFAULT_PRIVATE_KEY_FILE);
+		properties.setProperty(Constants.PROPERTIES_PUBLIC_KEY,
+			Constants.DEFAULT_PUBLIC_KEY_FILE);
+	}
+
+	public String getFilename() {
+		return propertiesFilename;
+	}
+
+	public String getProperty(String propertiesKey) {
+		return properties.getProperty(propertiesKey);
 	}
 
 }

@@ -14,9 +14,9 @@ public class Constants {
 
 	public static final String AES_CBC_PKCS5 = "AES/CBC/PKCS5Padding";
 
-	public static final String DEFAULT_PRIVATE_KEY_FILE = "privateKey";
+	public static final String DEFAULT_PRIVATE_KEY_FILE = ".lapcipher_privateKey";
 
-	public static final String DEFAULT_PUBLIC_KEY_FILE = "publicKey";
+	public static final String DEFAULT_PUBLIC_KEY_FILE = ".lapcipher_publicKey";
 
 	public static final String DEFAULT_FILE = "document.bin";
 
