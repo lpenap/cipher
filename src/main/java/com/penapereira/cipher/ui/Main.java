@@ -29,6 +29,9 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Constants;
 import com.penapereira.cipher.model.data.EncryptedDataInterface;
@@ -37,6 +40,8 @@ import com.penapereira.cipher.model.keypair.KeyPairManager;
 import com.penapereira.cipher.util.AesRsaCipher;
 
 public class Main extends JFrame {
+	private static final Logger logger = LogManager.getLogger();
+	
 	private static final long serialVersionUID = 1L;
 	protected JTextPane textPane = null;
 	private Configuration config;
@@ -47,15 +52,8 @@ public class Main extends JFrame {
 
 	public static void showMessage(Component parent, String text,
 		String title, int msgType) {
-		System.out.println("showMessage: " + text);
+		logger.debug("showMessage: " + text);
 		JOptionPane.showMessageDialog(parent, text, title, msgType);
-	}
-
-	public static void printUsage() {
-		System.out.println("USAGE:");
-		System.out.println("  java -jar cipher.jar [prop]");
-		System.out.println("PARAMETERS:");
-		System.out.println("  prop : properties file to use.");
 	}
 
 	public Main(Configuration config, KeyPairManager keysManager,
@@ -73,7 +71,7 @@ public class Main extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 				if (textPane.getText().equals("")) {
-					System.out.println("Empty text, skipping.");
+					logger.info("Empty text, nothing to save.");
 					JOptionPane.showMessageDialog(
 						(Component) e.getSource(),
 						"Nothing to save.", "",

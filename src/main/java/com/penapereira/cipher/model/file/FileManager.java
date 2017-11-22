@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -22,14 +23,18 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.penapereira.cipher.model.data.EncryptedDataInterface;
 import com.penapereira.cipher.util.AesRsaCipher;
 
 public class FileManager {
 	private long fileSize = 0;
+	private static final Logger logger = LogManager.getLogger();
 
-	public FileManager(){
-		
+	public FileManager() {
+
 	}
 
 	public long getFileSize() {
@@ -58,7 +63,7 @@ public class FileManager {
 		BadPaddingException, InvalidParameterSpecException,
 		InvalidAlgorithmParameterException, ClassNotFoundException,
 		IOException {
-		System.out.println("Verifying file...");
+		logger.info("Verifying file...");
 		AesRsaCipher cipher = new AesRsaCipher();
 		return cipher.decrypt(readEncryptedFile(file), privateKey)
 			.equals(text);
@@ -82,10 +87,17 @@ public class FileManager {
 	public EncryptedDataInterface readEncryptedFile(String inputFileName)
 		throws ClassNotFoundException, IOException {
 		fileSize = 0;
-		System.out.println("Reading binary file: " + inputFileName);
-		File file = new File(inputFileName);
+		logger.info("Reading binary file: " + inputFileName);
+		File file;
+		try {
+			file = new File(
+				getClass().getResource("/" + inputFileName).toURI());
+		} catch (URISyntaxException e) {
+			logger.error("Error in URI syntax from file...", e);
+			file = new File(inputFileName);
+		}
 		fileSize = file.length();
-		System.out.println("File size: " + file.length() + " bytes");
+		logger.debug("File size: " + file.length() + " bytes");
 
 		byte[] resultBytes = new byte[(int) file.length()];
 		InputStream input = null;

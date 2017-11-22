@@ -1,21 +1,26 @@
 package com.penapereira.cipher.model.keypair;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URISyntaxException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.penapereira.cipher.conf.Constants;
 
 public class KeyPairManager {
+	private static final Logger logger = LogManager.getLogger();
+
 	protected String publicKeyFile = null;
 	protected String privateKeyFile = null;
 
@@ -26,7 +31,8 @@ public class KeyPairManager {
 		this.publicKeyFile = publicKeyFile;
 	}
 
-	public void generateKeyPair() throws NoSuchAlgorithmException, IOException {
+	public void generateKeyPair()
+		throws NoSuchAlgorithmException, IOException {
 		final KeyPairGenerator keyGen = KeyPairGenerator
 			.getInstance(Constants.RSA);
 		keyGen.initialize(Constants.RSA_KEY_SIZE);
@@ -60,14 +66,25 @@ public class KeyPairManager {
 	}
 
 	public boolean areKeysPresent() {
+		logger.debug("Looking for keys...");
 
-		File privateKey = new File(this.privateKeyFile);
-		File publicKey = new File(this.publicKeyFile);
-
-		if (privateKey.exists() && publicKey.exists()) {
-			return true;
+		boolean result = false;
+		File privateKey = null;
+		File publicKey = null;
+		try {
+			privateKey = new File(getClass()
+				.getResource("/" + this.privateKeyFile).toURI());
+			publicKey = new File(getClass()
+				.getResource("/" + this.publicKeyFile).toURI());
+		} catch (URISyntaxException ignored) {
 		}
-		return false;
+
+		if (privateKey != null && publicKey != null) {
+			if (privateKey.exists() && publicKey.exists()) {
+				result = true;
+			}
+		}
+		return result;
 	}
 
 	public KeyPair loadKeys()
@@ -77,21 +94,17 @@ public class KeyPairManager {
 
 	public KeyPair loadKeys(String publicKeyFile, String privateKeyFile)
 		throws FileNotFoundException, IOException, ClassNotFoundException {
-		ObjectInputStream inputStream = null;
+		logger.debug("Loading public key...");
+		PublicKey publicKey = (PublicKey) new ObjectInputStream(
+			getClass().getResourceAsStream("/" + publicKeyFile))
+				.readObject();
+		logger.trace("Done loading public key.");
 
-		System.out.print("Loading public key...");
-		inputStream = new ObjectInputStream(
-			new FileInputStream(publicKeyFile));
-		PublicKey publicKey = (PublicKey) inputStream.readObject();
-		inputStream.close();
-		System.out.println("Done");
-
-		System.out.print("Loading private key...");
-		inputStream = new ObjectInputStream(
-			new FileInputStream(privateKeyFile));
-		PrivateKey privateKey = (PrivateKey) inputStream.readObject();
-		inputStream.close();
-		System.out.println("Done");
+		logger.debug("Loading private key...");
+		PrivateKey privateKey = (PrivateKey) new ObjectInputStream(
+			getClass().getResourceAsStream("/" + privateKeyFile))
+				.readObject();
+		logger.trace("Done loading private key.");
 
 		return new KeyPair(publicKey, privateKey);
 	}

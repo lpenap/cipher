@@ -1,13 +1,17 @@
 package com.penapereira.cipher.conf;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Configuration {
+	private static final Logger logger = LogManager.getLogger();
+
 	protected String documentFile = null;
 
 	protected String publicKeyFile = null;
@@ -48,12 +52,12 @@ public class Configuration {
 				Constants.PROPERTIES_PUBLIC_KEY,
 				Constants.DEFAULT_PUBLIC_KEY_FILE);
 		} catch (InvalidPropertiesFormatException e) {
-			System.out.println(
+			logger.error(
 				"Invalid Properties file, please check your file.");
 		} catch (FileNotFoundException e) {
-			System.out.println("Could not find Properties file.");
+			logger.error("Could not find Properties file.");
 		} catch (IOException e) {
-			System.out.println("IO Error loading Properties file.");
+			logger.error("IO Error loading Properties file.");
 		}
 		return properties != null;
 	}
@@ -61,11 +65,11 @@ public class Configuration {
 	protected String getPropertiesPath(String[] args) {
 		propertiesFilename = Constants.DEFAULT_PROPERTIES_FILE;
 		if (args.length >= 1) {
-			System.out.println(
+			logger.info(
 				"Will attempt to use properties file: " + args[0]);
 			propertiesFilename = args[0];
 		} else {
-			System.out.println("Using default properties file: "
+			logger.info("Using default properties file: "
 				+ Constants.DEFAULT_PROPERTIES_FILE);
 		}
 		return propertiesFilename;
@@ -77,7 +81,7 @@ public class Configuration {
 		Properties properties = null;
 
 		properties = new Properties();
-		properties.loadFromXML(new FileInputStream(file));
+		properties.loadFromXML(getClass().getResourceAsStream("/"+file));
 
 		Enumeration<Object> enuKeys = properties.keys();
 		System.out.println("-------- Properties --------");
