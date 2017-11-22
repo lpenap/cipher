@@ -24,9 +24,9 @@ public class KeyPairManager {
 	protected String publicKeyFile = null;
 	protected String privateKeyFile = null;
 
+	KeyPair keyPair = null;
+
 	public KeyPairManager(String publicKeyFile, String privateKeyFile) {
-		System.out.println(publicKeyFile);
-		System.out.println(privateKeyFile);
 		this.privateKeyFile = privateKeyFile;
 		this.publicKeyFile = publicKeyFile;
 	}
@@ -89,7 +89,8 @@ public class KeyPairManager {
 
 	public KeyPair loadKeys()
 		throws FileNotFoundException, ClassNotFoundException, IOException {
-		return this.loadKeys(publicKeyFile, privateKeyFile);
+		this.keyPair = this.loadKeys(publicKeyFile, privateKeyFile);
+		return this.keyPair;
 	}
 
 	public KeyPair loadKeys(String publicKeyFile, String privateKeyFile)
@@ -106,7 +107,12 @@ public class KeyPairManager {
 				.readObject();
 		logger.trace("Done loading private key.");
 
-		return new KeyPair(publicKey, privateKey);
+		this.keyPair = new KeyPair(publicKey, privateKey);
+		return this.keyPair;
+	}
+
+	public KeyPair getKeyPair() {
+		return keyPair;
 	}
 
 	public String getPublicKeyFile() {

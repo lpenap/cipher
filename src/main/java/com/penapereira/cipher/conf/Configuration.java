@@ -81,16 +81,16 @@ public class Configuration {
 		Properties properties = null;
 
 		properties = new Properties();
-		properties.loadFromXML(getClass().getResourceAsStream("/"+file));
+		properties.loadFromXML(getClass().getResourceAsStream("/" + file));
 
 		Enumeration<Object> enuKeys = properties.keys();
-		System.out.println("-------- Properties --------");
+		logger.info("-------- Properties --------");
 		while (enuKeys.hasMoreElements()) {
 			String key = (String) enuKeys.nextElement();
 			String value = properties.getProperty(key);
-			System.out.println("  " + key + ": " + value);
+			logger.info("  " + key + ": " + value);
 		}
-		System.out.println("----------------------------");
+		logger.info("----------------------------");
 
 		return properties;
 	}

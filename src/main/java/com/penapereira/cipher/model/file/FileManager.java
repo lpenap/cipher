@@ -69,12 +69,13 @@ public class FileManager {
 			.equals(text);
 	}
 
-	public void writeFile(EncryptedDataInterface data, String aOutputFileName)
-		throws IOException {
+	public void writeFile(EncryptedDataInterface data, String outputFileName)
+		throws IOException, URISyntaxException {
 		OutputStream output = null;
 		try {
 			output = new BufferedOutputStream(
-				new FileOutputStream(aOutputFileName));
+				new FileOutputStream(new File(getClass()
+					.getResource("/" + outputFileName).toURI())));
 			output.write(serialize(data));
 			output.flush();
 		} finally {

@@ -6,21 +6,12 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.spec.InvalidParameterSpecException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -37,11 +28,12 @@ import com.penapereira.cipher.conf.Constants;
 import com.penapereira.cipher.model.data.EncryptedDataInterface;
 import com.penapereira.cipher.model.file.FileManager;
 import com.penapereira.cipher.model.keypair.KeyPairManager;
+import com.penapereira.cipher.ui.listener.SaveActionListener;
 import com.penapereira.cipher.util.AesRsaCipher;
 
 public class Main extends JFrame {
 	private static final Logger logger = LogManager.getLogger();
-	
+
 	private static final long serialVersionUID = 1L;
 	protected JTextPane textPane = null;
 	private Configuration config;
@@ -66,83 +58,22 @@ public class Main extends JFrame {
 	}
 
 	protected void showMainWindow(String text, final PrivateKey privateKey) {
-		JButton save = new JButton("Encrypt & Save");
-		save.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				if (textPane.getText().equals("")) {
-					logger.info("Empty text, nothing to save.");
-					JOptionPane.showMessageDialog(
-						(Component) e.getSource(),
-						"Nothing to save.", "",
-						JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					System.out.println(
-						"-----------------------------------");
-					System.out.println("Encrypting "
-						+ textPane.getText().getBytes().length
-						+ " bytes");
-					System.out.flush();
-					EncryptedDataInterface crypted = encrypt(
-						textPane.getText(), keyPair.getPublic());
-
-					if (writeFile(crypted,
-						config.getDocumentFile())) {
-						if (checkAfterSaving) {
-							try {
-								if (checkFile(
-									config.getDocumentFile(),
-									textPane.getText(),
-									privateKey)) {
-									JOptionPane
-										.showMessageDialog(
-											(Component) e
-												.getSource(),
-											"File encrypted, saved & verified!",
-											"Success",
-											JOptionPane.INFORMATION_MESSAGE);
-									System.out.println(
-										"File encrypted, saved & "
-											+ "verified!");
-
-								}
-							} catch (Exception e1) {
-								e1.printStackTrace();
-								System.out.println(
-									"--- End of trace");
-								JOptionPane.showMessageDialog(
-									(Component) e.getSource(),
-									"Error verifying encrypted file!\n"
-										+ "Check console log for details.",
-									"Warning",
-									JOptionPane.WARNING_MESSAGE);
-							}
-						} else {
-							JOptionPane.showMessageDialog(
-								(Component) e.getSource(),
-								"File encrypted and saved! (not verified)",
-								"Success",
-								JOptionPane.INFORMATION_MESSAGE);
-							System.out.println(
-								"File encrypted and saved!"
-									+ "(not verified)");
-						}
-					}
-				}
-			}
-		});
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		JButton save = new JButton("Encrypt & Save");
+
 		textPane = new JTextPane();
 		StyledDocument doc = textPane.getStyledDocument();
 		textPane.setFont(new Font("Courier", Font.PLAIN, 14));
+
+		save.addActionListener(new SaveActionListener(this, textPane,
+			keysManager, config, fileManager));
 		try {
 			doc.insertString(doc.getLength(), text,
 				doc.getStyle("regular"));
 		} catch (BadLocationException e) {
-			e.printStackTrace();
-			System.out.println("--- End of trace");
-			System.out.println("Could not insert text into text pane"
-				+ "terminating to prevent damaging the file.");
+			logger.error("Could not insert text into text pane,"
+				+ "continuing may damage the file");
 			if (JOptionPane.showConfirmDialog(this,
 				"Could not insert the file content into main window\n"
 					+ "Check console log for details.\n"
@@ -184,58 +115,12 @@ public class Main extends JFrame {
 		}
 	}
 
-	protected boolean checkFile(String fileName, String text,
-		PrivateKey privateKey) throws InvalidKeyException,
-		NoSuchAlgorithmException, NoSuchPaddingException,
-		IllegalBlockSizeException, BadPaddingException,
-		InvalidParameterSpecException, InvalidAlgorithmParameterException,
-		ClassNotFoundException, IOException {
-		return fileManager.checkFile(fileName, text, privateKey);
-	}
-
-	protected boolean writeFile(EncryptedDataInterface crypted,
-		String fileName) {
-		boolean result = true;
-		try {
-			fileManager.writeFile(crypted, fileName);
-		} catch (Exception e) {
-			System.out.println("Error saving file");
-			e.printStackTrace();
-			System.out.println("--- End of trace.");
-			JOptionPane.showMessageDialog(this,
-				"Error saving file.\n"
-					+ "Check console log for full details.",
-				"Error", JOptionPane.ERROR_MESSAGE);
-			result = false;
-		}
-		return result;
-	}
-
-	protected EncryptedDataInterface encrypt(String text,
-		PublicKey publicKey) {
-		EncryptedDataInterface crypted = null;
-
-		try {
-			AesRsaCipher cipher = new AesRsaCipher();
-			crypted = cipher.encrypt(textPane.getText(),
-				keyPair.getPublic());
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("--- End of Exception.");
-			JOptionPane.showMessageDialog(this,
-				"Error encrypting file!"
-					+ "check console log for details.",
-				"Error", JOptionPane.ERROR_MESSAGE);
-		}
-
-		return crypted;
-	}
-
 	public void checkKeys() {
 		try {
 			if (!keysManager.areKeysPresent()) {
 				System.out.println(
 					"Keys not present, will generate new pair.");
+				// TODO there are only 2 options not 3!
 				switch (JOptionPane.showConfirmDialog(this,
 					"Keys not found :\n" + "private key : "
 						+ config.getPrivateKeyFile() + "\n"
@@ -261,13 +146,13 @@ public class Main extends JFrame {
 						"Doing nothing, brace yourselves.");
 				}
 			} else {
-				System.out.println("Key files found:");
-				System.out.println("  " + config.getPublicKeyFile());
-				System.out.println("  " + config.getPrivateKeyFile());
+				logger.debug("Key files found:");
+				logger.debug("  " + config.getPublicKeyFile());
+				logger.debug("  " + config.getPrivateKeyFile());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("--- End of trace");
+			logger.error(
+				"IO Error accessing and/or generating key files, exiting");
 			JOptionPane.showMessageDialog(this, "Error accessing and/or "
 				+ "generating key pair files! :\n" + "private key : "
 				+ config.getPrivateKeyFile() + "\n" + "public key : "
@@ -276,8 +161,8 @@ public class Main extends JFrame {
 				JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			System.out.println("--- End of trace");
+			logger.error("RSA algorithm not supporteby the JVM, "
+				+ "please check your java installation and try again");
 			JOptionPane.showMessageDialog(this,
 				"RSA Algorithm not found " + "in the JVM!\n"
 					+ "Please check your java installation"
@@ -294,20 +179,18 @@ public class Main extends JFrame {
 		try {
 			result = keysManager.loadKeys();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			System.out.println("--- End of trace.");
+			logger.error("Key files not found!");
 		} catch (ClassNotFoundException e) {
+			logger.error("Error while trying to load keys. "
+				+ "Missing critical files in your installation, aborting.");
 			JOptionPane.showMessageDialog(this,
 				"Unrecoverablex program error!\n"
 					+ "Check your installation or jar file\n"
 					+ "Will EXIT the program",
 				"Error", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-			System.out.println("--- End of trace.");
 			System.exit(1);
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("--- End of trace.");
+			logger.error("IO Error while trying to load keys.");
 		}
 		if (result == null) {
 			message = "Keys could not be loaded!\n"
