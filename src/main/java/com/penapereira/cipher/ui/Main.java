@@ -32,7 +32,9 @@ import javax.swing.text.StyledDocument;
 import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Constants;
 import com.penapereira.cipher.model.data.EncryptedDataInterface;
+import com.penapereira.cipher.model.file.FileManager;
 import com.penapereira.cipher.model.keypair.KeyPairManager;
+import com.penapereira.cipher.util.AesRsaCipher;
 
 public class Main extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -41,10 +43,11 @@ public class Main extends JFrame {
 	private KeyPair keyPair;
 	protected boolean checkAfterSaving = true;
 	protected KeyPairManager keysManager;
+	protected FileManager fileManager;
 
 	public static void showMessage(Component parent, String text,
 		String title, int msgType) {
-		System.out.println("showMessage: "+text);
+		System.out.println("showMessage: " + text);
 		JOptionPane.showMessageDialog(parent, text, title, msgType);
 	}
 
@@ -55,10 +58,12 @@ public class Main extends JFrame {
 		System.out.println("  prop : properties file to use.");
 	}
 
-	public Main(Configuration config, KeyPairManager keysManager) {
+	public Main(Configuration config, KeyPairManager keysManager,
+		FileManager fileManager) {
 		super("Editing: "
 			+ config.getProperty(Constants.PROPERTIES_DEFAULT_FILE));
 		this.keysManager = keysManager;
+		this.fileManager = fileManager;
 		this.config = config;
 	}
 
@@ -170,10 +175,10 @@ public class Main extends JFrame {
 		setVisible(true);
 		textPane.requestFocus();
 
-		if (text.equals("") && config.getFileSize() != 0) {
+		if (text.equals("") && fileManager.getFileSize() != 0) {
 			JOptionPane.showMessageDialog(this,
 				"WARNING! The encrypted file size is "
-					+ config.getFileSize()
+					+ fileManager.getFileSize()
 					+ " bytes\nBut the decrypted text is "
 					+ "empty!\nIf you save, the file will be "
 					+ "overwritten.",
@@ -187,14 +192,14 @@ public class Main extends JFrame {
 		IllegalBlockSizeException, BadPaddingException,
 		InvalidParameterSpecException, InvalidAlgorithmParameterException,
 		ClassNotFoundException, IOException {
-		return config.checkFile(fileName, text, privateKey);
+		return fileManager.checkFile(fileName, text, privateKey);
 	}
 
 	protected boolean writeFile(EncryptedDataInterface crypted,
 		String fileName) {
 		boolean result = true;
 		try {
-			config.writeFile(crypted, fileName);
+			fileManager.writeFile(crypted, fileName);
 		} catch (Exception e) {
 			System.out.println("Error saving file");
 			e.printStackTrace();
@@ -213,7 +218,8 @@ public class Main extends JFrame {
 		EncryptedDataInterface crypted = null;
 
 		try {
-			crypted = config.encryptAes(textPane.getText(),
+			AesRsaCipher cipher = new AesRsaCipher();
+			crypted = cipher.encrypt(textPane.getText(),
 				keyPair.getPublic());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -329,7 +335,8 @@ public class Main extends JFrame {
 	public EncryptedDataInterface readFile() {
 		EncryptedDataInterface data = null;
 		try {
-			data = config.readFile(config.getDocumentFile());
+			data = fileManager
+				.readEncryptedFile(config.getDocumentFile());
 		} catch (FileNotFoundException ex) {
 			System.out
 				.println("File not found: " + config.getDocumentFile());
@@ -384,8 +391,9 @@ public class Main extends JFrame {
 	public String decrypt(EncryptedDataInterface data,
 		PrivateKey privateKey) {
 		String result = null;
+		AesRsaCipher cipher = new AesRsaCipher();
 		try {
-			result = config.decryptAes(data, privateKey);
+			result = cipher.decrypt(data, privateKey);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.flush();
@@ -406,9 +414,9 @@ public class Main extends JFrame {
 				System.exit(1);
 			}
 		}
-		if (config.getDecryptMessage() != null) {
+		if (cipher.getDecryptResultMessage() != null) {
 			JOptionPane.showMessageDialog(this,
-				config.getDecryptMessage(), "Warning",
+				cipher.getDecryptResultMessage(), "Warning",
 				JOptionPane.WARNING_MESSAGE);
 		}
 		return result;

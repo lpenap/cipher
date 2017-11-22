@@ -4,6 +4,7 @@ import javax.swing.JOptionPane;
 
 import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Constants;
+import com.penapereira.cipher.model.file.FileManager;
 import com.penapereira.cipher.model.keypair.KeyPairManager;
 import com.penapereira.cipher.ui.Main;
 
@@ -13,16 +14,18 @@ public class LapCipherLauncher {
 		if (!config.loadConfiguration(args)) {
 			Main.printUsage();
 			Main.showMessage(null, "There is a problem loading"
-					+ " configuration from file:\n" + config.getFilename() + "\n\n"
-					+ "Will use defaults:\n\n" + "Document: "
-					+ Constants.DEFAULT_FILE + "\n" + "PrivateKey: "
-					+ Constants.PROPERTIES_PRIVATE_KEY + "\n" + "PublicKey: "
-					+ Constants.PROPERTIES_PUBLIC_KEY, "Warning",
-					JOptionPane.WARNING_MESSAGE);
+				+ " configuration from file:\n" + config.getFilename()
+				+ "\n\n" + "Will use defaults:\n\n" + "Document: "
+				+ Constants.DEFAULT_FILE + "\n" + "PrivateKey: "
+				+ Constants.PROPERTIES_PRIVATE_KEY + "\n"
+				+ "PublicKey: " + Constants.PROPERTIES_PUBLIC_KEY,
+				"Warning", JOptionPane.WARNING_MESSAGE);
 			config.loadDefaults();
 		}
-		KeyPairManager keysManager= new KeyPairManager(config.getPublicKeyFile(), config.getPrivateKeyFile());
-		Main window = new Main(config, keysManager);
+		KeyPairManager keysManager = new KeyPairManager(
+			config.getPublicKeyFile(), config.getPrivateKeyFile());
+		FileManager fileManager = new FileManager();
+		Main window = new Main(config, keysManager, fileManager);
 		window.initWindow();
 	}
 }
