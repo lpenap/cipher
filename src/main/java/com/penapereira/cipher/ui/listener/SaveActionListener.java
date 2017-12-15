@@ -76,6 +76,14 @@ public class SaveActionListener implements ActionListener {
 								JOptionPane.INFORMATION_MESSAGE);
 							logger.info("File encrypted, saved & "
 								+ "verified!");
+						} else {
+							logger.error(
+								"File could not be saved!");
+							JOptionPane.showMessageDialog(
+								(Component) e.getSource(),
+								"File could not be saved!",
+								"Error",
+								JOptionPane.ERROR_MESSAGE);
 						}
 					} catch (Exception e1) {
 						logger.error(

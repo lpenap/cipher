@@ -1,5 +1,7 @@
 package com.penapereira.cipher.conf;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -8,6 +10,8 @@ import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.penapereira.cipher.model.file.FileManager;
 
 public class Configuration {
 	private static final Logger logger = LogManager.getLogger();
@@ -75,23 +79,24 @@ public class Configuration {
 		return propertiesFilename;
 	}
 
-	protected Properties loadProperties(String file)
+	protected Properties loadProperties(String filename)
 		throws InvalidPropertiesFormatException, FileNotFoundException,
 		IOException {
 		Properties properties = null;
 
 		properties = new Properties();
-		properties.loadFromXML(getClass().getResourceAsStream("/" + file));
-
-		Enumeration<Object> enuKeys = properties.keys();
-		logger.info("-------- Properties --------");
-		while (enuKeys.hasMoreElements()) {
-			String key = (String) enuKeys.nextElement();
-			String value = properties.getProperty(key);
-			logger.info("  " + key + ": " + value);
+		File file = FileManager.getResourceFile(this.getClass(), filename);
+		if (file != null) {
+			properties.loadFromXML(new FileInputStream(file));
+			Enumeration<Object> enuKeys = properties.keys();
+			logger.info("-------- Properties --------");
+			while (enuKeys.hasMoreElements()) {
+				String key = (String) enuKeys.nextElement();
+				String value = properties.getProperty(key);
+				logger.info("  " + key + ": " + value);
+			}
+			logger.info("----------------------------");
 		}
-		logger.info("----------------------------");
-
 		return properties;
 	}
 

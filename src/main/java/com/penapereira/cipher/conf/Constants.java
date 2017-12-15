@@ -1,7 +1,10 @@
 package com.penapereira.cipher.conf;
 
-
 public class Constants {
+	public static final String DIR_SEP = "/";
+	
+	public static final String JAR_RESOURCE_PREFIX = "jar:";
+
 	public static final int BLOCK_SIZE_RSA = 117;
 
 	public static final int KB = 1024;
@@ -26,5 +29,5 @@ public class Constants {
 
 	public static final String PROPERTIES_DEFAULT_FILE = "defaultFile";
 
-	public static final int RSA_KEY_SIZE = 1024;
+	public static final int RSA_KEY_SIZE = 2048;
 }
