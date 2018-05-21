@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'application'
     id 'net.ltgt.apt' version '0.10'
 }
 
@@ -16,6 +16,7 @@ tasks.withType(JavaCompile) {
 
 repositories {
      mavenCentral()
+     jcenter()
 }
 dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version:'2.11.0'
@@ -43,3 +44,5 @@ test {
         html.enabled = true
     }
 }
+
+mainClassName = "com.penapereira.cipher.launcher.LapCipherLauncher"

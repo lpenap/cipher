@@ -1,5 +1,7 @@
 .DS_Store
 release/
+runInstall.sh
+src/main/resources/setup
 
 # gradle
 ##########################################

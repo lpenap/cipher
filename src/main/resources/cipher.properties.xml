@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>	
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>
-	<entry key="privateKey">sample-keys/.lapcipher_privateKey</entry>
-	<entry key="publicKey">sample-keys/.lapcipher_publicKey</entry>
-	<entry key="defaultFile">saves/document.bin</entry>
-</properties>
