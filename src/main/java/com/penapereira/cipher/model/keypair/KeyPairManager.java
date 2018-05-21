@@ -84,14 +84,18 @@ public class KeyPairManager {
 
 	protected Object loadKey(String keyFilename)
 		throws IOException, ClassNotFoundException {
-		File file = FileManager.getResourceFile(getClass(), keyFilename);
+		// File file = FileManager.getResourceFile(getClass(), keyFilename);
+		File file = new File(keyFilename);
 		Object keyObject = null;
-		if (file != null) {
+		if (file.exists()) {
+			logger.debug("Loading key :" + keyFilename);
 			FileInputStream in = new FileInputStream(file);
 			ObjectInputStream oIn = new ObjectInputStream(in);
 			keyObject = oIn.readObject();
 			oIn.close();
 			in.close();
+		} else {
+			logger.error("Key file not found: " + keyFilename);
 		}
 		return keyObject;
 	}
