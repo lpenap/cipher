@@ -1,47 +1,59 @@
 package com.penapereira.cipher.launcher;
 
-import javax.swing.JOptionPane;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.penapereira.cipher.conf.Configuration;
-import com.penapereira.cipher.conf.Constants;
-import com.penapereira.cipher.model.file.FileManager;
-import com.penapereira.cipher.model.keypair.KeyPairManager;
-import com.penapereira.cipher.ui.Main;
+import com.penapereira.cipher.service.ApplicationService;
+import com.penapereira.cipher.service.ConfigurationService;
+import com.penapereira.cipher.service.impl.ApplicationServiceImpl;
+import com.penapereira.cipher.service.impl.ConfigurationServiceImpl;
 
 public class LapCipherLauncher {
 
     private final Logger logger = LogManager.getLogger();
 
+    ApplicationService appService;
+    ConfigurationService configService;
+
     public static void main(String[] args) {
         LapCipherLauncher launcher = new LapCipherLauncher();
-        launcher.loadLauncher(args);
+        launcher.init(args);
+        launcher.start(args);
     }
 
-    public void loadLauncher(String[] args) {
-        logger.info("Loading launcher...");
-        Configuration config = new Configuration();
-        if (!config.configurationFolderExists()) {
-            config.createDefaultConfiguration();
+    public void init(String[] args) {
+        configService = ConfigurationServiceImpl.instance();
+        CommandLineParser parser = new DefaultParser();
+        Options options = new Options();
+        Option configDir =
+                Option.builder().argName("d").longOpt("config-dir").desc("configuration directory").hasArg().build();
+        options.addOption(configDir);
+
+        try {
+            CommandLine line = parser.parse(options, args);
+            if (line.hasOption("config-dir")) {
+                configService.setConfigurationDirectory(line.getOptionValue("config-dir"));
+            }
+        } catch (ParseException exp) {
+            System.out.println("Unexpected exception:" + exp.getMessage());
         }
-        if (!config.loadConfiguration(args)) {
-            printUsage();
-            Main.showMessage(null,
-                    "There is a problem loading" + " configuration from file:\n" + config.getFilename() + "\n\n"
-                            + "Will use defaults:\n\n" + "Document: " + Constants.DEFAULT_FILE + "\n" + "PrivateKey: "
-                            + Constants.PROPERTIES_PRIVATE_KEY + "\n" + "PublicKey: " + Constants.PROPERTIES_PUBLIC_KEY,
-                    "Warning", JOptionPane.WARNING_MESSAGE);
-            config.loadDefaults();
-        }
-        KeyPairManager keysManager = new KeyPairManager(config.getPublicKeyFile(), config.getPrivateKeyFile());
-        FileManager fileManager = new FileManager();
-        Main window = new Main(config, keysManager, fileManager);
-        window.initWindow();
+
+        appService = ApplicationServiceImpl.instance();
+    }
+
+    public void start(String[] args) {
+        logger.info("Loading Application...");
+        appService.start();
     }
 
     public void printUsage() {
         logger.info("USAGE:");
-        logger.info("  java -jar cipher.jar [prop]");
+        logger.info("  java -jar cipher.jar []");
         logger.info("PARAMETERS:");
         logger.info("  prop : properties file to use.");
     }

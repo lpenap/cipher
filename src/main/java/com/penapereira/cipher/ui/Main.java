@@ -22,12 +22,11 @@ import javax.swing.text.StyledDocument;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Constants;
 import com.penapereira.cipher.model.data.EncryptedDataInterface;
 import com.penapereira.cipher.model.file.FileManager;
 import com.penapereira.cipher.model.keypair.KeyPairManager;
+import com.penapereira.cipher.service.ConfigurationService;
 import com.penapereira.cipher.ui.listener.SaveActionListener;
 import com.penapereira.cipher.util.AesRsaCipher;
 
@@ -36,7 +35,7 @@ public class Main extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	protected JTextPane textPane = null;
-	private Configuration config;
+	private ConfigurationService config;
 	private KeyPair keyPair;
 	protected boolean checkAfterSaving = true;
 	protected KeyPairManager keysManager;
@@ -48,7 +47,7 @@ public class Main extends JFrame {
 		JOptionPane.showMessageDialog(parent, text, title, msgType);
 	}
 
-	public Main(Configuration config, KeyPairManager keysManager,
+	public Main(ConfigurationService config, KeyPairManager keysManager,
 		FileManager fileManager) {
 		super("Editing: "
 			+ config.getProperty(Constants.PROPERTIES_DEFAULT_FILE));

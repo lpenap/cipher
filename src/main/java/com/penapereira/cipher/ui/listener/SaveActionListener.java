@@ -19,11 +19,10 @@ import javax.swing.JTextPane;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.model.data.EncryptedDataInterface;
 import com.penapereira.cipher.model.file.FileManager;
 import com.penapereira.cipher.model.keypair.KeyPairManager;
+import com.penapereira.cipher.service.ConfigurationService;
 import com.penapereira.cipher.util.AesRsaCipher;
 
 public class SaveActionListener implements ActionListener {
@@ -32,12 +31,12 @@ public class SaveActionListener implements ActionListener {
 
 	private JTextPane textPane;
 	private KeyPairManager keysManager;
-	private Configuration config;
+	private ConfigurationService config;
 	private FileManager fileManager;
 	private Container parentComponent;
 
 	public SaveActionListener(Container parent, JTextPane textPane,
-		KeyPairManager keysManager, Configuration config,
+		KeyPairManager keysManager, ConfigurationService config,
 		FileManager fileManager) {
 		this.textPane = textPane;
 		this.parentComponent = parent;
