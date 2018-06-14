@@ -21,6 +21,9 @@ public class Messages {
     private String documentMenu;
     private String addDocumentMenu;
     private String saveAllMenu;
+    private String deleteDocumentMenu;
+    private String deleteDocumentConfirmPre;
+    private String deleteDocumentConfirmPost;
 
     private String setupConfirmTitle;
     private String setupConfirmMsg;

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -18,20 +17,18 @@ import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.shared.Util;
 
-public class AddDocumentActionListener extends JFrame implements ActionListener {
+public class AddDocumentActionListener extends AbstractActionListener {
 
     private static final Logger log = LoggerFactory.getLogger(AddDocumentActionListener.class);
 
     private static final long serialVersionUID = 1L;
-    private DocumentController documentController;
-    private Messages messages;
     private JTextField documentTitleTextField;
 
-    public AddDocumentActionListener(DocumentController documentController, Messages msgs) {
-        super();
-        this.documentController = documentController;
-        this.messages = msgs;
+    public AddDocumentActionListener(DocumentController documentController, Messages messages) {
+        super(documentController, messages);
+    }
 
+    public void build() {
         setResizable(false);
         setSize(427, 172);
 
@@ -75,7 +72,6 @@ public class AddDocumentActionListener extends JFrame implements ActionListener 
         documentTitleTextField = new JTextField();
         formPanel.add(documentTitleTextField, "6, 4, fill, default");
         documentTitleTextField.setColumns(10);
-
     }
 
     protected void addDocument() {

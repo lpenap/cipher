@@ -1,11 +1,15 @@
 package com.penapereira.cipher.view.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JFrame;
@@ -29,6 +33,7 @@ import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.view.MainUserInterface;
 import com.penapereira.cipher.view.swing.listener.AboutActionListener;
 import com.penapereira.cipher.view.swing.listener.AddDocumentActionListener;
+import com.penapereira.cipher.view.swing.listener.DeleteDocumentActionListener;
 import com.penapereira.cipher.view.swing.listener.ExitActionListener;
 
 @Component
@@ -43,6 +48,8 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
 
     protected List<Document> documents;
     private JTabbedPane documentsTabbedPane;
+    
+    protected Map<JScrollPane, Long> modelMap;
 
     @Autowired
     public MainUserInterfaceImpl(DocumentController documentController, Messages messages, Configuration config) {
@@ -88,7 +95,12 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
 
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
         documentMenu.add(menuItemSaveAll);
-
+        cipherMenu.addSeparator();
+        
+        JMenuItem menuItemDeleteDocument = new JMenuItem(messages.getDeleteDocumentMenu());
+        menuItemDeleteDocument.addActionListener(new DeleteDocumentActionListener(documentController, messages));
+        cipherMenu.add(menuItemDeleteDocument);
+        
         documentsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
         getContentPane().add(documentsTabbedPane, BorderLayout.CENTER);
     }
@@ -148,6 +160,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     protected void displayAllDocuments() {
         documents = documentController.getAll();
         getDocumentsTabbedPane().removeAll();
+        this.modelMap = new HashMap<JScrollPane, Long>();
         Iterator<Document> i = documents.iterator();
         while (i.hasNext()) {
             Document doc = i.next();
@@ -161,6 +174,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
                 continue;
             }
             JScrollPane scrollPane = new JScrollPane(textPane);
+            modelMap.put(scrollPane, doc.getId());
             documentsTabbedPane.addTab(doc.getTitle(), scrollPane);
         }
     }
@@ -168,11 +182,15 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     protected JTabbedPane getDocumentsTabbedPane() {
         return documentsTabbedPane;
     }
-
+    
+    public Long getDocumentIdFromScrollPane(JScrollPane tab) {
+        return modelMap.get(tab);
+    }
+    
     protected void setSize() {
-        // Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        // int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);
-        // setSize(width, (int) screenSize.getHeight() - 100);
-        setSize(500, 500);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);
+        setSize(width, (int) screenSize.getHeight() - 100);
+        // setSize(500, 500);
     }
 }
