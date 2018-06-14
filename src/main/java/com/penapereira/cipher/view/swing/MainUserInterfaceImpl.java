@@ -2,8 +2,6 @@ package com.penapereira.cipher.view.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Iterator;
@@ -28,8 +26,10 @@ import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
-import com.penapereira.cipher.shared.Util;
 import com.penapereira.cipher.view.MainUserInterface;
+import com.penapereira.cipher.view.swing.listener.AboutActionListener;
+import com.penapereira.cipher.view.swing.listener.AddDocumentActionListener;
+import com.penapereira.cipher.view.swing.listener.ExitActionListener;
 
 @Component
 public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, Observer {
@@ -71,33 +71,19 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         menuBar.add(cipherMenu);
 
         JMenuItem menuItemAbout = new JMenuItem(messages.getAboutMenu());
-        menuItemAbout.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                about();
-            }
-        });
+        menuItemAbout.addActionListener(new AboutActionListener(messages));
         cipherMenu.add(menuItemAbout);
         cipherMenu.addSeparator();
 
         JMenuItem menuItemExit = new JMenuItem(messages.getExitMenu());
-        menuItemExit.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        menuItemExit.addActionListener(new ExitActionListener());
         cipherMenu.add(menuItemExit);
 
         JMenu documentMenu = new JMenu(messages.getDocumentMenu());
         menuBar.add(documentMenu);
 
         JMenuItem menuItemAddDocument = new JMenuItem(messages.getAddDocumentMenu());
-        menuItemAddDocument.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                
-            }
-        });
+        menuItemAddDocument.addActionListener(new AddDocumentActionListener(documentController, messages));
         documentMenu.add(menuItemAddDocument);
 
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
@@ -146,11 +132,6 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     protected boolean confirm(String title, String msg) {
         int dialogResult = JOptionPane.showConfirmDialog(this, msg, title, JOptionPane.YES_NO_OPTION);
         return dialogResult == JOptionPane.YES_OPTION;
-    }
-
-    @Override
-    public void about() {
-        alert(new Util().listToString(messages.getAbout()));
     }
 
     @Override

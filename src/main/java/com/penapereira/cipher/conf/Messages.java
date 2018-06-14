@@ -26,4 +26,9 @@ public class Messages {
     private String setupConfirmMsg;
     private String helpDocumentTitle;
     private List<String> helpDocument = new ArrayList<>();
+    
+    private String create;
+    private String cancel;
+    private String documentTitle;
+    
 }

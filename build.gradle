@@ -29,8 +29,9 @@ dependencies {
 	//compile('org.springframework.boot:spring-boot-starter-mail')
 	compile('org.springframework.boot:spring-boot-starter-validation')
 	//compile('org.springframework.session:spring-session-data-redis')
-	//compile('commons-cli:commons-cli:1.4')
 	//runtime('org.springframework.boot:spring-boot-devtools')
+	//compile('commons-cli:commons-cli:1.4')
+	compile 'com.jgoodies:jgoodies-forms:1.9.0'
 	runtime('com.h2database:h2')
 	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
 	compileOnly('org.projectlombok:lombok')
