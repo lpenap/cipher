@@ -35,8 +35,17 @@ public class DocumentController extends Observable {
 
     }
 
-    public void save(Document doc) {
+    public Document save(Document doc) {
         Document savedDoc = documentService.save(doc);
+        this.setChanged();
         notifyObservers(savedDoc);
+        return savedDoc;
+    }
+
+    public Document createDocument(String title, String text) {
+        Document newDoc = documentService.createNew(title, text);
+        this.setChanged();
+        notifyObservers(newDoc);
+        return newDoc;
     }
 }

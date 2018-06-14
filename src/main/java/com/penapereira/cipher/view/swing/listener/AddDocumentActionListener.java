@@ -1,24 +1,26 @@
 package com.penapereira.cipher.view.swing.listener;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
+import com.jgoodies.forms.layout.RowSpec;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-import java.awt.GridBagLayout;
-import javax.swing.JButton;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+import com.penapereira.cipher.shared.Util;
 
 public class AddDocumentActionListener extends JFrame implements ActionListener {
+
+    private static final Logger log = LoggerFactory.getLogger(AddDocumentActionListener.class);
 
     private static final long serialVersionUID = 1L;
     private DocumentController documentController;
@@ -30,30 +32,33 @@ public class AddDocumentActionListener extends JFrame implements ActionListener 
         this.documentController = documentController;
         this.messages = msgs;
 
+        setResizable(false);
+        setSize(427, 172);
+
         setTitle(messages.getAddDocumentMenu());
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setAlignmentX(CENTER_ALIGNMENT);
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-        GridBagLayout gbl_buttonPanel = new GridBagLayout();
-        gbl_buttonPanel.columnWidths = new int[] {0, 0, 0, 0, 0, 0, 0};
-        gbl_buttonPanel.rowHeights = new int[] {0, 0};
-        gbl_buttonPanel.columnWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-        gbl_buttonPanel.rowWeights = new double[] {0.0, Double.MIN_VALUE};
-        buttonPanel.setLayout(gbl_buttonPanel);
 
         JButton btnCreate = new JButton(messages.getCreate());
-        GridBagConstraints gbc_btnCreate = new GridBagConstraints();
-        gbc_btnCreate.insets = new Insets(0, 0, 0, 5);
-        gbc_btnCreate.gridx = 2;
-        gbc_btnCreate.gridy = 0;
-        buttonPanel.add(btnCreate, gbc_btnCreate);
+        btnCreate.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                addDocument();
+            }
+        });
+        buttonPanel.add(btnCreate);
 
         JButton btnCancel = new JButton(messages.getCancel());
-        GridBagConstraints gbc_btnCancel = new GridBagConstraints();
-        gbc_btnCancel.gridx = 5;
-        gbc_btnCancel.gridy = 0;
-        buttonPanel.add(btnCancel, gbc_btnCancel);
+        btnCancel.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        });
+        buttonPanel.add(btnCancel);
 
         JPanel formPanel = new JPanel();
         getContentPane().add(formPanel, BorderLayout.CENTER);
@@ -73,9 +78,20 @@ public class AddDocumentActionListener extends JFrame implements ActionListener 
 
     }
 
+    protected void addDocument() {
+        String title = new Util().sanitizeString(documentTitleTextField.getText());
+        log.info("Adding new document with title: " + title);
+        documentController.createDocument(title, "");
+        this.setVisible(false);
+    }
+
+    /**
+     * This will show the dialog wrapped by this class when the action is triggered in the related component.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         this.setVisible(true);
+        documentTitleTextField.setRequestFocusEnabled(true);
     }
 
 }
