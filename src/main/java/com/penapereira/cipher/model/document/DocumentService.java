@@ -9,4 +9,9 @@ public interface DocumentService {
     Document createNew(String title, String text);
 
     Document save(Document doc);
+
+    Document findById(Long id);
+
+    void deleteById(Long id);
+
 }

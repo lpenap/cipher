@@ -48,7 +48,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
 
     protected List<Document> documents;
     private JTabbedPane documentsTabbedPane;
-    
+
     protected Map<JScrollPane, Long> modelMap;
 
     @Autowired
@@ -96,11 +96,12 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
         documentMenu.add(menuItemSaveAll);
         cipherMenu.addSeparator();
-        
+
         JMenuItem menuItemDeleteDocument = new JMenuItem(messages.getDeleteDocumentMenu());
-        menuItemDeleteDocument.addActionListener(new DeleteDocumentActionListener(documentController, messages));
+        menuItemDeleteDocument
+                .addActionListener(new DeleteDocumentActionListener(documentController, messages, this));
         cipherMenu.add(menuItemDeleteDocument);
-        
+
         documentsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
         getContentPane().add(documentsTabbedPane, BorderLayout.CENTER);
     }
@@ -179,14 +180,14 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         }
     }
 
-    protected JTabbedPane getDocumentsTabbedPane() {
+    public JTabbedPane getDocumentsTabbedPane() {
         return documentsTabbedPane;
     }
-    
+
     public Long getDocumentIdFromScrollPane(JScrollPane tab) {
         return modelMap.get(tab);
     }
-    
+
     protected void setSize() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);

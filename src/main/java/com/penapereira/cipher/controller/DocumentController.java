@@ -48,4 +48,17 @@ public class DocumentController extends Observable {
         notifyObservers(newDoc);
         return newDoc;
     }
+
+    public Document get(Long documentId) {
+        return documentService.findById(documentId);
+    }
+
+    public void delete(Long documentId) {
+        if (documentId != null) {
+            Document doc = documentService.findById(documentId);
+            documentService.deleteById(documentId);
+            this.setChanged();
+            notifyObservers(doc);
+        }
+    }
 }

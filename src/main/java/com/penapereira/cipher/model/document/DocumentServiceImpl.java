@@ -31,4 +31,14 @@ public class DocumentServiceImpl implements DocumentService {
     public Document save(Document doc) {
         return documentRepository.save(doc);
     }
+
+    @Override
+    public Document findById(Long id) {
+        return documentRepository.findById(id).get();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+       documentRepository.deleteById(id);
+    }
 }
