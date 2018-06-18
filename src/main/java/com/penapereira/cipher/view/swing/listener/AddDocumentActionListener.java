@@ -76,8 +76,8 @@ public class AddDocumentActionListener extends AbstractActionListener {
 
     protected void addDocument() {
         String title = new StringUtil().sanitizeString(documentTitleTextField.getText());
-        log.info("Adding new document with title: " + title);
-        documentController.createDocument(title, "");
+        log.info("Adding new empty document with title: " + title);
+        documentController.createAndSaveDocument(title, "");
         this.setVisible(false);
     }
 
