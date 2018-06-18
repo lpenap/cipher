@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
@@ -32,10 +29,6 @@ import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.MainUserInterface;
-import com.penapereira.cipher.view.swing.listener.AboutActionListener;
-import com.penapereira.cipher.view.swing.listener.AddDocumentActionListener;
-import com.penapereira.cipher.view.swing.listener.DeleteDocumentActionListener;
-import com.penapereira.cipher.view.swing.listener.ExitActionListener;
 
 @Component
 public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, Observer {
@@ -51,15 +44,18 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     private JTabbedPane documentsTabbedPane;
 
     protected Map<JScrollPane, Long> modelMap;
+    protected MainMenuBuilder menuBuilder;
 
     @Autowired
-    public MainUserInterfaceImpl(DocumentController documentController, Messages messages, Configuration config) {
+    public MainUserInterfaceImpl(DocumentController documentController, Messages messages, Configuration config,
+            MainMenuBuilder menuBuilder) {
         super();
 
         this.documentController = documentController;
         this.documents = documentController.getAll();
         this.messages = messages;
         this.config = config;
+        this.menuBuilder = menuBuilder;
 
         setTitle(messages.getWindowTitle());
         setSize();
@@ -72,36 +68,8 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
             }
         });
 
-        JMenuBar menuBar = new JMenuBar();
-        setJMenuBar(menuBar);
-
-        JMenu cipherMenu = new JMenu(messages.getCipherMenu());
-        menuBar.add(cipherMenu);
-
-        JMenuItem menuItemAbout = new JMenuItem(messages.getAboutMenu());
-        menuItemAbout.addActionListener(new AboutActionListener(messages));
-        cipherMenu.add(menuItemAbout);
-        cipherMenu.addSeparator();
-
-        JMenuItem menuItemExit = new JMenuItem(messages.getExitMenu());
-        menuItemExit.addActionListener(new ExitActionListener());
-        cipherMenu.add(menuItemExit);
-
-        JMenu documentMenu = new JMenu(messages.getDocumentMenu());
-        menuBar.add(documentMenu);
-
-        JMenuItem menuItemAddDocument = new JMenuItem(messages.getAddDocumentMenu());
-        menuItemAddDocument.addActionListener(new AddDocumentActionListener(documentController, messages));
-        documentMenu.add(menuItemAddDocument);
-
-        JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
-        documentMenu.add(menuItemSaveAll);
-        cipherMenu.addSeparator();
-
-        JMenuItem menuItemDeleteDocument = new JMenuItem(messages.getDeleteDocumentMenu());
-        menuItemDeleteDocument.addActionListener(new DeleteDocumentActionListener(documentController, messages, this));
-        documentMenu.addSeparator();
-        documentMenu.add(menuItemDeleteDocument);
+        menuBuilder.setMainUserInterface(this);
+        setJMenuBar(menuBuilder.buildJMenuBar());
 
         documentsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
         getContentPane().add(documentsTabbedPane, BorderLayout.CENTER);
@@ -124,7 +92,6 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
             log.info("Documents repository has {} document(s), proceeding to render them...", documents.size());
             displayAllDocuments();
         }
-        displayAllDocuments();
         return isInitCompleted;
     }
 
@@ -144,10 +111,10 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
      */
     @Override
     public void update(Observable o, Object arg) {
+        log.debug("Update request received from controller");
         if (arg != null && arg instanceof DocumentActionInterface) {
             DocumentActionInterface action = (DocumentActionInterface) arg;
             Document doc = action.getDocument();
-            log.info("Need to update document " + doc.getTitle());
             switch (action.getAction()) {
                 case ADD:
                     addDocument(doc);
@@ -160,24 +127,27 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
                     break;
             }
         } else {
-            log.info("Need to update all documents");
             displayAllDocuments();
         }
     }
 
     private void updateDocument(Document doc) {
+        log.info("[Update] Need to *UPDATE* document " + doc.getTitle());
         displayAllDocuments();
     }
 
     private void deleteDocument(Document doc) {
+        log.info("[Update] Need to *DELETE* document " + doc.getTitle());
         displayAllDocuments();
     }
 
     private void addDocument(Document doc) {
+        log.info("[Update] Need to *ADD* document " + doc.getTitle());
         displayAllDocuments();
     }
 
     protected void displayAllDocuments() {
+        log.info("[Update] Need to refresh all documents");
         documents = documentController.getAll();
         getDocumentsTabbedPane().removeAll();
         this.modelMap = new HashMap<JScrollPane, Long>();
