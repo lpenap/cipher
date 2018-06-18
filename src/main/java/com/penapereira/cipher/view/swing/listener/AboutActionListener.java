@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 import com.penapereira.cipher.conf.Messages;
-import com.penapereira.cipher.shared.Util;
+import com.penapereira.cipher.shared.StringUtil;
 
 public class AboutActionListener extends AbstractActionListener {
 
@@ -16,7 +16,7 @@ public class AboutActionListener extends AbstractActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JOptionPane.showMessageDialog((Component) e.getSource(), new Util().listToString(messages.getAbout()),
+        JOptionPane.showMessageDialog((Component) e.getSource(), new StringUtil().listToString(messages.getAbout()),
                 messages.getAboutMenu(), JOptionPane.OK_OPTION);
     }
 

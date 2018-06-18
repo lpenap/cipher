@@ -3,7 +3,8 @@ package com.penapereira.cipher.view.swing.listener;
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
@@ -11,6 +12,7 @@ import com.penapereira.cipher.view.swing.MainUserInterfaceImpl;
 
 public class DeleteDocumentActionListener extends AbstractActionListener {
 
+    private static final Logger log = LoggerFactory.getLogger(DeleteDocumentActionListener.class);
     private static final long serialVersionUID = 1L;
     private MainUserInterfaceImpl parent;
 
@@ -22,10 +24,21 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        Document selectedDoc = getSelectedDocument();
+        if (selectedDoc == null) {
+            log.warn("Selected document is null, refreshing all documents.");
+            documentController.requestNotifyObservers();
+        } else {
+            confirmDeletion(selectedDoc);
+        }
+    }
+
+    private void confirmDeletion(Document doc) {
         int dialogResult = JOptionPane.showConfirmDialog(null, messages.getDeleteDocumentMenu(),
-                messages.getDeleteDocumentConfirmPre() + e.get, JOptionPane.YES_NO_OPTION);
+                messages.getDeleteDocumentConfirmPre() + doc.getTitle() + messages.getDeleteDocumentConfirmPost(),
+                JOptionPane.YES_NO_OPTION);
         if (dialogResult == JOptionPane.YES_OPTION) {
-            deleteSelectedDocument();
+            documentController.delete(doc);
         }
     }
 

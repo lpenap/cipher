@@ -3,7 +3,7 @@ package com.penapereira.cipher.shared;
 import java.util.Iterator;
 import java.util.List;
 
-public class Util {
+public class StringUtil {
 
     public String listToString(String lineSeparator, List<String> lines) {
         StringBuilder text = new StringBuilder();

@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Messages;
+import com.penapereira.cipher.controller.DocumentActionInterface.ActionType;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.model.document.DocumentService;
-import com.penapereira.cipher.shared.Util;
+import com.penapereira.cipher.shared.StringUtil;
 
 @Component
 public class DocumentController extends Observable {
@@ -30,22 +31,20 @@ public class DocumentController extends Observable {
     }
 
     public Document getHelpDocument() {
-        return documentService.createNew(messages.getHelpDocumentTitle(),
-                new Util().listToString(messages.getHelpDocument()));
-
+        return documentService.create(messages.getHelpDocumentTitle(),
+                new StringUtil().listToString(messages.getHelpDocument()));
     }
 
     public Document save(Document doc) {
         Document savedDoc = documentService.save(doc);
-        this.setChanged();
-        notifyObservers(savedDoc);
+        requestNotifyObservers(ActionType.UPDATE, savedDoc);
         return savedDoc;
     }
 
-    public Document createDocument(String title, String text) {
-        Document newDoc = documentService.createNew(title, text);
-        this.setChanged();
-        notifyObservers(newDoc);
+    public Document createAndSaveDocument(String title, String text) {
+        Document newDoc = documentService.create(title, text);
+        newDoc = documentService.save(newDoc);
+        requestNotifyObservers(ActionType.ADD, newDoc);
         return newDoc;
     }
 
@@ -57,8 +56,24 @@ public class DocumentController extends Observable {
         if (documentId != null) {
             Document doc = documentService.findById(documentId);
             documentService.deleteById(documentId);
-            this.setChanged();
-            notifyObservers(doc);
+            requestNotifyObservers(ActionType.DELETE, doc);
         }
+    }
+
+    public void delete(Document doc) {
+        if (doc != null) {
+            documentService.delete(doc);
+            requestNotifyObservers(ActionType.DELETE, doc);
+        }
+    }
+
+    public void requestNotifyObservers() {
+        this.setChanged();
+        notifyObservers();
+    }
+
+    public void requestNotifyObservers(ActionType action, Document doc) {
+        this.setChanged();
+        notifyObservers(new DocumentAction(action, doc));
     }
 }

@@ -6,12 +6,14 @@ public interface DocumentService {
 
     List<Document> findAll();
 
-    Document createNew(String title, String text);
+    Document create(String title, String text);
 
     Document save(Document doc);
 
     Document findById(Long id);
 
     void deleteById(Long id);
+
+    void delete(Document doc);
 
 }

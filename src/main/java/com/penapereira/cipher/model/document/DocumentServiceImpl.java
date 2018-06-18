@@ -20,11 +20,11 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Document createNew(String title, String text) {
+    public Document create(String title, String text) {
         Document doc = new Document();
         doc.setTitle(title);
         doc.setText(text);
-        return documentRepository.save(doc);
+        return doc;
     }
 
     @Override
@@ -39,6 +39,11 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public void deleteById(Long id) {
-       documentRepository.deleteById(id);
+        documentRepository.deleteById(id);
+    }
+
+    @Override
+    public void delete(Document doc) {
+        documentRepository.delete(doc);
     }
 }

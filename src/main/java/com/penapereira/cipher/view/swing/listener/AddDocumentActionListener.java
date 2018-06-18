@@ -15,7 +15,7 @@ import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
-import com.penapereira.cipher.shared.Util;
+import com.penapereira.cipher.shared.StringUtil;
 
 public class AddDocumentActionListener extends AbstractActionListener {
 
@@ -75,7 +75,7 @@ public class AddDocumentActionListener extends AbstractActionListener {
     }
 
     protected void addDocument() {
-        String title = new Util().sanitizeString(documentTitleTextField.getText());
+        String title = new StringUtil().sanitizeString(documentTitleTextField.getText());
         log.info("Adding new document with title: " + title);
         documentController.createDocument(title, "");
         this.setVisible(false);

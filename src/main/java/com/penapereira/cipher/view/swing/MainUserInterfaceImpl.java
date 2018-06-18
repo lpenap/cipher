@@ -29,7 +29,9 @@ import org.springframework.stereotype.Component;
 import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
+import com.penapereira.cipher.controller.DocumentActionInterface;
 import com.penapereira.cipher.model.document.Document;
+import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.MainUserInterface;
 import com.penapereira.cipher.view.swing.listener.AboutActionListener;
 import com.penapereira.cipher.view.swing.listener.AddDocumentActionListener;
@@ -98,9 +100,9 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         cipherMenu.addSeparator();
 
         JMenuItem menuItemDeleteDocument = new JMenuItem(messages.getDeleteDocumentMenu());
-        menuItemDeleteDocument
-                .addActionListener(new DeleteDocumentActionListener(documentController, messages, this));
-        cipherMenu.add(menuItemDeleteDocument);
+        menuItemDeleteDocument.addActionListener(new DeleteDocumentActionListener(documentController, messages, this));
+        documentMenu.addSeparator();
+        documentMenu.add(menuItemDeleteDocument);
 
         documentsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
         getContentPane().add(documentsTabbedPane, BorderLayout.CENTER);
@@ -113,7 +115,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         boolean isInitCompleted = true;
 
         if (documents.isEmpty()) {
-            if (confirm(messages.getSetupConfirmTitle(), messages.getSetupConfirmMsg())) {
+            if (new SwingUtil(this).confirm(messages.getSetupConfirmTitle(), messages.getSetupConfirmMsg())) {
                 initializeWelcomeDocument();
             } else {
                 log.info("User didn't want to continue. Exiting...");
@@ -121,7 +123,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
             }
         } else {
             log.info("Documents repository has {} document(s), proceeding to render them...", documents.size());
-            this.update(documentController, null);
+            displayAllDocuments();
         }
         displayAllDocuments();
         return isInitCompleted;
@@ -138,23 +140,41 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         this.setVisible(true);
     }
 
-    protected void alert(String msg) {
-        JOptionPane.showMessageDialog(this, msg);
-    }
-
-    protected boolean confirm(String title, String msg) {
-        int dialogResult = JOptionPane.showConfirmDialog(this, msg, title, JOptionPane.YES_NO_OPTION);
-        return dialogResult == JOptionPane.YES_OPTION;
-    }
-
+    /**
+     * Update method from Observer pattern invoked every time a document is modified (created, updated, deleted)
+     */
     @Override
     public void update(Observable o, Object arg) {
-        if (arg != null && arg instanceof Document) {
-            Document doc = (Document) arg;
+        if (arg != null && arg instanceof DocumentActionInterface) {
+            DocumentActionInterface action = (DocumentActionInterface) arg;
+            Document doc = action.getDocument();
             log.info("Need to update document " + doc.getTitle());
+            switch (action.getAction()) {
+                case ADD:
+                    addDocument(doc);
+                    break;
+                case DELETE:
+                    deleteDocument(doc);
+                    break;
+                case UPDATE:
+                    updateDocument(doc);
+                    break;
+            }
         } else {
             log.info("Need to update all documents");
+            displayAllDocuments();
         }
+    }
+
+    private void updateDocument(Document doc) {
+        displayAllDocuments();
+    }
+
+    private void deleteDocument(Document doc) {
+        displayAllDocuments();
+    }
+
+    private void addDocument(Document doc) {
         displayAllDocuments();
     }
 
