@@ -30,6 +30,7 @@ import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.MainUserInterface;
+import com.penapereira.cipher.view.swing.listener.CipherDocumentListener;
 
 @Component
 public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, Observer {
@@ -157,6 +158,8 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
             Document doc = i.next();
             JTextPane textPane = new JTextPane();
             StyledDocument styledDoc = textPane.getStyledDocument();
+            CipherDocumentListener documentListener = new CipherDocumentListener();
+            styledDoc.addDocumentListener(documentListener);
             textPane.setFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
             try {
                 styledDoc.insertString(styledDoc.getLength(), doc.getText(), styledDoc.getStyle("regular"));
@@ -167,6 +170,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
             JScrollPane scrollPane = new JScrollPane(textPane);
             modelMap.put(scrollPane, doc.getId());
             documentsTabbedPane.addTab(doc.getTitle(), scrollPane);
+            documentListener.setTabbedPane(documentsTabbedPane);
         }
     }
 
