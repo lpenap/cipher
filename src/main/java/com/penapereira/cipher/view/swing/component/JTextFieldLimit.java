@@ -15,7 +15,7 @@ public class JTextFieldLimit extends PlainDocument {
     }
 
     public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
-        if (str == null || getLength() >= limit) {
+        if (str == null || getLength() == limit) {
             return;
         }
         int strSize = Math.min(str.length(), limit - getLength());
