@@ -21,6 +21,7 @@ import javax.swing.text.StyledDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Messages;
@@ -47,16 +48,15 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     protected MainMenuBuilder menuBuilder;
 
     @Autowired
-    public MainUserInterfaceImpl(DocumentController documentController, Messages messages, Configuration config,
-            MainMenuBuilder menuBuilder) {
+    public MainUserInterfaceImpl(ApplicationContext context) {
         super();
 
-        this.documentController = documentController;
-        this.documents = documentController.getAll();
-        this.messages = messages;
-        this.config = config;
-        this.menuBuilder = menuBuilder;
+        this.documentController = context.getBean(DocumentController.class);
+        this.messages = context.getBean(Messages.class);
+        this.config = context.getBean(Configuration.class);
+        this.menuBuilder = context.getBean(MainMenuBuilder.class);
 
+        this.documents = documentController.getAll();
         setTitle(messages.getWindowTitle());
         setSize();
         setResizable(true);

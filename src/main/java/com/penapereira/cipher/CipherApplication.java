@@ -24,10 +24,10 @@ public class CipherApplication {
         ConfigurableApplicationContext context =
                 new SpringApplicationBuilder(CipherApplication.class).headless(false).run(args);
 
-        MainUserInterface ui = context.getBean(MainUserInterfaceImpl.class);
-        if (!ui.init()) {
+        MainUserInterface userInterface = context.getBean(MainUserInterfaceImpl.class);
+        if (!userInterface.init()) {
             System.exit(0);
         }
-        ui.launch();
+        userInterface.launch();
     }
 }

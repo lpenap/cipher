@@ -16,12 +16,13 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.shared.StringUtil;
+import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
 
 public class AddDocumentActionListener extends AbstractActionListener {
 
     private static final Logger log = LoggerFactory.getLogger(AddDocumentActionListener.class);
-
     private static final long serialVersionUID = 1L;
+    public final static int MAX_INPUT_SIZE = 20;
     private JTextField documentTitleTextField;
 
     public AddDocumentActionListener(DocumentController documentController, Messages messages) {
@@ -70,8 +71,9 @@ public class AddDocumentActionListener extends AbstractActionListener {
         formPanel.add(lblDocumentTitle, "4, 4, right, default");
 
         documentTitleTextField = new JTextField();
-        formPanel.add(documentTitleTextField, "6, 4, fill, default");
-        documentTitleTextField.setColumns(10);
+        formPanel.add(documentTitleTextField, "6, 4, left, default");
+        documentTitleTextField.setDocument(new JTextFieldLimit(MAX_INPUT_SIZE));
+        documentTitleTextField.setColumns(MAX_INPUT_SIZE);
     }
 
     protected void addDocument() {
