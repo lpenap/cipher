@@ -33,6 +33,8 @@ public class Configuration {
     private String privateKeyFile = ".lapcipher_privateKey";
     private String publicKeyFile = ".lapcipher_privateKey";
     private int windowWidth = 900;
+    private String documentFont = "Courier";
+    private int documentFontSize = 16;
 
     @EventListener(ApplicationReadyEvent.class)
     public void printConfig() {

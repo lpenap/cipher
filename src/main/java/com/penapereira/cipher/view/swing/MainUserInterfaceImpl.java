@@ -157,7 +157,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
             Document doc = i.next();
             JTextPane textPane = new JTextPane();
             StyledDocument styledDoc = textPane.getStyledDocument();
-            textPane.setFont(new Font("Courier", Font.PLAIN, 16));
+            textPane.setFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
             try {
                 styledDoc.insertString(styledDoc.getLength(), doc.getText(), styledDoc.getStyle("regular"));
             } catch (BadLocationException e) {
