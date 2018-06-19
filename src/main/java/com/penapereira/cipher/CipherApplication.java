@@ -20,7 +20,6 @@ public class CipherApplication {
     private static final Logger log = LoggerFactory.getLogger(CipherApplication.class);
 
     public static void main(String[] args) {
-        log.info("Launching Cipher Application");
         ConfigurableApplicationContext context =
                 new SpringApplicationBuilder(CipherApplication.class).headless(false).run(args);
 
@@ -28,6 +27,7 @@ public class CipherApplication {
         if (!userInterface.init()) {
             System.exit(0);
         }
+        log.debug("Launching User Interface: " + userInterface.getUserInterfaceName());
         userInterface.launch();
     }
 }

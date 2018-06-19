@@ -37,6 +37,6 @@ public class Configuration {
     @EventListener(ApplicationReadyEvent.class)
     public void printConfig() {
         String cipherHomePath = System.getProperty("user.home") + File.separator + this.getHomeFolder();
-        log.info("Cipher home folder: " + cipherHomePath);
+        log.debug("Cipher home folder: " + cipherHomePath);
     }
 }

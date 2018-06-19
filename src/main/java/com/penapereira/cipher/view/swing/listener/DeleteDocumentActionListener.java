@@ -38,6 +38,7 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
                 messages.getDeleteDocumentConfirmPre() + doc.getTitle() + messages.getDeleteDocumentConfirmPost();
         boolean isDeletionConfirmed = new SwingUtil(parent).confirm(messages.getDeleteDocumentMenu(), confirmMessage);
         if (isDeletionConfirmed) {
+            log.debug("Deleting document " + doc.getTitle());
             documentController.delete(doc);
         }
     }

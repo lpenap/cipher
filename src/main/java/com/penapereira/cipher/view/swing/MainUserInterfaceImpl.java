@@ -78,7 +78,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     @Override
     public boolean init() {
         this.documentController.addObserver(this);
-        log.info("Preparing main user interface...");
+        log.debug("Initializing main user interface...");
         boolean isInitCompleted = true;
 
         if (documents.isEmpty()) {
@@ -89,20 +89,21 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
                 isInitCompleted = false;
             }
         } else {
-            log.info("Documents repository has {} document(s), proceeding to render them...", documents.size());
+            log.debug("Documents repository has {} document(s), proceeding to render them...", documents.size());
             displayAllDocuments();
         }
         return isInitCompleted;
     }
 
     private void initializeWelcomeDocument() {
-        log.info("Initializing document repository with welcome document!");
+        log.debug("Initializing document repository with welcome document!");
         Document helpDocument = documentController.getHelpDocument();
         documentController.save(helpDocument);
     }
 
     @Override
     public void launch() {
+        log.debug("Launching user interface...");
         this.setVisible(true);
     }
 
@@ -132,22 +133,22 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     }
 
     private void updateDocument(Document doc) {
-        log.info("[Update] Need to *UPDATE* document " + doc.getTitle());
+        log.debug("*UPDATE* document " + doc.getTitle());
         displayAllDocuments();
     }
 
     private void deleteDocument(Document doc) {
-        log.info("[Update] Need to *DELETE* document " + doc.getTitle());
+        log.debug("*DELETE* document " + doc.getTitle());
         displayAllDocuments();
     }
 
     private void addDocument(Document doc) {
-        log.info("[Update] Need to *ADD* document " + doc.getTitle());
+        log.debug("*ADD* document " + doc.getTitle());
         displayAllDocuments();
     }
 
     protected void displayAllDocuments() {
-        log.info("[Update] Need to refresh all documents");
+        log.debug("Refreshing all documents");
         documents = documentController.getAll();
         getDocumentsTabbedPane().removeAll();
         this.modelMap = new HashMap<JScrollPane, Long>();
@@ -182,5 +183,10 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);
         setSize(width, (int) screenSize.getHeight() - 100);
         // setSize(500, 500);
+    }
+
+    @Override
+    public String getUserInterfaceName() {
+        return "Swing UI";
     }
 }
