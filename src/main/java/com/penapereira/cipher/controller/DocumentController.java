@@ -1,5 +1,6 @@
 package com.penapereira.cipher.controller;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,12 @@ public class DocumentController extends Observable {
         return savedDoc;
     }
 
+    public List<Document> saveAll(List<Document> documents) {
+        List<Document> savedDocs = documentService.saveAll(documents);
+        requestNotifyObservers(ActionType.UPDATE, savedDocs);
+        return savedDocs;
+    }
+
     public Document createAndSaveDocument(String title, String text) {
         Document newDoc = documentService.create(title, text);
         newDoc = documentService.save(newDoc);
@@ -75,5 +82,12 @@ public class DocumentController extends Observable {
     public void requestNotifyObservers(ActionType action, Document doc) {
         this.setChanged();
         notifyObservers(new DocumentAction(action, doc));
+    }
+
+    private void requestNotifyObservers(ActionType action, List<Document> savedDocs) {
+        Iterator<Document> i = savedDocs.iterator();
+        while (i.hasNext()) {
+            requestNotifyObservers(action, i.next());
+        }
     }
 }

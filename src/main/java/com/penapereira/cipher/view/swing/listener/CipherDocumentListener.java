@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 public class CipherDocumentListener implements DocumentListener {
 
+    protected final String MODIFIED_PREFIX = "* \u2063";
+
     private static final Logger log = LoggerFactory.getLogger(CipherDocumentListener.class);
     protected JTabbedPane tabbedPane;
 
@@ -30,7 +32,10 @@ public class CipherDocumentListener implements DocumentListener {
         if (tabbedPane != null) {
             log.trace("Document changed!");
             int i = tabbedPane.getSelectedIndex();
-            tabbedPane.setTitleAt(i, "* " + tabbedPane.getTitleAt(i));
+            String title = tabbedPane.getTitleAt(i);
+            if (!title.substring(0, Math.min(title.length(), MODIFIED_PREFIX.length())).equals(MODIFIED_PREFIX)) {
+                tabbedPane.setTitleAt(i, MODIFIED_PREFIX + title);
+            }
         }
     }
 

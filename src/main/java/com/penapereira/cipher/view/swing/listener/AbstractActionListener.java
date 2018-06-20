@@ -15,6 +15,10 @@ public abstract class AbstractActionListener extends JFrame implements ActionLis
         build();
     }
 
+    protected AbstractActionListener(DocumentController documentController) {
+        this.documentController = documentController;
+    }
+
     protected AbstractActionListener(DocumentController documentController, Messages msgs) {
         this.documentController = documentController;
         this.messages = msgs;

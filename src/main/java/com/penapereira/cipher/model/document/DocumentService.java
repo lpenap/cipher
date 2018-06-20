@@ -16,4 +16,6 @@ public interface DocumentService {
 
     void delete(Document doc);
 
+    List<Document> saveAll(List<Document> documents);
+
 }

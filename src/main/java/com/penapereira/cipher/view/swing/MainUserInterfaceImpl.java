@@ -45,7 +45,8 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     protected List<Document> documents;
     private JTabbedPane documentsTabbedPane;
 
-    protected Map<JScrollPane, Long> modelMap;
+    protected Map<JScrollPane, Long> idByScrollPane;
+    protected Map<JScrollPane, JTextPane> textPaneByScrollPane;
     protected MainMenuBuilder menuBuilder;
 
     @Autowired
@@ -152,7 +153,8 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         log.debug("Refreshing all documents");
         documents = documentController.getAll();
         getDocumentsTabbedPane().removeAll();
-        this.modelMap = new HashMap<JScrollPane, Long>();
+        this.idByScrollPane = new HashMap<JScrollPane, Long>();
+        this.textPaneByScrollPane = new HashMap<JScrollPane, JTextPane>();
         Iterator<Document> i = documents.iterator();
         while (i.hasNext()) {
             Document doc = i.next();
@@ -168,7 +170,8 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
                 continue;
             }
             JScrollPane scrollPane = new JScrollPane(textPane);
-            modelMap.put(scrollPane, doc.getId());
+            idByScrollPane.put(scrollPane, doc.getId());
+            textPaneByScrollPane.put(scrollPane, textPane);
             documentsTabbedPane.addTab(doc.getTitle(), scrollPane);
             documentListener.setTabbedPane(documentsTabbedPane);
         }
@@ -179,7 +182,11 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     }
 
     public Long getDocumentIdFromScrollPane(JScrollPane tab) {
-        return modelMap.get(tab);
+        return idByScrollPane.get(tab);
+    }
+
+    public String getTextFromScrollPane(JScrollPane scrollPane) {
+        return textPaneByScrollPane.get(scrollPane).getText();
     }
 
     protected void setSize() {

@@ -33,6 +33,11 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public List<Document> saveAll(List<Document> documents) {
+        return documentRepository.saveAll(documents);
+    }
+
+    @Override
     public Document findById(Long id) {
         return documentRepository.findById(id).get();
     }

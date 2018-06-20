@@ -11,6 +11,7 @@ import com.penapereira.cipher.view.swing.listener.AboutActionListener;
 import com.penapereira.cipher.view.swing.listener.AddDocumentActionListener;
 import com.penapereira.cipher.view.swing.listener.DeleteDocumentActionListener;
 import com.penapereira.cipher.view.swing.listener.ExitActionListener;
+import com.penapereira.cipher.view.swing.listener.SaveAllActionListener;
 
 @Component
 public class MainMenuBuilder {
@@ -51,6 +52,7 @@ public class MainMenuBuilder {
         documentMenu.add(menuItemAddDocument);
 
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
+        menuItemSaveAll.addActionListener(new SaveAllActionListener(documentController, parent));
         documentMenu.add(menuItemSaveAll);
         cipherMenu.addSeparator();
 
