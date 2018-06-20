@@ -54,7 +54,6 @@ public class MainMenuBuilder {
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
         menuItemSaveAll.addActionListener(new SaveAllActionListener(documentController, parent));
         documentMenu.add(menuItemSaveAll);
-        cipherMenu.addSeparator();
 
         JMenuItem menuItemDeleteDocument = new JMenuItem(messages.getDeleteDocumentMenu());
         menuItemDeleteDocument
