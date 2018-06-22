@@ -52,12 +52,12 @@ public class MainMenuBuilder {
         documentMenu.add(menuItemAddDocument);
 
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
-        menuItemSaveAll.addActionListener(new SaveAllActionListener(documentController, parent));
+        menuItemSaveAll.addActionListener(new SaveAllActionListener(documentController, parent.getDataModel()));
         documentMenu.add(menuItemSaveAll);
 
         JMenuItem menuItemDeleteDocument = new JMenuItem(messages.getDeleteDocumentMenu());
-        menuItemDeleteDocument
-                .addActionListener(new DeleteDocumentActionListener(documentController, messages, parent));
+        menuItemDeleteDocument.addActionListener(
+                new DeleteDocumentActionListener(documentController, messages, parent, parent.getDataModel()));
         documentMenu.addSeparator();
         documentMenu.add(menuItemDeleteDocument);
 

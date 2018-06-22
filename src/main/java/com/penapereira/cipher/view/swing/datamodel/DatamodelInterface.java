@@ -4,25 +4,17 @@ import java.awt.Font;
 import java.util.List;
 import com.penapereira.cipher.model.document.Document;
 
-public interface DatamodelFactoryInterface<M, D, C> {
-
-    M isntanceDatamodel();
+public interface DatamodelInterface<M, D, C> {
 
     void clearDatamodel();
 
-    M getDatamodel();
-
-    C buildDocumentContainer(Document doc);
-
-    D buildDecorator(C documentContainer);
+    M getWrappedDatamodel();
 
     void addToDatamodel(Document doc, D decorator);
 
     Long getDocumentIdFor(D decorator);
 
     String getTextFromDecorator(D decorator);
-
-    String getTextFromDocumentContainer(C documentContainer);
 
     void setDocumentContainerText(C documentContainer, String text);
 

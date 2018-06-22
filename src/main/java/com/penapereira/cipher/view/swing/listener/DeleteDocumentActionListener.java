@@ -1,24 +1,29 @@
 package com.penapereira.cipher.view.swing.listener;
 
 import java.awt.event.ActionEvent;
+import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
-import com.penapereira.cipher.view.swing.MainUserInterfaceImpl;
+import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
 
 public class DeleteDocumentActionListener extends AbstractActionListener {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteDocumentActionListener.class);
     private static final long serialVersionUID = 1L;
-    private MainUserInterfaceImpl parent;
+    private DatamodelInterface<JTabbedPane, JScrollPane, JTextPane> datamodel;
+    private JFrame parent;
 
-    public DeleteDocumentActionListener(DocumentController documentController, Messages messages,
-            MainUserInterfaceImpl parent) {
+    public DeleteDocumentActionListener(DocumentController documentController, Messages messages, JFrame parent,
+            DatamodelInterface<JTabbedPane, JScrollPane, JTextPane> datamodel) {
         super(documentController, messages);
+        this.datamodel = datamodel;
         this.parent = parent;
     }
 
@@ -44,8 +49,7 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
     }
 
     protected Long getSelectedDocumentId() {
-        JScrollPane selectedScrollPane = (JScrollPane) parent.getDocumentModel().getTabbedPane().getSelectedComponent();
-        return parent.getDocumentModel().getDocumentIdFor(selectedScrollPane);
+        return datamodel.getDocumentIdFor((JScrollPane) datamodel.getWrappedDatamodel().getSelectedComponent());
     }
 
     protected Document getSelectedDocument() {

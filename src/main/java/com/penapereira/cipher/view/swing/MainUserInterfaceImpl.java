@@ -23,8 +23,8 @@ import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.MainUserInterface;
-import com.penapereira.cipher.view.swing.datamodel.DatamodelFactoryInterface;
-import com.penapereira.cipher.view.swing.datamodel.TabbedPaneDatamodelFactory;
+import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.TabbedPaneDatamodel;
 import com.penapereira.cipher.view.swing.listener.WindowExitListener;
 
 @Component
@@ -39,7 +39,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     protected Configuration config;
 
     protected MainMenuBuilder menuBuilder;
-    protected DatamodelFactoryInterface<JTabbedPane, JScrollPane, JTextPane> datamodelFactory;
+    protected DatamodelInterface<JTabbedPane, JScrollPane, JTextPane> datamodel;
     protected JTabbedPane documentsTabbedPane;
 
     @Autowired
@@ -51,10 +51,10 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         config = context.getBean(Configuration.class);
         menuBuilder = context.getBean(MainMenuBuilder.class);
 
-        datamodelFactory = new TabbedPaneDatamodelFactory();
-        datamodelFactory
+        datamodel = new TabbedPaneDatamodel();
+        datamodel
                 .setDocumentContainerFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
-        datamodelFactory.setDocuments(documentController.getAll());
+        datamodel.setDocuments(documentController.getAll());
 
         setTitle(messages.getWindowTitle());
         setSize();
@@ -63,7 +63,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         menuBuilder.setMainUserInterface(this);
         setJMenuBar(menuBuilder.buildJMenuBar());
 
-        documentsTabbedPane = datamodelFactory.getDatamodel();
+        documentsTabbedPane = datamodel.getWrappedDatamodel();
         getContentPane().add(documentsTabbedPane, BorderLayout.CENTER);
     }
 
@@ -126,24 +126,24 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     }
 
     private void updateDocument(Document doc) {
-        log.debug("*UPDATE* document " + doc.getTitle());
-        datamodelFactory.updateDatamodelForDocument(doc);
+        log.debug("*UPDATE* document '{}' ", doc.getTitle());
+        datamodel.updateDatamodelForDocument(doc);
     }
 
     private void deleteDocument(Document doc) {
-        log.debug("*DELETE* document " + doc.getTitle());
+        log.debug("*DELETE* document '{}' ", doc.getTitle());
         displayAllDocuments();
     }
 
     private void addDocument(Document doc) {
-        log.debug("*ADD* document " + doc.getTitle());
+        log.debug("*ADD* document '{}' ", doc.getTitle());
         displayAllDocuments();
     }
 
     protected void displayAllDocuments() {
         log.debug("Refreshing all documents");
-        datamodelFactory.setDocuments(documentController.getAll());
-        documentsTabbedPane = datamodelFactory.getDatamodel();
+        datamodel.setDocuments(documentController.getAll());
+        documentsTabbedPane = datamodel.getWrappedDatamodel();
     }
 
     protected void setSize() {
@@ -159,7 +159,11 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         return uiName;
     }
 
-    public DatamodelFactoryInterface<JTabbedPane, JScrollPane, JTextPane> getDatamodelFactory() {
-        return datamodelFactory;
+    public JTabbedPane getTabbedPane() {
+        return documentsTabbedPane;
+    }
+
+    public DatamodelInterface<JTabbedPane, JScrollPane, JTextPane> getDataModel() {
+        return datamodel;
     }
 }

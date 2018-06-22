@@ -10,7 +10,7 @@ import com.penapereira.cipher.model.document.Document;
 import lombok.Data;
 
 @Data
-public abstract class AbstractDatamodelFactory<M, D, C> implements DatamodelFactoryInterface<M, D, C> {
+public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M, D, C> {
 
     protected List<Document> documents;
     protected Map<D, Long> decoratorToIdMap;
@@ -23,22 +23,28 @@ public abstract class AbstractDatamodelFactory<M, D, C> implements DatamodelFact
 
     protected Font documentContainerFont;
 
-    protected AbstractDatamodelFactory() {
+    protected AbstractDatamodel() {
         documents = new ArrayList<Document>();
         decoratorToIdMap = new HashMap<D, Long>();
         decoratorToDocumentContainerMap = new HashMap<D, C>();
         idToDecoratorMap = new HashMap<Long, D>();
         documentFont = "Courier";
         documentFontSize = 12;
-        datamodel = isntanceDatamodel();
+        datamodel = isntanceWrappedDatamodel();
     }
+
+    protected abstract M isntanceWrappedDatamodel();
+
+    protected abstract C buildDocumentContainer(Document doc);
+
+    protected abstract D buildDecorator(C documentContainer);
 
     public synchronized void setDocuments(List<Document> documents) {
         this.documents = documents;
         build();
     }
 
-    public synchronized M getDatamodel() {
+    public synchronized M getWrappedDatamodel() {
         if (datamodel == null) {
             build();
         }
@@ -56,6 +62,8 @@ public abstract class AbstractDatamodelFactory<M, D, C> implements DatamodelFact
     public synchronized String getTextFromDecorator(D decorator) {
         return getTextFromDocumentContainer(decoratorToDocumentContainerMap.get(decorator));
     }
+
+    protected abstract String getTextFromDocumentContainer(C documentContainer);
 
     public synchronized void updateDatamodelForDocument(Document doc) {
         D decorator = idToDecoratorMap.get(doc.getId());

@@ -7,4 +7,5 @@ public interface MainUserInterface {
     public void launch();
 
     public String getUserInterfaceName();
+
 }

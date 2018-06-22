@@ -10,14 +10,14 @@ import org.slf4j.LoggerFactory;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.view.swing.listener.CipherDocumentListener;
 
-public class TabbedPaneDatamodelFactory extends AbstractDatamodelFactory<JTabbedPane, JScrollPane, JTextPane> {
+public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollPane, JTextPane> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     protected JTabbedPane tabbedPaneDatamodel;
 
     @Override
-    public JTabbedPane isntanceDatamodel() {
+    protected JTabbedPane isntanceWrappedDatamodel() {
         tabbedPaneDatamodel = new JTabbedPane(JTabbedPane.TOP);
         return tabbedPaneDatamodel;
     }
@@ -33,14 +33,14 @@ public class TabbedPaneDatamodelFactory extends AbstractDatamodelFactory<JTabbed
         StyledDocument styledDoc = textPane.getStyledDocument();
         CipherDocumentListener documentListener = new CipherDocumentListener();
         documentListener.setTabbedPane(tabbedPaneDatamodel);
-        styledDoc.addDocumentListener(documentListener);
         textPane.setFont(documentContainerFont);
         try {
-            styledDoc.insertString(styledDoc.getLength(), doc.getText(), styledDoc.getStyle("regular"));
+            styledDoc.insertString(0, doc.getText(), styledDoc.getStyle("regular"));
         } catch (BadLocationException e) {
             log.error("Could not insert text from document '" + doc.getTitle()
                     + "' into the user interface, skipping...");
         }
+        styledDoc.addDocumentListener(documentListener);
         return textPane;
     }
 
