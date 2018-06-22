@@ -26,10 +26,10 @@ public class SaveAllActionListener extends AbstractActionListener implements Act
     public void actionPerformed(ActionEvent e) {
         log.debug("Saving all documents...");
         List<Document> documents = new ArrayList<>();
-        for (int i = 0; i < parent.getDocumentsTabbedPane().getTabCount(); i++) {
-            JScrollPane scrollPane = (JScrollPane) parent.getDocumentsTabbedPane().getComponentAt(i);
-            String text = parent.getTextFromScrollPane(scrollPane);
-            Long documentId = parent.getDocumentIdFromScrollPane(scrollPane);
+        for (int i = 0; i < parent.getDocumentModel().getTabbedPane().getTabCount(); i++) {
+            JScrollPane scrollPane = (JScrollPane) parent.getDocumentModel().getTabbedPane().getComponentAt(i);
+            String text = parent.getDocumentModel().getTextFrom(scrollPane);
+            Long documentId = parent.getDocumentModel().getDocumentIdFor(scrollPane);
             Document doc = documentController.get(documentId);
             doc.setText(text);
             documents.add(doc);

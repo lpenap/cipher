@@ -2,22 +2,13 @@ package com.penapereira.cipher.view.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.StyledDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +21,6 @@ import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.MainUserInterface;
-import com.penapereira.cipher.view.swing.listener.CipherDocumentListener;
 
 @Component
 public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, Observer {
@@ -42,23 +32,24 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     protected Messages messages;
     protected Configuration config;
 
-    protected List<Document> documents;
-    private JTabbedPane documentsTabbedPane;
-
-    protected Map<JScrollPane, Long> idByScrollPane;
-    protected Map<JScrollPane, JTextPane> textPaneByScrollPane;
     protected MainMenuBuilder menuBuilder;
+    protected DocumentModel documentModel;
+    protected JTabbedPane documentsTabbedPane;
 
     @Autowired
     public MainUserInterfaceImpl(ApplicationContext context) {
         super();
 
-        this.documentController = context.getBean(DocumentController.class);
-        this.messages = context.getBean(Messages.class);
-        this.config = context.getBean(Configuration.class);
-        this.menuBuilder = context.getBean(MainMenuBuilder.class);
+        documentController = context.getBean(DocumentController.class);
+        messages = context.getBean(Messages.class);
+        config = context.getBean(Configuration.class);
+        menuBuilder = context.getBean(MainMenuBuilder.class);
 
-        this.documents = documentController.getAll();
+        documentModel = DocumentModel.instance();
+        documentModel.setDocuments(documentController.getAll());
+        documentModel.setDocumentFont(config.getDocumentFont());
+        documentModel.setDocumentFontSize(config.getDocumentFontSize());
+
         setTitle(messages.getWindowTitle());
         setSize();
         setResizable(true);
@@ -73,7 +64,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         menuBuilder.setMainUserInterface(this);
         setJMenuBar(menuBuilder.buildJMenuBar());
 
-        documentsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        documentsTabbedPane = documentModel.getTabbedPane();
         getContentPane().add(documentsTabbedPane, BorderLayout.CENTER);
     }
 
@@ -83,7 +74,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         log.debug("Initializing main user interface...");
         boolean isInitCompleted = true;
 
-        if (documents.isEmpty()) {
+        if (documentModel.getDocuments().isEmpty()) {
             if (new SwingUtil(this).confirm(messages.getSetupConfirmTitle(), messages.getSetupConfirmMsg())) {
                 initializeWelcomeDocument();
             } else {
@@ -91,7 +82,8 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
                 isInitCompleted = false;
             }
         } else {
-            log.debug("Documents repository has {} document(s), proceeding to render them...", documents.size());
+            log.debug("Documents repository has {} document(s), proceeding to render them...",
+                    documentModel.getDocuments().size());
             displayAllDocuments();
         }
         return isInitCompleted;
@@ -151,42 +143,8 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
 
     protected void displayAllDocuments() {
         log.debug("Refreshing all documents");
-        documents = documentController.getAll();
-        getDocumentsTabbedPane().removeAll();
-        this.idByScrollPane = new HashMap<JScrollPane, Long>();
-        this.textPaneByScrollPane = new HashMap<JScrollPane, JTextPane>();
-        Iterator<Document> i = documents.iterator();
-        while (i.hasNext()) {
-            Document doc = i.next();
-            JTextPane textPane = new JTextPane();
-            StyledDocument styledDoc = textPane.getStyledDocument();
-            CipherDocumentListener documentListener = new CipherDocumentListener();
-            styledDoc.addDocumentListener(documentListener);
-            textPane.setFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
-            try {
-                styledDoc.insertString(styledDoc.getLength(), doc.getText(), styledDoc.getStyle("regular"));
-            } catch (BadLocationException e) {
-                log.error("Could not display the document '" + doc.getTitle() + "' , skipping...");
-                continue;
-            }
-            JScrollPane scrollPane = new JScrollPane(textPane);
-            idByScrollPane.put(scrollPane, doc.getId());
-            textPaneByScrollPane.put(scrollPane, textPane);
-            documentsTabbedPane.addTab(doc.getTitle(), scrollPane);
-            documentListener.setTabbedPane(documentsTabbedPane);
-        }
-    }
-
-    public JTabbedPane getDocumentsTabbedPane() {
-        return documentsTabbedPane;
-    }
-
-    public Long getDocumentIdFromScrollPane(JScrollPane tab) {
-        return idByScrollPane.get(tab);
-    }
-
-    public String getTextFromScrollPane(JScrollPane scrollPane) {
-        return textPaneByScrollPane.get(scrollPane).getText();
+        documentModel.setDocuments(documentController.getAll());
+        documentsTabbedPane = documentModel.getTabbedPane();
     }
 
     protected void setSize() {
@@ -199,5 +157,9 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     @Override
     public String getUserInterfaceName() {
         return "Swing UI";
+    }
+
+    public DocumentModel getDocumentModel() {
+        return documentModel;
     }
 }

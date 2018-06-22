@@ -44,8 +44,8 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
     }
 
     protected Long getSelectedDocumentId() {
-        JScrollPane selectedComponent = (JScrollPane) parent.getDocumentsTabbedPane().getSelectedComponent();
-        return parent.getDocumentIdFromScrollPane(selectedComponent);
+        JScrollPane selectedScrollPane = (JScrollPane) parent.getDocumentModel().getTabbedPane().getSelectedComponent();
+        return parent.getDocumentModel().getDocumentIdFor(selectedScrollPane);
     }
 
     protected Document getSelectedDocument() {
