@@ -2,13 +2,15 @@ package com.penapereira.cipher.view.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,14 @@ import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.MainUserInterface;
+import com.penapereira.cipher.view.swing.datamodel.DatamodelFactoryInterface;
+import com.penapereira.cipher.view.swing.datamodel.TabbedPaneDatamodelFactory;
+import com.penapereira.cipher.view.swing.listener.WindowExitListener;
 
 @Component
 public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, Observer {
 
+    private final String uiName = "Swing UI";
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(MainUserInterfaceImpl.class);
 
@@ -33,7 +39,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     protected Configuration config;
 
     protected MainMenuBuilder menuBuilder;
-    protected DocumentModel documentModel;
+    protected DatamodelFactoryInterface<JTabbedPane, JScrollPane, JTextPane> datamodelFactory;
     protected JTabbedPane documentsTabbedPane;
 
     @Autowired
@@ -45,36 +51,30 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
         config = context.getBean(Configuration.class);
         menuBuilder = context.getBean(MainMenuBuilder.class);
 
-        documentModel = DocumentModel.instance();
-        documentModel.setDocuments(documentController.getAll());
-        documentModel.setDocumentFont(config.getDocumentFont());
-        documentModel.setDocumentFontSize(config.getDocumentFontSize());
+        datamodelFactory = new TabbedPaneDatamodelFactory();
+        datamodelFactory
+                .setDocumentContainerFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
+        datamodelFactory.setDocuments(documentController.getAll());
 
         setTitle(messages.getWindowTitle());
         setSize();
-        setResizable(true);
-        addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
+        addWindowListener(new WindowExitListener());
 
         menuBuilder.setMainUserInterface(this);
         setJMenuBar(menuBuilder.buildJMenuBar());
 
-        documentsTabbedPane = documentModel.getTabbedPane();
+        documentsTabbedPane = datamodelFactory.getDatamodel();
         getContentPane().add(documentsTabbedPane, BorderLayout.CENTER);
     }
 
     @Override
     public boolean init() {
-        this.documentController.addObserver(this);
+        documentController.addObserver(this);
+        List<Document> documents = documentController.getAll();
         log.debug("Initializing main user interface...");
         boolean isInitCompleted = true;
 
-        if (documentModel.getDocuments().isEmpty()) {
+        if (documents.isEmpty()) {
             if (new SwingUtil(this).confirm(messages.getSetupConfirmTitle(), messages.getSetupConfirmMsg())) {
                 initializeWelcomeDocument();
             } else {
@@ -82,8 +82,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
                 isInitCompleted = false;
             }
         } else {
-            log.debug("Documents repository has {} document(s), proceeding to render them...",
-                    documentModel.getDocuments().size());
+            log.debug("Documents repository has {} document(s), proceeding to render them...", documents.size());
             displayAllDocuments();
         }
         return isInitCompleted;
@@ -128,7 +127,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
 
     private void updateDocument(Document doc) {
         log.debug("*UPDATE* document " + doc.getTitle());
-        displayAllDocuments();
+        datamodelFactory.updateDatamodelForDocument(doc);
     }
 
     private void deleteDocument(Document doc) {
@@ -143,11 +142,12 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
 
     protected void displayAllDocuments() {
         log.debug("Refreshing all documents");
-        documentModel.setDocuments(documentController.getAll());
-        documentsTabbedPane = documentModel.getTabbedPane();
+        datamodelFactory.setDocuments(documentController.getAll());
+        documentsTabbedPane = datamodelFactory.getDatamodel();
     }
 
     protected void setSize() {
+        setResizable(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);
         setSize(width, (int) screenSize.getHeight() - 100);
@@ -156,10 +156,10 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
 
     @Override
     public String getUserInterfaceName() {
-        return "Swing UI";
+        return uiName;
     }
 
-    public DocumentModel getDocumentModel() {
-        return documentModel;
+    public DatamodelFactoryInterface<JTabbedPane, JScrollPane, JTextPane> getDatamodelFactory() {
+        return datamodelFactory;
     }
 }
