@@ -91,7 +91,7 @@ public class MainUserInterfaceImpl extends JFrame implements MainUserInterface, 
     private void initializeWelcomeDocument() {
         log.debug("Initializing document repository with welcome document!");
         Document helpDocument = documentController.getHelpDocument();
-        documentController.save(helpDocument);
+        documentController.createAndSaveDocument(helpDocument.getTitle(), helpDocument.getText());
     }
 
     @Override
