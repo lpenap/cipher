@@ -16,6 +16,8 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
     protected Map<D, Long> decoratorToIdMap;
     protected Map<Long, D> idToDecoratorMap;
     protected Map<D, C> decoratorToDocumentContainerMap;
+    protected Map<D, Integer> decoratorIndex;
+    protected Map<Integer, Boolean> decoratorIndexToIsModifiedMap;
 
     protected String documentFont;
     protected int documentFontSize;
@@ -28,6 +30,8 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
         decoratorToIdMap = new HashMap<D, Long>();
         decoratorToDocumentContainerMap = new HashMap<D, C>();
         idToDecoratorMap = new HashMap<Long, D>();
+        decoratorIndex = new HashMap<D, Integer>();
+        decoratorIndexToIsModifiedMap = new HashMap<Integer, Boolean>();
         documentFont = "Courier";
         documentFontSize = 12;
         datamodel = isntanceWrappedDatamodel();
@@ -38,6 +42,14 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
     protected abstract C buildDocumentContainer(Document doc);
 
     protected abstract D buildDecorator(C documentContainer);
+
+    protected abstract void setDocumentContainerText(C documentContainer, String text);
+
+    protected abstract String getTextFromDocumentContainer(C documentContainer);
+
+    protected abstract Integer addToDatamodel(D decorator, String name);
+
+    protected abstract void setDecoratorNameAt(Integer index, String name);
 
     public synchronized void setDocuments(List<Document> documents) {
         this.documents = documents;
@@ -63,13 +75,12 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
         return getTextFromDocumentContainer(decoratorToDocumentContainerMap.get(decorator));
     }
 
-    protected abstract String getTextFromDocumentContainer(C documentContainer);
-
     public synchronized void updateDatamodelForDocument(Document doc) {
         D decorator = idToDecoratorMap.get(doc.getId());
         C documentContainer = decoratorToDocumentContainerMap.get(decorator);
-
         setDocumentContainerText(documentContainer, doc.getText());
+        setDecoratorNameAt(decoratorIndex.get(decorator), doc.getTitle());
+        decoratorIndexToIsModifiedMap.put(decoratorIndex.get(decorator), false);
     }
 
     protected void build() {
@@ -84,7 +95,9 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
             decoratorToIdMap.put(decorator, doc.getId());
             decoratorToDocumentContainerMap.put(decorator, documentContainer);
 
-            addToDatamodel(doc, decorator);
+            Integer index = addToDatamodel(decorator, doc.getTitle());
+            decoratorIndexToIsModifiedMap.put(index, false);
+            decoratorIndex.put(decorator, index);
         }
     }
 }

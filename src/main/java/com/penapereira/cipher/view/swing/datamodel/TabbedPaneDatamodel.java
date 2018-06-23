@@ -12,19 +12,19 @@ import com.penapereira.cipher.view.swing.listener.CipherDocumentListener;
 
 public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollPane, JTextPane> {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    protected final String MODIFIED_PREFIX = "* \u2063";
 
-    protected JTabbedPane tabbedPaneDatamodel;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     protected JTabbedPane isntanceWrappedDatamodel() {
-        tabbedPaneDatamodel = new JTabbedPane(JTabbedPane.TOP);
-        return tabbedPaneDatamodel;
+        datamodel = new JTabbedPane(JTabbedPane.TOP);
+        return datamodel;
     }
 
     @Override
     public synchronized void clearDatamodel() {
-        tabbedPaneDatamodel.removeAll();
+        datamodel.removeAll();
     }
 
     @Override
@@ -32,7 +32,7 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
         JTextPane textPane = new JTextPane();
         StyledDocument styledDoc = textPane.getStyledDocument();
         CipherDocumentListener documentListener = new CipherDocumentListener();
-        documentListener.setTabbedPane(tabbedPaneDatamodel);
+        documentListener.setDatamodel(this);
         textPane.setFont(documentContainerFont);
         try {
             styledDoc.insertString(0, doc.getText(), styledDoc.getStyle("regular"));
@@ -50,8 +50,11 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
     }
 
     @Override
-    public synchronized void addToDatamodel(Document doc, JScrollPane decorator) {
-        tabbedPaneDatamodel.add(doc.getTitle(), decorator);
+    public synchronized Integer addToDatamodel(JScrollPane decorator, String name) {
+        Integer lastIndex = datamodel.getTabCount();
+        decorator.setName(name);
+        datamodel.add(decorator, lastIndex);
+        return lastIndex;
     }
 
     @Override
@@ -64,4 +67,20 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
         documentContainer.setText(text);
     }
 
+    @Override
+    protected void setDecoratorNameAt(Integer index, String name) {
+        log.trace("Updating tab name at {} with {}", index, name);
+        datamodel.setTitleAt(index, name);
+    }
+
+    @Override
+    public void setModifiedNameOfSelectedComponent() {
+        int index = datamodel.getSelectedIndex();
+        if (!decoratorIndexToIsModifiedMap.get(index)) {
+            JScrollPane selectedComponent = (JScrollPane) datamodel.getSelectedComponent();
+            String tabName = selectedComponent.getName();
+            setDecoratorNameAt(index, MODIFIED_PREFIX + tabName);
+        }
+        decoratorIndexToIsModifiedMap.put(index, true);
+    }
 }

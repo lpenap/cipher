@@ -1,45 +1,42 @@
 package com.penapereira.cipher.view.swing.listener;
 
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
 
 public class CipherDocumentListener implements DocumentListener {
-
-    protected final String MODIFIED_PREFIX = "* \u2063";
-
     private static final Logger log = LoggerFactory.getLogger(CipherDocumentListener.class);
-    protected JTabbedPane tabbedPane;
+
+    protected DatamodelInterface<JTabbedPane, JScrollPane, JTextPane> datamodel;
 
     @Override
     public void insertUpdate(DocumentEvent e) {
+        log.trace("insertUpdate");
         setModified();
     }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
+        log.trace("removeUpdate");
         setModified();
     }
 
     @Override
     public void changedUpdate(DocumentEvent e) {
+        log.trace("changedUpdate");
         setModified();
     }
 
     protected void setModified() {
-        if (tabbedPane != null) {
-            log.trace("Document changed!");
-            int i = tabbedPane.getSelectedIndex();
-            String title = tabbedPane.getTitleAt(i);
-            if (!title.substring(0, Math.min(title.length(), MODIFIED_PREFIX.length())).equals(MODIFIED_PREFIX)) {
-                tabbedPane.setTitleAt(i, MODIFIED_PREFIX + title);
-            }
-        }
+        datamodel.setModifiedNameOfSelectedComponent();
     }
 
-    public void setTabbedPane(JTabbedPane documentsTabbedPane) {
-        this.tabbedPane = documentsTabbedPane;
+    public void setDatamodel(DatamodelInterface<JTabbedPane, JScrollPane, JTextPane> datamodel) {
+        this.datamodel = datamodel;
     }
 }
