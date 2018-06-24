@@ -9,7 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import com.penapereira.cipher.view.MainUserInterface;
-import com.penapereira.cipher.view.swing.MainUserInterfaceImpl;
+import com.penapereira.cipher.view.swing.TabbedPaneUserInterface;
 
 @SpringBootApplication
 @Configuration
@@ -23,7 +23,7 @@ public class CipherApplication {
         ConfigurableApplicationContext context =
                 new SpringApplicationBuilder(CipherApplication.class).headless(false).run(args);
 
-        MainUserInterface userInterface = context.getBean(MainUserInterfaceImpl.class);
+        MainUserInterface userInterface = context.getBean(TabbedPaneUserInterface.class);
         if (!userInterface.init()) {
             System.exit(0);
         }

@@ -18,7 +18,7 @@ public class MainMenuBuilder {
 
     private Messages messages;
     private DocumentController documentController;
-    private MainUserInterfaceImpl parent;
+    private TabbedPaneUserInterface parent;
 
     @Autowired
     public MainMenuBuilder(DocumentController documentController, Messages messages) {
@@ -26,7 +26,7 @@ public class MainMenuBuilder {
         this.documentController = documentController;
     }
 
-    public void setMainUserInterface(MainUserInterfaceImpl parent) {
+    public void setMainUserInterface(TabbedPaneUserInterface parent) {
         this.parent = parent;
     }
 
@@ -52,12 +52,12 @@ public class MainMenuBuilder {
         documentMenu.add(menuItemAddDocument);
 
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
-        menuItemSaveAll.addActionListener(new SaveAllActionListener(documentController, parent.getDataModel()));
+        menuItemSaveAll.addActionListener(new SaveAllActionListener(documentController, parent.getDatamodel()));
         documentMenu.add(menuItemSaveAll);
 
         JMenuItem menuItemDeleteDocument = new JMenuItem(messages.getDeleteDocumentMenu());
         menuItemDeleteDocument.addActionListener(
-                new DeleteDocumentActionListener(documentController, messages, parent, parent.getDataModel()));
+                new DeleteDocumentActionListener(documentController, messages, parent, parent.getDatamodel()));
         documentMenu.addSeparator();
         documentMenu.add(menuItemDeleteDocument);
 

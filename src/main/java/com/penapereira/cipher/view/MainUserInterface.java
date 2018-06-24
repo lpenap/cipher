@@ -1,11 +1,14 @@
 package com.penapereira.cipher.view;
 
+import java.util.Observable;
+
 public interface MainUserInterface {
 
-    public boolean init();
+    boolean init();
 
-    public void launch();
+    void launch();
 
-    public String getUserInterfaceName();
+    String getUserInterfaceName();
 
+    void update(Observable o, Object arg);
 }
