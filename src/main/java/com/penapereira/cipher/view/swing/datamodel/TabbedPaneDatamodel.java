@@ -18,13 +18,12 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
 
     @Override
     protected JTabbedPane isntanceWrappedDatamodel() {
-        datamodel = new JTabbedPane(JTabbedPane.TOP);
-        return datamodel;
+        return new JTabbedPane(JTabbedPane.TOP);
     }
 
     @Override
     public synchronized void clearDatamodel() {
-        datamodel.removeAll();
+        getDatamodel().removeAll();
     }
 
     @Override
@@ -33,7 +32,7 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
         StyledDocument styledDoc = textPane.getStyledDocument();
         CipherDocumentListener documentListener = new CipherDocumentListener();
         documentListener.setDatamodel(this);
-        textPane.setFont(documentContainerFont);
+        textPane.setFont(getDocumentContainerFont());
         try {
             styledDoc.insertString(0, doc.getText(), styledDoc.getStyle("regular"));
         } catch (BadLocationException e) {
@@ -51,9 +50,9 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
 
     @Override
     public synchronized Integer addToDatamodel(JScrollPane decorator, String name) {
-        Integer lastIndex = datamodel.getTabCount();
+        Integer lastIndex = getDatamodel().getTabCount();
         decorator.setName(name);
-        datamodel.add(decorator, lastIndex);
+        getDatamodel().add(decorator, lastIndex);
         return lastIndex;
     }
 
@@ -70,17 +69,22 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
     @Override
     protected void setDecoratorNameAt(Integer index, String name) {
         log.trace("Updating tab name at {} with {}", index, name);
-        datamodel.setTitleAt(index, name);
+        getDatamodel().setTitleAt(index, name);
     }
 
     @Override
     public void setModifiedNameOfSelectedComponent() {
         int index = datamodel.getSelectedIndex();
-        if (!decoratorIndexToIsModifiedMap.get(index)) {
+        if (!isDecoratorMarkedAsModified(index)) {
             JScrollPane selectedComponent = (JScrollPane) datamodel.getSelectedComponent();
             String tabName = selectedComponent.getName();
             setDecoratorNameAt(index, MODIFIED_PREFIX + tabName);
         }
-        decoratorIndexToIsModifiedMap.put(index, true);
+        markDecoratorAsModified(index);
+    }
+
+    @Override
+    protected void requestFocus(int decoratorIndex) {
+        getDatamodel().setSelectedIndex(decoratorIndex);
     }
 }

@@ -51,6 +51,8 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
 
     protected abstract void setDecoratorNameAt(Integer index, String name);
 
+    protected abstract void requestFocus(int decoratorIndex);
+
     public synchronized void setDocuments(List<Document> documents) {
         this.documents = documents;
         build();
@@ -67,12 +69,25 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
         this.documentContainerFont = font;
     }
 
+    public synchronized Font getDocumentContainerFont() {
+        return this.documentContainerFont;
+    }
+
     public synchronized Long getDocumentIdFor(D decorator) {
         return decoratorToIdMap.get(decorator);
     }
 
     public synchronized String getTextFromDecorator(D decorator) {
         return getTextFromDocumentContainer(decoratorToDocumentContainerMap.get(decorator));
+    }
+
+    protected void build() {
+        clearDatamodel();
+        Iterator<Document> i = documents.iterator();
+        while (i.hasNext()) {
+            Document doc = i.next();
+            addDocument(doc);
+        }
     }
 
     public synchronized void updateDatamodelForDocument(Document doc) {
@@ -83,21 +98,26 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
         decoratorIndexToIsModifiedMap.put(decoratorIndex.get(decorator), false);
     }
 
-    protected void build() {
-        clearDatamodel();
-        Iterator<Document> i = documents.iterator();
-        while (i.hasNext()) {
-            Document doc = i.next();
-            C documentContainer = buildDocumentContainer(doc);
-            D decorator = buildDecorator(documentContainer);
+    public synchronized void addDocument(Document doc) {
+        C documentContainer = buildDocumentContainer(doc);
+        D decorator = buildDecorator(documentContainer);
 
-            idToDecoratorMap.put(doc.getId(), decorator);
-            decoratorToIdMap.put(decorator, doc.getId());
-            decoratorToDocumentContainerMap.put(decorator, documentContainer);
+        idToDecoratorMap.put(doc.getId(), decorator);
+        decoratorToIdMap.put(decorator, doc.getId());
+        decoratorToDocumentContainerMap.put(decorator, documentContainer);
 
-            Integer index = addToDatamodel(decorator, doc.getTitle());
-            decoratorIndexToIsModifiedMap.put(index, false);
-            decoratorIndex.put(decorator, index);
-        }
+        Integer index = addToDatamodel(decorator, doc.getTitle());
+        decoratorIndexToIsModifiedMap.put(index, false);
+        decoratorIndex.put(decorator, index);
+
+        requestFocus(index);
+    }
+
+    protected boolean isDecoratorMarkedAsModified(int index) {
+        return decoratorIndexToIsModifiedMap.get(index);
+    }
+
+    protected void markDecoratorAsModified(int index) {
+        decoratorIndexToIsModifiedMap.put(index, true);
     }
 }

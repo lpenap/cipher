@@ -54,7 +54,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
 
         build(context);
     }
-    
+
     protected abstract void build(ApplicationContext context);
 
     protected abstract DatamodelInterface<P, JScrollPane, JTextPane> createDatamodel();
@@ -86,8 +86,8 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
 
     @Override
     public void launch() {
-        // TODO Auto-generated method stub
-
+        log.debug("Launching user interface...");
+        this.setVisible(true);
     }
 
     /**
@@ -127,7 +127,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
 
     private void addDocument(Document doc) {
         log.debug("*ADD* document '{}' ", doc.getTitle());
-        displayAllDocuments();
+        datamodel.addDocument(doc);
     }
 
     private void initializeWelcomeDocument() {
@@ -147,7 +147,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
     public DatamodelInterface<P, JScrollPane, JTextPane> getDatamodel() {
         return datamodel;
     }
-    
+
     protected DocumentController getDocumentController() {
         return documentController;
     }

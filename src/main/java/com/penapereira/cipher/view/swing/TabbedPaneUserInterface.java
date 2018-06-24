@@ -44,16 +44,13 @@ public class TabbedPaneUserInterface extends AbstractSwingInterface<JTabbedPane>
     }
 
     @Override
-    public void launch() {
-        log.debug("Launching user interface...");
-        this.setVisible(true);
-    }
-
-    @Override
     protected void displayAllDocuments() {
         log.debug("Refreshing all documents");
         getDatamodel().setDocuments(getDocumentController().getAll());
         documentsTabbedPane = getDatamodel().getWrappedDatamodel();
+        if (documentsTabbedPane.getTabCount() > 0) {
+            documentsTabbedPane.setSelectedIndex(0);
+        }
     }
 
     @Override
