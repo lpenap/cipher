@@ -3,6 +3,7 @@ package com.penapereira.cipher.view.swing.datamodel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import org.slf4j.Logger;
@@ -106,5 +107,10 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
     @Override
     protected void removeFromWrappedDatamodel(JScrollPane scrollPane) {
         getDatamodel().remove(scrollPane);
+    }
+
+    @Override
+    public void addWrapedDatamodelChangeListener(ChangeListener listener) {
+        getDatamodel().addChangeListener(listener);
     }
 }

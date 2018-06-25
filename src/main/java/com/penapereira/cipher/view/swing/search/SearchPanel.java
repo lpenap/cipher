@@ -39,13 +39,17 @@ public class SearchPanel<P> extends JPanel {
         add(eastPanel, BorderLayout.EAST);
 
         searchTextField = new JTextField();
-        searchTextField.addKeyListener(new SearchAdapter(searchTextField));
         searchTextField.setColumns(10);
 
         eastPanel.add(searchTextField);
 
         addSearchResultLabels(eastPanel);
         addSearchControlButtons(eastPanel);
+
+        SearchAdapter<P> searchAdapter = new SearchAdapter<P>(searchTextField, datamodel);
+        searchTextField.addKeyListener(searchAdapter);
+        datamodel.addWrapedDatamodelChangeListener(searchAdapter);
+
         setVisible(false);
     }
 

@@ -2,6 +2,7 @@ package com.penapereira.cipher.view.swing.datamodel;
 
 import java.awt.Font;
 import java.util.List;
+import javax.swing.event.ChangeListener;
 import com.penapereira.cipher.model.document.Document;
 
 /**
@@ -31,10 +32,12 @@ public interface DatamodelInterface<M, D, C> {
     void setDocumentContainerFont(Font font);
 
     void setDocuments(List<Document> documents);
-    
+
     void setModifiedNameFor(C documentContainer);
 
     void addDocument(Document doc);
 
     void deleteDocument(Document doc);
+
+    void addWrapedDatamodelChangeListener(ChangeListener listener);
 }
