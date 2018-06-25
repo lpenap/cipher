@@ -34,4 +34,8 @@ public class Messages {
     private String cancel;
     private String documentTitle;
     
+    private String next;
+    private String previous;
+    private String closeSearchBar;
+    
 }

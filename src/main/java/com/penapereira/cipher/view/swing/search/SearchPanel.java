@@ -3,23 +3,31 @@ package com.penapereira.cipher.view.swing.search;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import com.penapereira.cipher.conf.Messages;
+import com.penapereira.cipher.shared.SwingUtil;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class SearchPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private JTextField searchTextField;
+    private Messages messages;
+    private JLabel labelSearchFound;
+    private JLabel labelSearchTotal;
 
-    public SearchPanel() {
+    public SearchPanel(Messages messages) {
         super();
+        this.messages = messages;
+        SwingUtil swingUtil = new SwingUtil();
         setLayout(new BorderLayout(0, 0));
 
         JPanel eastPanel = new JPanel();
@@ -29,21 +37,48 @@ public class SearchPanel extends JPanel {
         eastPanel.add(searchTextField);
         searchTextField.setColumns(10);
 
+        labelSearchFound = new JLabel("0");
+        labelSearchFound.setForeground(Color.gray);
+        eastPanel.add(labelSearchFound);
+
+        JLabel labelSlash = new JLabel("/");
+        labelSlash.setForeground(Color.gray);
+        labelSlash.setIconTextGap(100);
+        eastPanel.add(labelSlash);
+
+        labelSearchTotal = new JLabel("0");
+        labelSearchTotal.setForeground(Color.gray);
+        eastPanel.add(labelSearchTotal);
+
+        JLabel labelSeparator = new JLabel("  |  ");
+        labelSeparator.setForeground(Color.gray);
+        eastPanel.add(labelSeparator);
+
         IconFontSwing.register(FontAwesome.getIconFont());
-        Icon iconPrevious = IconFontSwing.buildIcon(FontAwesome.ANGLE_UP, 20, new Color(0, 0, 0));
-        Icon iconNext = IconFontSwing.buildIcon(FontAwesome.ANGLE_DOWN, 20, new Color(0, 0, 0));
-        Icon iconClose = IconFontSwing.buildIcon(FontAwesome.WINDOW_CLOSE_O, 20, new Color(0, 0, 0));
+        Icon iconPrevious = IconFontSwing.buildIcon(FontAwesome.ANGLE_UP, 20, new Color(80, 80, 80));
+        Icon iconNext = IconFontSwing.buildIcon(FontAwesome.ANGLE_DOWN, 20, new Color(80, 80, 80));
+        Icon iconClose = IconFontSwing.buildIcon(FontAwesome.TIMES, 16, new Color(80, 80, 80));
 
-        JLabel labelPrevious = new JLabel(iconPrevious);
-        eastPanel.add(labelPrevious);
+        JButton btnPrevious = swingUtil.createTransparentButton(iconPrevious, messages.getPrevious());
+        eastPanel.add(btnPrevious);
 
-        JLabel labelNext = new JLabel(iconNext);
-        eastPanel.add(labelNext);
+        JButton btnNext = swingUtil.createTransparentButton(iconNext, messages.getNext());
+        eastPanel.add(btnNext);
 
-        JLabel labelClose = new JLabel(iconClose);
-        eastPanel.add(labelClose);
-        
+        JLabel separator = new JLabel("  ");
+        eastPanel.add(separator);
+
+        JButton btnClose = swingUtil.createTransparentButton(iconClose, messages.getCloseSearchBar());
+        eastPanel.add(btnClose);
+
         setVisible(false);
     }
 
+    public JLabel getLabelSearchFound() {
+        return labelSearchFound;
+    }
+
+    public JLabel getLabelSearchTotal() {
+        return labelSearchTotal;
+    }
 }

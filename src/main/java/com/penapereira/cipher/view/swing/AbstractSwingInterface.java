@@ -66,7 +66,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
     protected abstract P getDocumentsPane();
 
     protected void addSearchPanel() {
-        searchPanel = new SearchPanel();
+        searchPanel = new SearchPanel(messages);
         getContentPane().add(searchPanel, BorderLayout.NORTH);
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
                 .addKeyEventDispatcher(new SearchPanelDispatcher(searchPanel));

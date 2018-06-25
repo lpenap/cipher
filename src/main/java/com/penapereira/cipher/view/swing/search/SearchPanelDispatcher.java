@@ -15,12 +15,13 @@ public class SearchPanelDispatcher implements KeyEventDispatcher {
     public boolean dispatchKeyEvent(KeyEvent e) {
         int onmask = KeyEvent.CTRL_DOWN_MASK;
         int offmask = KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
+
         if ((e.getKeyCode() == KeyEvent.VK_F) && ((e.getModifiersEx() & (onmask | offmask)) == onmask)) {
             showSearchPanel();
             return true;
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        if ((e.getKeyCode() == KeyEvent.VK_ESCAPE) && searchPanel.isVisible()) {
             hideSearchPanel();
             return true;
         }
