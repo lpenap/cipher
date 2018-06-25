@@ -44,9 +44,6 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         config = context.getBean(Configuration.class);
 
         datamodel = createDatamodel();
-        datamodel
-                .setDocumentContainerFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
-//        datamodel.setDocuments(documentController.getAll());
 
         setTitle(messages.getWindowTitle());
         setSize();
@@ -65,6 +62,8 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
 
     @Override
     public boolean init() {
+        datamodel
+                .setDocumentContainerFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
         documentController.addObserver(this);
         List<Document> documents = documentController.getAll();
         log.debug("Initializing main user interface...");
@@ -141,7 +140,6 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);
         setSize(width, (int) screenSize.getHeight() - 100);
-        // setSize(500, 500);
     }
 
     public DatamodelInterface<P, JScrollPane, JTextPane> getDatamodel() {
