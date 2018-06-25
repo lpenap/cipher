@@ -40,4 +40,6 @@ public interface DatamodelInterface<M, D, C> {
     void deleteDocument(Document doc);
 
     void addWrapedDatamodelChangeListener(ChangeListener listener);
+
+    C getSelectedDocumentContainer();
 }

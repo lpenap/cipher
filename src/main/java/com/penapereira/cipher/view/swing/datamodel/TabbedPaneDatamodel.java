@@ -113,4 +113,9 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
     public void addWrapedDatamodelChangeListener(ChangeListener listener) {
         getDatamodel().addChangeListener(listener);
     }
+
+    @Override
+    public JScrollPane getSelectedDecorator() {
+        return (JScrollPane) getDatamodel().getSelectedComponent();
+    }
 }

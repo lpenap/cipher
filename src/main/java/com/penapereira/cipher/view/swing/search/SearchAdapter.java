@@ -2,6 +2,9 @@ package com.penapereira.cipher.view.swing.search;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -32,35 +35,50 @@ public class SearchAdapter<P> implements KeyListener, ChangeListener {
     @Override
     public void keyPressed(KeyEvent e) {
         search();
-
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         search();
-
     }
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        performSearch();
+        boolean isSearchForced = true;
+        search(isSearchForced);
     }
 
     protected void search() {
-        if (isValidQuery()) {
-            performSearch();
+        search(false);
+    }
+
+    protected void search(boolean force) {
+        if (force || !searchTextField.getText().equals(previousSearch)) {
+            try {
+                performSearch();
+            } catch (IOException e) {
+                log.error("Could not read text from document, clearing search query");
+                searchTextField.setText("");
+            }
         }
     }
 
-    protected void performSearch() {
-        String query = searchTextField.getText();
+    protected void performSearch() throws IOException {
+        String query = searchTextField.getText().toLowerCase();
         log.trace("Searching for {}", query);
+        JTextPane textPane = datamodel.getSelectedDocumentContainer();
+        String text = textPane.getText();
+        BufferedReader reader = new BufferedReader(new StringReader(text));
+        String line = reader.readLine().toLowerCase();
+        int matches = 0;
+        while (line != null) {
+            if (line.contains(query)) {
+                matches++;
+            }
+            line = reader.readLine().toLowerCase();
+        }
+        log.trace("{} matches found", matches);
 
         previousSearch = query;
     }
-
-    protected boolean isValidQuery() {
-        return !searchTextField.getText().equals(previousSearch);
-    }
-
 }

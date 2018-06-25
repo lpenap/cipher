@@ -55,6 +55,8 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
 
     protected abstract void removeFromWrappedDatamodel(D decorator);
 
+    protected abstract D getSelectedDecorator();
+
     protected void initArrays() {
         decoratorToIdMap = new HashMap<D, Long>();
         decoratorToDocumentContainerMap = new HashMap<D, C>();
@@ -161,5 +163,10 @@ public abstract class AbstractDatamodel<M, D, C> implements DatamodelInterface<M
             }
         }
         return decoratorFound;
+    }
+
+    public C getSelectedDocumentContainer() {
+        D selectedDecorator = getSelectedDecorator();
+        return decoratorToDocumentContainerMap.get(selectedDecorator);
     }
 }
