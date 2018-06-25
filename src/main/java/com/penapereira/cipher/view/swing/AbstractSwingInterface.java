@@ -152,7 +152,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);
         setSize(width, (int) screenSize.getHeight() - 100);
-        setSize(500, 500);
+        //setSize(500, 500);
     }
 
     public DatamodelInterface<P, JScrollPane, JTextPane> getDatamodel() {
