@@ -8,5 +8,6 @@ Java AES/RSA Cipher Application to manage in-editor encrypted documents.
 ## Run (Development Only)
 * Clone this repo
 * Execute
-```./gradlew bootRun
+```bash
+./gradlew bootRun
 ```
