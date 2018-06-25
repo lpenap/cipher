@@ -1,12 +1,15 @@
 package com.penapereira.cipher.view.swing;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import org.slf4j.Logger;
@@ -22,6 +25,8 @@ import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.MainUserInterface;
 import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
 import com.penapereira.cipher.view.swing.listener.WindowExitListener;
+import com.penapereira.cipher.view.swing.search.SearchPanel;
+import com.penapereira.cipher.view.swing.search.SearchPanelDispatcher;
 
 public abstract class AbstractSwingInterface<P> extends JFrame implements MainUserInterface, Observer {
 
@@ -34,6 +39,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
     protected Configuration config;
 
     protected DatamodelInterface<P, JScrollPane, JTextPane> datamodel;
+    private SearchPanel searchPanel;
 
     @Autowired
     public AbstractSwingInterface(ApplicationContext context) {
@@ -44,11 +50,10 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         config = context.getBean(Configuration.class);
 
         datamodel = createDatamodel();
-
         setTitle(messages.getWindowTitle());
+        addSearchPanel();
         setSize();
         addWindowListener(new WindowExitListener());
-
         build(context);
     }
 
@@ -59,6 +64,13 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
     protected abstract void displayAllDocuments();
 
     protected abstract P getDocumentsPane();
+
+    protected void addSearchPanel() {
+        searchPanel = new SearchPanel();
+        getContentPane().add(searchPanel, BorderLayout.NORTH);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                .addKeyEventDispatcher(new SearchPanelDispatcher(searchPanel));
+    }
 
     @Override
     public boolean init() {
@@ -140,6 +152,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);
         setSize(width, (int) screenSize.getHeight() - 100);
+        setSize(500, 500);
     }
 
     public DatamodelInterface<P, JScrollPane, JTextPane> getDatamodel() {
@@ -150,4 +163,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         return documentController;
     }
 
+    public JPanel getSearchPanel() {
+        return searchPanel;
+    }
 }

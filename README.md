@@ -14,6 +14,7 @@ Java AES/RSA Cipher Application to manage in-editor encrypted documents.
 * H2 Database
 * lombok
 * slf4j for logging
+* jiconfont + font-awesome
 
 ## Run (Development Only)
 * Clone this repo
