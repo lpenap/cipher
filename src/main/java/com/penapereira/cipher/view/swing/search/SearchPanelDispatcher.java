@@ -3,11 +3,11 @@ package com.penapereira.cipher.view.swing.search;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 
-public class SearchPanelDispatcher implements KeyEventDispatcher {
+public class SearchPanelDispatcher<P> implements KeyEventDispatcher {
 
-    private SearchPanel searchPanel;
+    private SearchPanel<P> searchPanel;
 
-    public SearchPanelDispatcher(SearchPanel searchPanel) {
+    public SearchPanelDispatcher(SearchPanel<P> searchPanel) {
         this.searchPanel = searchPanel;
     }
 

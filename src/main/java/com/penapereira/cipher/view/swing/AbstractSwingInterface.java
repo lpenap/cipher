@@ -39,7 +39,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
     protected Configuration config;
 
     protected DatamodelInterface<P, JScrollPane, JTextPane> datamodel;
-    private SearchPanel searchPanel;
+    private SearchPanel<P> searchPanel;
 
     @Autowired
     public AbstractSwingInterface(ApplicationContext context) {
@@ -66,10 +66,10 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
     protected abstract P getDocumentsPane();
 
     protected void addSearchPanel() {
-        searchPanel = new SearchPanel(messages);
+        searchPanel = new SearchPanel<P>(messages, datamodel);
         getContentPane().add(searchPanel, BorderLayout.NORTH);
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                .addKeyEventDispatcher(new SearchPanelDispatcher(searchPanel));
+                .addKeyEventDispatcher(new SearchPanelDispatcher<P>(searchPanel));
     }
 
     @Override
