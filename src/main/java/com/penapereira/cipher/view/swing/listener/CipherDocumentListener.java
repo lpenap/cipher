@@ -14,6 +14,13 @@ public class CipherDocumentListener implements DocumentListener {
 
     protected DatamodelInterface<JTabbedPane, JScrollPane, JTextPane> datamodel;
 
+    protected JTextPane textPane;
+
+    public CipherDocumentListener(JTextPane textPane) {
+        super();
+        this.textPane = textPane;
+    }
+
     @Override
     public void insertUpdate(DocumentEvent e) {
         log.trace("insertUpdate");
@@ -33,7 +40,7 @@ public class CipherDocumentListener implements DocumentListener {
     }
 
     protected void setModified() {
-        datamodel.setModifiedNameOfSelectedComponent();
+        datamodel.setModifiedNameFor(textPane);
     }
 
     public void setDatamodel(DatamodelInterface<JTabbedPane, JScrollPane, JTextPane> datamodel) {

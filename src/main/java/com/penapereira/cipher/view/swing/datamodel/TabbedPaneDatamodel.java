@@ -30,7 +30,7 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
     public JTextPane buildDocumentContainer(Document doc) {
         JTextPane textPane = new JTextPane();
         StyledDocument styledDoc = textPane.getStyledDocument();
-        CipherDocumentListener documentListener = new CipherDocumentListener();
+        CipherDocumentListener documentListener = new CipherDocumentListener(textPane);
         documentListener.setDatamodel(this);
         textPane.setFont(getDocumentContainerFont());
         try {
@@ -50,10 +50,9 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
 
     @Override
     public synchronized Integer addToDatamodel(JScrollPane decorator, String name) {
-        Integer lastIndex = getDatamodel().getTabCount();
         decorator.setName(name);
-        getDatamodel().add(decorator, lastIndex);
-        return lastIndex;
+        getDatamodel().add(name, decorator);
+        return getScrollPaneIndex(decorator);
     }
 
     @Override
@@ -67,24 +66,45 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
     }
 
     @Override
-    protected void setDecoratorNameAt(Integer index, String name) {
-        log.trace("Updating tab name at {} with {}", index, name);
-        getDatamodel().setTitleAt(index, name);
+    protected void setDecoratorName(JScrollPane scrollPane, String name) {
+        int index = getScrollPaneIndex(scrollPane);
+        if (index != -1) {
+            log.trace("Updating tab name at index {} with '{}'", index, name);
+            getDatamodel().setTitleAt(index, name);
+        }
+    }
+
+    protected int getScrollPaneIndex(JScrollPane scrollPane) {
+        log.trace("Searching tab index of '{}'", scrollPane.getName());
+        for (int i = 0; i < getDatamodel().getTabCount(); i++) {
+            JScrollPane currentScrollPane = (JScrollPane) getDatamodel().getComponentAt(i);
+            if (scrollPane == currentScrollPane) {
+                log.trace("Tab found at index {}", i);
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
-    public void setModifiedNameOfSelectedComponent() {
-        int index = datamodel.getSelectedIndex();
-        if (!isDecoratorMarkedAsModified(index)) {
-            JScrollPane selectedComponent = (JScrollPane) datamodel.getSelectedComponent();
-            String tabName = selectedComponent.getName();
-            setDecoratorNameAt(index, MODIFIED_PREFIX + tabName);
+    public void setModifiedNameFor(JTextPane textPane) {
+        JScrollPane scrollPane = findDecoratorForDocumentContainer(textPane);
+        int scrollPaneIndex = getScrollPaneIndex(scrollPane);
+        if (!isDecoratorMarkedAsModified(scrollPane)) {
+            String tabName = MODIFIED_PREFIX + scrollPane.getName();
+            log.trace("Updating tab name to '{}'", tabName);
+            getDatamodel().setTitleAt(scrollPaneIndex, tabName);
+            markDecoratorAsModified(scrollPane);
         }
-        markDecoratorAsModified(index);
     }
 
     @Override
     protected void requestFocus(int decoratorIndex) {
         getDatamodel().setSelectedIndex(decoratorIndex);
+    }
+
+    @Override
+    protected void removeFromWrappedDatamodel(JScrollPane scrollPane) {
+        getDatamodel().remove(scrollPane);
     }
 }

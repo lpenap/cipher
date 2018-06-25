@@ -46,7 +46,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         datamodel = createDatamodel();
         datamodel
                 .setDocumentContainerFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
-        datamodel.setDocuments(documentController.getAll());
+//        datamodel.setDocuments(documentController.getAll());
 
         setTitle(messages.getWindowTitle());
         setSize();
@@ -122,7 +122,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
 
     private void deleteDocument(Document doc) {
         log.debug("*DELETE* document '{}' ", doc.getTitle());
-        displayAllDocuments();
+        datamodel.deleteDocument(doc);
     }
 
     private void addDocument(Document doc) {

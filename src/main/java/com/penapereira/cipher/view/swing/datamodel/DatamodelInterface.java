@@ -32,7 +32,9 @@ public interface DatamodelInterface<M, D, C> {
 
     void setDocuments(List<Document> documents);
     
-    void setModifiedNameOfSelectedComponent();
+    void setModifiedNameFor(C documentContainer);
 
     void addDocument(Document doc);
+
+    void deleteDocument(Document doc);
 }
