@@ -44,7 +44,7 @@ public class SearchAdapter implements KeyListener, ChangeListener {
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        if (!searchTextField.getText().equals("")) {
+        if (searchPanel.isVisible() && !searchTextField.getText().equals("")) {
             boolean isSearchForced = true;
             search(isSearchForced);
         }
@@ -69,16 +69,17 @@ public class SearchAdapter implements KeyListener, ChangeListener {
         String query = searchTextField.getText().toLowerCase();
         log.trace("Searching for {}", query);
         String text = datamodel.getTextFromComponent(datamodel.getSelectedComponent());
-        // BufferedReader reader = new BufferedReader(new StringReader(text));
-        // String line = reader.readLine().toLowerCase();
-        // int matches = 0;
-        // while (line != null) {
-        // if (line.contains(query)) {
-        // matches++;
-        // }
-        // line = reader.readLine().toLowerCase();
-        // }
-        // log.trace("{} matches found", matches);
+        BufferedReader reader = new BufferedReader(new StringReader(text));
+        String line = reader.readLine();
+        int matches = 0;
+        while (line != null) {
+            line = line.toLowerCase();
+            if (line.contains(query)) {
+                matches++;
+            }
+            line = reader.readLine();
+        }
+        log.trace("{} matches found", matches);
 
         previousSearch = query;
     }
