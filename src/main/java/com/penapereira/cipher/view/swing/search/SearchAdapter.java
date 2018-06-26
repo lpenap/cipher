@@ -5,24 +5,24 @@ import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 
-public class SearchAdapter<P> implements KeyListener, ChangeListener {
+public class SearchAdapter implements KeyListener, ChangeListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     protected JTextField searchTextField;
     protected String previousSearch;
-    protected DatamodelInterface<P, JScrollPane, JTextPane> datamodel;
+    protected SwingDatamodelInterface datamodel;
+    private SearchPanel searchPanel;
 
-    public SearchAdapter(JTextField searchTextField, DatamodelInterface<P, JScrollPane, JTextPane> datamodel) {
-        this.searchTextField = searchTextField;
+    public SearchAdapter(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
+        this.searchTextField = searchPanel.getSearchTextField();
+        this.searchPanel = searchPanel;
         this.previousSearch = "";
         this.datamodel = datamodel;
     }
@@ -44,8 +44,10 @@ public class SearchAdapter<P> implements KeyListener, ChangeListener {
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        boolean isSearchForced = true;
-        search(isSearchForced);
+        if (!searchTextField.getText().equals("")) {
+            boolean isSearchForced = true;
+            search(isSearchForced);
+        }
     }
 
     protected void search() {
@@ -66,18 +68,17 @@ public class SearchAdapter<P> implements KeyListener, ChangeListener {
     protected void performSearch() throws IOException {
         String query = searchTextField.getText().toLowerCase();
         log.trace("Searching for {}", query);
-        JTextPane textPane = datamodel.getSelectedDocumentContainer();
-        String text = textPane.getText();
-        BufferedReader reader = new BufferedReader(new StringReader(text));
-        String line = reader.readLine().toLowerCase();
-        int matches = 0;
-        while (line != null) {
-            if (line.contains(query)) {
-                matches++;
-            }
-            line = reader.readLine().toLowerCase();
-        }
-        log.trace("{} matches found", matches);
+        String text = datamodel.getTextFromComponent(datamodel.getSelectedComponent());
+        // BufferedReader reader = new BufferedReader(new StringReader(text));
+        // String line = reader.readLine().toLowerCase();
+        // int matches = 0;
+        // while (line != null) {
+        // if (line.contains(query)) {
+        // matches++;
+        // }
+        // line = reader.readLine().toLowerCase();
+        // }
+        // log.trace("{} matches found", matches);
 
         previousSearch = query;
     }

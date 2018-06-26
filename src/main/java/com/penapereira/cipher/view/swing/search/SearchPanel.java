@@ -2,18 +2,14 @@ package com.penapereira.cipher.view.swing.search;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.shared.SwingUtil;
-import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import lombok.Data;
@@ -21,16 +17,16 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SearchPanel<P> extends JPanel {
+public class SearchPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private JTextField searchTextField;
     private Messages messages;
     private JLabel labelSearchFound;
     private JLabel labelSearchTotal;
-    private DatamodelInterface<P, JScrollPane, JTextPane> datamodel;
+    private SwingDatamodelInterface datamodel;
 
-    public SearchPanel(Messages messages, DatamodelInterface<P, JScrollPane, JTextPane> datamodel) {
+    public SearchPanel(Messages messages, SwingDatamodelInterface datamodel) {
         super();
         this.messages = messages;
         this.datamodel = datamodel;
@@ -46,9 +42,9 @@ public class SearchPanel<P> extends JPanel {
         addSearchResultLabels(eastPanel);
         addSearchControlButtons(eastPanel);
 
-        SearchAdapter<P> searchAdapter = new SearchAdapter<P>(searchTextField, datamodel);
+        SearchAdapter searchAdapter = new SearchAdapter(this, datamodel);
         searchTextField.addKeyListener(searchAdapter);
-        datamodel.addWrapedDatamodelChangeListener(searchAdapter);
+        datamodel.addSearchAdapter(searchAdapter);
 
         setVisible(false);
     }
@@ -81,23 +77,17 @@ public class SearchPanel<P> extends JPanel {
         Icon iconClose = IconFontSwing.buildIcon(FontAwesome.TIMES, 16, new Color(80, 80, 80));
 
         JButton btnPrevious = swingUtil.createTransparentButton(iconPrevious, messages.getPrevious());
-        btnPrevious.addActionListener(new SearchPreviousActionListener<P>(this, datamodel));
+        btnPrevious.addActionListener(new SearchPreviousActionListener(this, datamodel));
         eastPanel.add(btnPrevious);
 
         JButton btnNext = swingUtil.createTransparentButton(iconNext, messages.getNext());
-        btnNext.addActionListener(new SearchNextActionListener<P>(this, datamodel));
+        btnNext.addActionListener(new SearchNextActionListener(this, datamodel));
         eastPanel.add(btnNext);
 
         JLabel separator = new JLabel("  ");
         eastPanel.add(separator);
         JButton btnClose = swingUtil.createTransparentButton(iconClose, messages.getCloseSearchBar());
-        btnClose.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        btnClose.addActionListener(new CloseActionListener(this));
         eastPanel.add(btnClose);
     }
 

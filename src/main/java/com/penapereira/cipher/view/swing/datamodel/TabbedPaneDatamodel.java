@@ -1,85 +1,68 @@
 package com.penapereira.cipher.view.swing.datamodel;
 
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
-import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.view.swing.listener.CipherDocumentListener;
+import com.penapereira.cipher.view.swing.search.SearchAdapter;
 
-public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollPane, JTextPane> {
+@Component
+public class TabbedPaneDatamodel extends AbstractSwingDatamodel {
 
     protected final String MODIFIED_PREFIX = "* \u2063";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Override
-    protected JTabbedPane isntanceWrappedDatamodel() {
+    protected JComponent buildMainComponent() {
         return new JTabbedPane(JTabbedPane.TOP);
     }
 
     @Override
+    public int getComponentCount() {
+        return ((JTabbedPane) getMainComponent()).getTabCount();
+    }
+
+    @Override
+    public JComponent getComponentAt(int index) {
+        return (JComponent) ((JTabbedPane) getMainComponent()).getComponentAt(index);
+    }
+
+    @Override
+    public JComponent getSelectedComponent() {
+        return (JComponent) ((JTabbedPane) getMainComponent()).getSelectedComponent();
+    }
+
+    @Override
     public synchronized void clearDatamodel() {
-        getDatamodel().removeAll();
+        ((JTabbedPane) getMainComponent()).removeAll();
     }
 
     @Override
-    public JTextPane buildDocumentContainer(Document doc) {
-        JTextPane textPane = new JTextPane();
-        StyledDocument styledDoc = textPane.getStyledDocument();
-        CipherDocumentListener documentListener = new CipherDocumentListener(textPane);
-        documentListener.setDatamodel(this);
-        textPane.setFont(getDocumentContainerFont());
-        try {
-            styledDoc.insertString(0, doc.getText(), styledDoc.getStyle("regular"));
-        } catch (BadLocationException e) {
-            log.error("Could not insert text from document '" + doc.getTitle()
-                    + "' into the user interface, skipping...");
-        }
-        styledDoc.addDocumentListener(documentListener);
-        return textPane;
+    protected void requestFocus(int decoratorIndex) {
+        ((JTabbedPane) getMainComponent()).setSelectedIndex(decoratorIndex);
     }
 
     @Override
-    public JScrollPane buildDecorator(JTextPane documentContainer) {
-        return new JScrollPane(documentContainer);
+    public synchronized Integer addToMainComponent(JComponent parent, Document doc) {
+        parent.setName(doc.getTitle());
+        ((JTabbedPane) getMainComponent()).add(doc.getTitle(), parent);
+
+        return getComponentIndex(parent);
     }
 
-    @Override
-    public synchronized Integer addToDatamodel(JScrollPane decorator, String name) {
-        decorator.setName(name);
-        getDatamodel().add(name, decorator);
-        return getScrollPaneIndex(decorator);
-    }
-
-    @Override
-    public synchronized String getTextFromDocumentContainer(JTextPane documentContainer) {
-        return documentContainer.getText();
-    }
-
-    @Override
-    public synchronized void setDocumentContainerText(JTextPane documentContainer, String text) {
-        documentContainer.setText(text);
-    }
-
-    @Override
-    protected void setDecoratorName(JScrollPane scrollPane, String name) {
-        int index = getScrollPaneIndex(scrollPane);
-        if (index != -1) {
-            log.trace("Updating tab name at index {} with '{}'", index, name);
-            getDatamodel().setTitleAt(index, name);
-        }
-    }
-
-    protected int getScrollPaneIndex(JScrollPane scrollPane) {
-        log.trace("Searching tab index of '{}'", scrollPane.getName());
-        for (int i = 0; i < getDatamodel().getTabCount(); i++) {
-            JScrollPane currentScrollPane = (JScrollPane) getDatamodel().getComponentAt(i);
-            if (scrollPane == currentScrollPane) {
+    protected int getComponentIndex(JComponent component) {
+        log.trace("Searching tab index of '{}'", component.getName());
+        for (int i = 0; i < getComponentCount(); i++) {
+            JComponent currentComponent = (JComponent) ((JTabbedPane) getMainComponent()).getComponentAt(i);
+            if (component == currentComponent) {
                 log.trace("Tab found at index {}", i);
                 return i;
             }
@@ -88,34 +71,60 @@ public class TabbedPaneDatamodel extends AbstractDatamodel<JTabbedPane, JScrollP
     }
 
     @Override
-    public void setModifiedNameFor(JTextPane textPane) {
-        JScrollPane scrollPane = findDecoratorForDocumentContainer(textPane);
-        int scrollPaneIndex = getScrollPaneIndex(scrollPane);
-        if (!isDecoratorMarkedAsModified(scrollPane)) {
-            String tabName = MODIFIED_PREFIX + scrollPane.getName();
+    protected Pair<JComponent, JComponent> buildDocumentContainerHierarchy(Document doc) {
+        JTextPane textPane = new JTextPane();
+        StyledDocument styledDoc = textPane.getStyledDocument();
+        CipherDocumentListener documentListener = new CipherDocumentListener(this, doc.getId());
+        textPane.setFont(getDocumentContainerFont());
+        try {
+            styledDoc.insertString(0, doc.getText(), styledDoc.getStyle("regular"));
+        } catch (BadLocationException e) {
+            log.error("Could not insert text from document '" + doc.getTitle()
+                    + "' into the user interface, skipping...");
+        }
+        styledDoc.addDocumentListener(documentListener);
+        JScrollPane scrollPane = new JScrollPane(textPane);
+        return Pair.of(scrollPane, textPane);
+    }
+
+    @Override
+    public void setModifiedNameFor(Long documentId) {
+        JComponent parentComponent = findParentOf(documentId);
+        int parentComponentIndex = getComponentIndex(parentComponent);
+        if (!isParentComponentModified(parentComponent)) {
+            String tabName = MODIFIED_PREFIX + parentComponent.getName();
             log.trace("Updating tab name to '{}'", tabName);
-            getDatamodel().setTitleAt(scrollPaneIndex, tabName);
-            markDecoratorAsModified(scrollPane);
+            ((JTabbedPane) getMainComponent()).setTitleAt(parentComponentIndex, tabName);
+            markParentComponentAsModified(parentComponent);
         }
     }
 
     @Override
-    protected void requestFocus(int decoratorIndex) {
-        getDatamodel().setSelectedIndex(decoratorIndex);
+    protected String getTextFromChildComponent(JComponent component) {
+        return ((JTextPane) component).getText();
     }
 
     @Override
-    protected void removeFromWrappedDatamodel(JScrollPane scrollPane) {
-        getDatamodel().remove(scrollPane);
+    protected void setDocumentContainerText(JComponent component, String text) {
+        ((JTextPane) component).setText(text);
     }
 
     @Override
-    public void addWrapedDatamodelChangeListener(ChangeListener listener) {
-        getDatamodel().addChangeListener(listener);
+    protected void setParentComponentName(JComponent component, String name) {
+        int index = getComponentIndex(component);
+        if (index != -1) {
+            log.trace("Updating tab name at index {} with '{}'", index, name);
+            ((JTabbedPane) getMainComponent()).setTitleAt(index, name);
+        }
     }
 
     @Override
-    public JScrollPane getSelectedDecorator() {
-        return (JScrollPane) getDatamodel().getSelectedComponent();
+    protected void removeParentComponent(JComponent component) {
+        ((JTabbedPane) getMainComponent()).remove(component);
+    }
+
+    @Override
+    public void addSearchAdapter(SearchAdapter searchAdapter) {
+        ((JTabbedPane) getMainComponent()).addChangeListener(searchAdapter);
     }
 }

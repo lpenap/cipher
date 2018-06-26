@@ -1,18 +1,15 @@
 package com.penapereira.cipher.view.swing.search;
 
 import java.awt.event.ActionEvent;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 
-public class SearchNextActionListener<P> extends AbstractSearchActionListener<P> {
+public class SearchNextActionListener extends AbstractSearchActionListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public SearchNextActionListener(SearchPanel<P> searchPanel,
-            DatamodelInterface<P, JScrollPane, JTextPane> datamodel) {
+    public SearchNextActionListener(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
         super(searchPanel, datamodel);
     }
 

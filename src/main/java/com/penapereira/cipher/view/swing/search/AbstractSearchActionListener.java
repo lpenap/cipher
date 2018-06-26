@@ -1,18 +1,16 @@
 package com.penapereira.cipher.view.swing.search;
 
 import java.awt.event.ActionListener;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
+import lombok.Data;
 
-public abstract class AbstractSearchActionListener<P> implements ActionListener {
+@Data
+public abstract class AbstractSearchActionListener implements ActionListener {
 
-    protected SearchPanel<P> searchPanel;
-    protected DatamodelInterface<P, JScrollPane, JTextPane> datamodel;
+    protected SearchPanel searchPanel;
+    protected SwingDatamodelInterface datamodel;
 
-    public AbstractSearchActionListener(SearchPanel<P> searchPanel,
-            DatamodelInterface<P, JScrollPane, JTextPane> datamodel) {
-
+    public AbstractSearchActionListener(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
         this.searchPanel = searchPanel;
         this.datamodel = datamodel;
     }

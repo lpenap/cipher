@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +20,20 @@ import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.MainUserInterface;
-import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 import com.penapereira.cipher.view.swing.listener.WindowExitListener;
 import com.penapereira.cipher.view.swing.search.SearchPanel;
 import com.penapereira.cipher.view.swing.search.SearchPanelDispatcher;
 
-public abstract class AbstractSwingInterface<P> extends JFrame implements MainUserInterface, Observer {
+public abstract class AbstractSwingInterface extends JFrame implements MainUserInterface, Observer {
 
     private static final long serialVersionUID = 1L;
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
+    private final Logger log = LoggerFactory.getLogger(AbstractSwingInterface.class);
     protected DocumentController documentController;
     protected Messages messages;
     protected Configuration config;
-
-    protected DatamodelInterface<P, JScrollPane, JTextPane> datamodel;
-    private SearchPanel<P> searchPanel;
+    protected SwingDatamodelInterface datamodel;
+    protected SearchPanel searchPanel;
 
     @Autowired
     public AbstractSwingInterface(ApplicationContext context) {
@@ -48,8 +42,8 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         documentController = context.getBean(DocumentController.class);
         messages = context.getBean(Messages.class);
         config = context.getBean(Configuration.class);
+        datamodel = buildDatamodel(context);
 
-        datamodel = createDatamodel();
         setTitle(messages.getWindowTitle());
         addSearchPanel();
         setSize();
@@ -57,19 +51,17 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         build(context);
     }
 
-    protected abstract void build(ApplicationContext context);
-
-    protected abstract DatamodelInterface<P, JScrollPane, JTextPane> createDatamodel();
-
     protected abstract void displayAllDocuments();
 
-    protected abstract P getDocumentsPane();
+    protected abstract SwingDatamodelInterface buildDatamodel(ApplicationContext context);
+
+    protected abstract void build(ApplicationContext context);
+
+    protected abstract SearchPanel buildSearchPanel();
 
     protected void addSearchPanel() {
-        searchPanel = new SearchPanel<P>(messages, datamodel);
+        searchPanel = buildSearchPanel();
         getContentPane().add(searchPanel, BorderLayout.NORTH);
-        KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                .addKeyEventDispatcher(new SearchPanelDispatcher<P>(searchPanel));
     }
 
     @Override
@@ -98,6 +90,8 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
     @Override
     public void launch() {
         log.debug("Launching user interface...");
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                .addKeyEventDispatcher(new SearchPanelDispatcher(searchPanel));
         this.setVisible(true);
     }
 
@@ -128,7 +122,7 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
 
     private void updateDocument(Document doc) {
         log.debug("*UPDATE* document '{}' ", doc.getTitle());
-        datamodel.updateDatamodelForDocument(doc);
+        datamodel.updateDocument(doc);
     }
 
     private void deleteDocument(Document doc) {
@@ -152,18 +146,14 @@ public abstract class AbstractSwingInterface<P> extends JFrame implements MainUs
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);
         setSize(width, (int) screenSize.getHeight() - 100);
-        //setSize(500, 500);
+        // setSize(500, 500);
     }
 
-    public DatamodelInterface<P, JScrollPane, JTextPane> getDatamodel() {
+    public SwingDatamodelInterface getDatamodel() {
         return datamodel;
     }
 
     protected DocumentController getDocumentController() {
         return documentController;
-    }
-
-    public JPanel getSearchPanel() {
-        return searchPanel;
     }
 }

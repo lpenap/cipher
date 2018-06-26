@@ -1,61 +1,62 @@
 package com.penapereira.cipher.view.swing;
 
 import java.awt.BorderLayout;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import com.penapereira.cipher.view.swing.datamodel.DatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 import com.penapereira.cipher.view.swing.datamodel.TabbedPaneDatamodel;
+import com.penapereira.cipher.view.swing.search.SearchPanel;
 
 @Component
-public class TabbedPaneUserInterface extends AbstractSwingInterface<JTabbedPane> {
+public class TabbedPaneUserInterface extends AbstractSwingInterface {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LoggerFactory.getLogger(TabbedPaneUserInterface.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final String uiName = "TabbedPane Swing UI";
 
-    protected MainMenuBuilder menuBuilder;
-    protected JTabbedPane documentsTabbedPane;
+    JTabbedPane tabbedPane;
 
+    @Autowired
     public TabbedPaneUserInterface(ApplicationContext context) {
         super(context);
     }
 
     @Override
-    protected void build(ApplicationContext context) {
-        menuBuilder = context.getBean(MainMenuBuilder.class);
-        menuBuilder.setMainUserInterface(this);
-        setJMenuBar(menuBuilder.buildJMenuBar());
-        documentsTabbedPane = getDatamodel().getWrappedDatamodel();
-        getContentPane().add(documentsTabbedPane, BorderLayout.CENTER);
+    protected SwingDatamodelInterface buildDatamodel(ApplicationContext context) {
+        return context.getBean(TabbedPaneDatamodel.class);
     }
 
     @Override
-    protected DatamodelInterface<JTabbedPane, JScrollPane, JTextPane> createDatamodel() {
-        return new TabbedPaneDatamodel();
-    }
-
-    public JTabbedPane getDocumentsPane() {
-        return documentsTabbedPane;
+    protected void build(ApplicationContext context) {
+        MainMenuBuilder menuBuilder = context.getBean(MainMenuBuilder.class);
+        menuBuilder.setParentFrame(this);
+        setJMenuBar(menuBuilder.buildJMenuBar());
+        tabbedPane = (JTabbedPane) getDatamodel().getMainComponent();
+        getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
 
     @Override
     protected void displayAllDocuments() {
         log.debug("Refreshing all documents");
         getDatamodel().setDocuments(getDocumentController().getAll());
-        documentsTabbedPane = getDatamodel().getWrappedDatamodel();
-        if (documentsTabbedPane.getTabCount() > 0) {
-            documentsTabbedPane.setSelectedIndex(0);
+        tabbedPane = (JTabbedPane) getDatamodel().getMainComponent();
+        if (tabbedPane.getTabCount() > 0) {
+            tabbedPane.setSelectedIndex(0);
         }
     }
 
     @Override
     public String getUserInterfaceName() {
         return uiName;
+    }
+
+    @Override
+    protected SearchPanel buildSearchPanel() {
+        return new SearchPanel(messages, datamodel);
     }
 
 }
