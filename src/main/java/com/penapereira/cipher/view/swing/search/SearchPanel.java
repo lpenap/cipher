@@ -2,8 +2,6 @@ package com.penapereira.cipher.view.swing.search;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -11,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.shared.SwingUtil;
+import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
@@ -22,6 +21,9 @@ import lombok.EqualsAndHashCode;
 public class SearchPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
+    private final int MAX_SEARCH_QUERY_LENGTH = 100;
+    private final int SEARCH_INPUT_TEXT_COLUMNS = 20;
+
     private JTextField searchTextField;
     private Messages messages;
     private JLabel labelSearchFound;
@@ -34,26 +36,23 @@ public class SearchPanel extends JPanel {
         this.messages = messages;
         this.datamodel = datamodel;
         this.searchMonitor = new SearchMonitor();
-        
+
         setLayout(new BorderLayout(0, 0));
         JPanel eastPanel = new JPanel();
         add(eastPanel, BorderLayout.EAST);
 
-        searchTextField = new JTextField();
-        searchTextField.setColumns(10);
-
-        eastPanel.add(searchTextField);
-
+        addSearchTextField(eastPanel);
         addSearchResultLabels(eastPanel);
         addSearchControlButtons(eastPanel);
-
-        SearchAdapter searchAdapter = new SearchAdapter(this, datamodel);
-        searchTextField.addKeyListener(searchAdapter);
-        searchTextField.addFocusListener(searchAdapter);
-        
-        datamodel.addSearchAdapter(searchAdapter);
-
+        addSearchAdapter();
         setVisible(false);
+    }
+
+    protected void addSearchTextField(JPanel eastPanel) {
+        searchTextField = new JTextField();
+        searchTextField.setColumns(SEARCH_INPUT_TEXT_COLUMNS);
+        searchTextField.setDocument(new JTextFieldLimit(MAX_SEARCH_QUERY_LENGTH));
+        eastPanel.add(searchTextField);
     }
 
     protected void addSearchResultLabels(JPanel eastPanel) {
@@ -63,7 +62,6 @@ public class SearchPanel extends JPanel {
 
         JLabel labelSlash = new JLabel("/");
         labelSlash.setForeground(Color.gray);
-        labelSlash.setIconTextGap(100);
         eastPanel.add(labelSlash);
 
         labelSearchTotal = new JLabel("0");
@@ -93,9 +91,17 @@ public class SearchPanel extends JPanel {
 
         JLabel separator = new JLabel("  ");
         eastPanel.add(separator);
+
         JButton btnClose = swingUtil.createTransparentButton(iconClose, messages.getCloseSearchBar());
         btnClose.addActionListener(new CloseActionListener(this));
         eastPanel.add(btnClose);
+    }
+
+    protected void addSearchAdapter() {
+        SearchAdapter searchAdapter = new SearchAdapter(this, datamodel);
+        searchTextField.addKeyListener(searchAdapter);
+        searchTextField.addFocusListener(searchAdapter);
+        datamodel.addSearchAdapter(searchAdapter);
     }
 
     public JLabel getLabelSearchFound() {
