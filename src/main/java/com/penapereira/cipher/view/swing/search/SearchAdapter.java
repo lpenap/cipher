@@ -2,9 +2,7 @@ package com.penapereira.cipher.view.swing.search;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -51,7 +49,9 @@ public class SearchAdapter implements KeyListener, ChangeListener {
     }
 
     protected void search() {
-        search(false);
+        if (!searchTextField.getText().equals("")) {
+            search(false);
+        }
     }
 
     protected void search(boolean force) {
@@ -69,18 +69,10 @@ public class SearchAdapter implements KeyListener, ChangeListener {
         String query = searchTextField.getText().toLowerCase();
         log.trace("Searching for {}", query);
         String text = datamodel.getTextFromComponent(datamodel.getSelectedComponent());
-        BufferedReader reader = new BufferedReader(new StringReader(text));
-        String line = reader.readLine();
-        int matches = 0;
-        while (line != null) {
-            line = line.toLowerCase();
-            if (line.contains(query)) {
-                matches++;
-            }
-            line = reader.readLine();
-        }
+        int matches = searchPanel.getSearchMonitor().search(text, query);
         log.trace("{} matches found", matches);
-
         previousSearch = query;
+        searchPanel.getLabelSearchFound().setText("0");
+        searchPanel.getLabelSearchTotal().setText("" + matches);
     }
 }

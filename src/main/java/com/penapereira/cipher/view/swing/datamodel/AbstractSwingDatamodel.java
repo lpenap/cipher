@@ -164,4 +164,9 @@ public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface 
     public Long getDocumentIdFor(JComponent component) {
         return parentToDocumentIdMap.get(component);
     }
+
+    @Override
+    public JComponent getSelectedChildComponent() {
+        return parentToChildComponentMap.get(getSelectedComponent());
+    }
 }

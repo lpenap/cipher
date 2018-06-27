@@ -49,7 +49,6 @@ public class TabbedPaneDatamodel extends AbstractTextPaneSwingDatamodel {
     public synchronized Integer addToMainComponent(JComponent parent, Document doc) {
         parent.setName(doc.getTitle());
         ((JTabbedPane) getMainComponent()).add(doc.getTitle(), parent);
-
         return getComponentIndex(parent);
     }
 
@@ -75,11 +74,6 @@ public class TabbedPaneDatamodel extends AbstractTextPaneSwingDatamodel {
             ((JTabbedPane) getMainComponent()).setTitleAt(parentComponentIndex, tabName);
             markParentComponentAsModified(parentComponent);
         }
-    }
-
-    @Override
-    protected String getTextFromChildComponent(JComponent component) {
-        return ((JTextPane) component).getText();
     }
 
     @Override

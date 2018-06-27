@@ -38,4 +38,6 @@ public interface SwingDatamodelInterface {
     void setModifiedNameFor(Long documentId);
 
     void addSearchAdapter(SearchAdapter searchAdapter);
+
+    JComponent getSelectedChildComponent();
 }

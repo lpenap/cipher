@@ -25,11 +25,14 @@ public class SearchPanel extends JPanel {
     private JLabel labelSearchFound;
     private JLabel labelSearchTotal;
     private SwingDatamodelInterface datamodel;
+    private SearchMonitor searchMonitor;
 
     public SearchPanel(Messages messages, SwingDatamodelInterface datamodel) {
         super();
         this.messages = messages;
         this.datamodel = datamodel;
+        this.searchMonitor = new SearchMonitor();
+        
         setLayout(new BorderLayout(0, 0));
         JPanel eastPanel = new JPanel();
         add(eastPanel, BorderLayout.EAST);

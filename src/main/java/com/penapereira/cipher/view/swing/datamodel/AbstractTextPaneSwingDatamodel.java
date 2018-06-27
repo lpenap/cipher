@@ -15,6 +15,7 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
 
     private final Logger log = LoggerFactory.getLogger(AbstractTextPaneSwingDatamodel.class);
 
+    @Override
     protected Pair<JComponent, JComponent> buildDocumentContainerHierarchy(Document doc) {
         JTextPane textPane = new JTextPane();
         StyledDocument styledDoc = textPane.getStyledDocument();
@@ -31,4 +32,8 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
         return Pair.of(scrollPane, textPane);
     }
 
+    @Override
+    protected String getTextFromChildComponent(JComponent component) {
+        return ((JTextPane) component).getText();
+    }
 }
