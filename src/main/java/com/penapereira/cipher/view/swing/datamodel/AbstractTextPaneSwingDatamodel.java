@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import com.penapereira.cipher.model.document.Document;
+import com.penapereira.cipher.shared.RXTextUtilities;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.swing.listener.CipherDocumentListener;
 
@@ -50,10 +51,8 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
         StyledDocument styledDoc = textPane.getStyledDocument();
         styledDoc.setCharacterAttributes(indexes.getFirst(), indexes.getSecond() - indexes.getFirst(),
                 new SwingUtil().getAltAttributeSet(), false);
-        // textPane.setCaretPosition(indexes.getFirst());
-        // textPane.setSelectionColor(Color.YELLOW);
-        // textPane.setSelectionStart(indexes.getFirst());
-        // textPane.setSelectionEnd(indexes.getSecond());
+        textPane.setCaretPosition(indexes.getFirst());
+        RXTextUtilities.centerLineInScrollPane(textPane);
     }
 
     @Override
