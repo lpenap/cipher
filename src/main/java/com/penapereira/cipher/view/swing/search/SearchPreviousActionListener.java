@@ -17,5 +17,4 @@ public class SearchPreviousActionListener extends AbstractSearchActionListener {
     public void actionPerformed(ActionEvent e) {
         log.debug("Search previous");
     }
-
 }

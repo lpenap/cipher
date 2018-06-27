@@ -16,7 +16,5 @@ public class SearchNextActionListener extends AbstractSearchActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         log.debug("Search next");
-        
     }
-
 }
