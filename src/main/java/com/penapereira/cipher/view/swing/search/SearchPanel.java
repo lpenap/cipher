@@ -2,6 +2,8 @@ package com.penapereira.cipher.view.swing.search;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -47,6 +49,8 @@ public class SearchPanel extends JPanel {
 
         SearchAdapter searchAdapter = new SearchAdapter(this, datamodel);
         searchTextField.addKeyListener(searchAdapter);
+        searchTextField.addFocusListener(searchAdapter);
+        
         datamodel.addSearchAdapter(searchAdapter);
 
         setVisible(false);
