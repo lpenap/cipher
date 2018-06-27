@@ -30,12 +30,11 @@ public class SearchPanelDispatcher implements KeyEventDispatcher {
     }
 
     protected void hideSearchPanel() {
-        searchPanel.setVisible(false);
+        searchPanel.close();
     }
 
     protected void showSearchPanel() {
         searchPanel.setVisible(true);
         searchPanel.getSearchTextField().requestFocusInWindow();
     }
-
 }

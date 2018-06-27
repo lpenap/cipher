@@ -58,9 +58,12 @@ public class SearchMonitor {
         reader = new BufferedReader(new StringReader(text));
         try {
             String line = reader.readLine();
+            int currentIndex = 0;
             while (line != null) {
+                log.trace("Searching line, current index {}", currentIndex);
                 line = line.toLowerCase();
-                processLine(line, query);
+                processLine(currentIndex, line, query);
+                currentIndex += line.length() + 1;
                 line = reader.readLine();
             }
         } catch (IOException e) {
@@ -71,12 +74,13 @@ public class SearchMonitor {
         return matches;
     }
 
-    protected void processLine(String line, String query) {
+    protected void processLine(int globalIndex, String line, String query) {
         int indexOf = line.indexOf(query);
         while (indexOf != -1) {
             matches++;
             int indexEnd = indexOf + query.length();
-            searchResults.add(Pair.of(indexOf, indexEnd));
+            log.trace("Match found. Total matches {}. Current line index {}", matches, indexOf);
+            searchResults.add(Pair.of(globalIndex + indexOf, globalIndex + indexEnd));
             indexOf = line.indexOf(query, indexEnd);
         }
     }

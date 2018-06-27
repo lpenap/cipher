@@ -43,4 +43,6 @@ public interface SwingDatamodelInterface {
     JComponent getSelectedChildComponent();
 
     void selectText(Pair<Integer, Integer> indexes);
+
+    void clearTextAttributes();
 }

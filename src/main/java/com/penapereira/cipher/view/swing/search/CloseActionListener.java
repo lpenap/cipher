@@ -13,7 +13,6 @@ public class CloseActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        searchPanel.setVisible(false);
+        searchPanel.close();
     }
-
 }

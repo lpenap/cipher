@@ -111,4 +111,9 @@ public class SearchPanel extends JPanel {
     public JLabel getLabelSearchTotal() {
         return labelSearchTotal;
     }
+
+    public void close() {
+        datamodel.clearTextAttributes();
+        setVisible(false);
+    }
 }

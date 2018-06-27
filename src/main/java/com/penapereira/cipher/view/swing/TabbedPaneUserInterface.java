@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
-import com.penapereira.cipher.view.swing.datamodel.TabbedPaneDatamodel;
+import com.penapereira.cipher.view.swing.datamodel.impl.TabbedPaneDatamodel;
 import com.penapereira.cipher.view.swing.search.SearchPanel;
 
 @Component

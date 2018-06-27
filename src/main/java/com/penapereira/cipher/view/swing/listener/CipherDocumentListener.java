@@ -1,12 +1,14 @@
 package com.penapereira.cipher.view.swing.listener;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 
-public class CipherDocumentListener implements DocumentListener {
+public class CipherDocumentListener implements DocumentListener, FocusListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private Long documentId;
@@ -29,14 +31,16 @@ public class CipherDocumentListener implements DocumentListener {
         setModified();
     }
 
-    @Override
-    public void changedUpdate(DocumentEvent e) {
-        log.trace("changedUpdate");
-        setModified();
-    }
-
     protected void setModified() {
         datamodel.setModifiedNameFor(documentId);
     }
 
+    @Override
+    public void changedUpdate(DocumentEvent e) {}
+
+    @Override
+    public void focusGained(FocusEvent e) {}
+
+    @Override
+    public void focusLost(FocusEvent e) {}
 }

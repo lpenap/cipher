@@ -1,12 +1,12 @@
-package com.penapereira.cipher.view.swing.datamodel;
+package com.penapereira.cipher.view.swing.datamodel.impl;
 
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import com.penapereira.cipher.model.document.Document;
+import com.penapereira.cipher.view.swing.datamodel.AbstractTextPaneSwingDatamodel;
 import com.penapereira.cipher.view.swing.search.SearchAdapter;
 
 @Component
@@ -74,11 +74,6 @@ public class TabbedPaneDatamodel extends AbstractTextPaneSwingDatamodel {
             ((JTabbedPane) getMainComponent()).setTitleAt(parentComponentIndex, tabName);
             markParentComponentAsModified(parentComponent);
         }
-    }
-
-    @Override
-    protected void setDocumentContainerText(JComponent component, String text) {
-        ((JTextPane) component).setText(text);
     }
 
     @Override

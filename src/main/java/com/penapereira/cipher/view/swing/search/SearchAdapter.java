@@ -10,6 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import com.penapereira.cipher.shared.StringUtil;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 
@@ -48,32 +49,28 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     @Override
     public void stateChanged(ChangeEvent e) {
         if (searchPanel.isVisible() && !searchTextField.getText().equals("")) {
-            boolean isSearchForced = true;
-            search(isSearchForced);
+            search();
         }
     }
 
     @Override
     public void focusGained(FocusEvent e) {
         if (!searchTextField.getText().equals("")) {
-            boolean isSearchForced = true;
-            search(isSearchForced);
+            search();
             searchTextField.setSelectionStart(0);
             searchTextField.setSelectionEnd(searchTextField.getText().length());
         }
     }
 
     @Override
-    public void focusLost(FocusEvent e) {}
-
-    protected void search() {
-        if (!searchTextField.getText().equals("")) {
-            search(false);
-        }
+    public void focusLost(FocusEvent e) {
+        datamodel.clearTextAttributes();
     }
 
-    protected void search(boolean force) {
-        if (force || !searchTextField.getText().equals(previousSearch)) {
+    protected void search() {
+        if (searchTextField.getText().equals("")) {
+            clearSearch();
+        } else {
             try {
                 performSearch();
             } catch (IOException e) {
@@ -95,10 +92,20 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
         selectFirst();
     }
 
+    protected void clearSearch() {
+        datamodel.clearTextAttributes();
+        searchPanel.getSearchMonitor().clearSearch();
+        searchPanel.getLabelSearchFound().setText("  0");
+        searchPanel.getLabelSearchTotal().setText("  0");
+    }
+
     protected void selectFirst() {
+        datamodel.clearTextAttributes();
         SearchMonitor searchMonitor = searchPanel.getSearchMonitor();
         if (searchMonitor.getMatches() != 0) {
-            datamodel.selectText(searchMonitor.getCurrent());
+            Pair<Integer, Integer> indexes = searchMonitor.getCurrent();
+            log.trace("Selecting first search result " + indexes.toString());
+            datamodel.selectText(indexes);
         }
     }
 }
