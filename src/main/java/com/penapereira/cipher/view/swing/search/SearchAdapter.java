@@ -5,7 +5,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.slf4j.Logger;
@@ -17,14 +16,12 @@ import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 public class SearchAdapter implements KeyListener, ChangeListener, FocusListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    protected JTextField searchTextField;
     protected String previousSearch;
     protected SwingDatamodelInterface datamodel;
     private SearchPanel searchPanel;
     private StringUtil util;
 
     public SearchAdapter(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
-        this.searchTextField = searchPanel.getSearchTextField();
         this.searchPanel = searchPanel;
         this.previousSearch = "";
         this.datamodel = datamodel;
@@ -48,64 +45,69 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        if (searchPanel.isVisible() && !searchTextField.getText().equals("")) {
+        if (searchPanel.isVisible() && !searchPanel.getSearchText().equals("")) {
             search();
         }
     }
 
     @Override
     public void focusGained(FocusEvent e) {
-        if (!searchTextField.getText().equals("")) {
+        if (!searchPanel.getSearchText().equals("")) {
             search();
-            searchTextField.setSelectionStart(0);
-            searchTextField.setSelectionEnd(searchTextField.getText().length());
+            searchPanel.selectSearchText();
         }
     }
 
     @Override
     public void focusLost(FocusEvent e) {
-        datamodel.clearTextAttributes();
+        datamodel.resetTextAttributesOfSelectedComponent();
     }
 
     protected void search() {
-        if (searchTextField.getText().equals("")) {
+        if (searchPanel.getSearchText().equals("")) {
             clearSearch();
         } else {
             try {
                 performSearch();
             } catch (IOException e) {
                 log.error("Could not read text from document, clearing search query");
-                searchTextField.setText("");
+                searchPanel.clearSearchText();
             }
         }
     }
 
     protected void performSearch() throws IOException {
-        String query = searchTextField.getText().toLowerCase();
+        String query = searchPanel.getSearchText().toLowerCase();
         log.trace("Searching for {}", query);
         String text = datamodel.getTextFromComponent(datamodel.getSelectedComponent());
         int matches = searchPanel.getSearchMonitor().search(text, query);
         log.trace("{} matches found", matches);
         previousSearch = query;
-        searchPanel.getLabelSearchFound().setText("  0");
-        searchPanel.getLabelSearchTotal().setText(util.padLeft("" + matches, 3, ' '));
+        searchPanel.setLabelSearchTotal(util.padLeft("" + matches, 3, ' '));
         selectFirst();
     }
 
     protected void clearSearch() {
-        datamodel.clearTextAttributes();
+        datamodel.resetTextAttributesOfSelectedComponent();
         searchPanel.getSearchMonitor().clearSearch();
-        searchPanel.getLabelSearchFound().setText("  0");
-        searchPanel.getLabelSearchTotal().setText("  0");
+        resetLabels();
+    }
+
+    protected void resetLabels() {
+        searchPanel.setLabelSearchFound("  0");
+        searchPanel.setLabelSearchTotal("  0");
     }
 
     protected void selectFirst() {
-        datamodel.clearTextAttributes();
+        datamodel.resetTextAttributesOfSelectedComponent();
         SearchMonitor searchMonitor = searchPanel.getSearchMonitor();
         if (searchMonitor.getMatches() != 0) {
+            searchPanel.setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
             Pair<Integer, Integer> indexes = searchMonitor.getCurrent();
             log.trace("Selecting first search result " + indexes.toString());
-            datamodel.selectText(indexes);
+            datamodel.markText(indexes);
+        } else {
+            resetLabels();
         }
     }
 }

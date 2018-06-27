@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 
-public class SearchMonitor {
+public class SearchMonitor extends Observable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     protected BufferedReader reader;
@@ -25,15 +26,19 @@ public class SearchMonitor {
         searchResults = new ArrayList<>();
         currentIndex = 0;
         matches = 0;
+        requestNotifyObservers();
     }
 
     public synchronized Pair<Integer, Integer> getNext() {
         currentIndex = ++currentIndex % searchResults.size();
+        requestNotifyObservers();
         return searchResults.get(currentIndex);
     }
 
     public synchronized Pair<Integer, Integer> getPrevious() {
-        currentIndex = --currentIndex % searchResults.size();
+        currentIndex = --currentIndex < 0 ? matches + currentIndex : currentIndex;
+        requestNotifyObservers();
+        log.debug("Returning previous search with index {}", currentIndex);
         return searchResults.get(currentIndex);
     }
 
@@ -71,6 +76,7 @@ public class SearchMonitor {
                     + "This does not means the document file is damaged, "
                     + "but that search operation could read the text from memory.");
         }
+        requestNotifyObservers();
         return matches;
     }
 
@@ -83,5 +89,10 @@ public class SearchMonitor {
             searchResults.add(Pair.of(globalIndex + indexOf, globalIndex + indexEnd));
             indexOf = line.indexOf(query, indexEnd);
         }
+    }
+
+    protected void requestNotifyObservers() {
+        setChanged();
+        notifyObservers();
     }
 }

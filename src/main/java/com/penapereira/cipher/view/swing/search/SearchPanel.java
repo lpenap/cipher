@@ -13,11 +13,7 @@ import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
 public class SearchPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -104,16 +100,37 @@ public class SearchPanel extends JPanel {
         datamodel.addSearchAdapter(searchAdapter);
     }
 
-    public JLabel getLabelSearchFound() {
-        return labelSearchFound;
-    }
-
-    public JLabel getLabelSearchTotal() {
-        return labelSearchTotal;
+    public SearchMonitor getSearchMonitor() {
+        return searchMonitor;
     }
 
     public void close() {
-        datamodel.clearTextAttributes();
+        datamodel.resetTextAttributesOfSelectedComponent();
         setVisible(false);
+    }
+
+    public synchronized void setLabelSearchFound(String text) {
+        labelSearchFound.setText(text);
+    }
+
+    public synchronized void setLabelSearchTotal(String text) {
+        labelSearchTotal.setText(text);
+    }
+
+    public synchronized void requestFocus() {
+        searchTextField.requestFocusInWindow();
+    }
+
+    public synchronized String getSearchText() {
+        return searchTextField.getText();
+    }
+
+    public synchronized void selectSearchText() {
+        searchTextField.setSelectionStart(0);
+        searchTextField.setSelectionEnd(searchTextField.getText().length());
+    }
+
+    public void clearSearchText() {
+        searchTextField.setText("");
     }
 }

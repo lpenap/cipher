@@ -42,7 +42,9 @@ public interface SwingDatamodelInterface {
 
     JComponent getSelectedChildComponent();
 
-    void selectText(Pair<Integer, Integer> indexes);
+    void markText(Pair<Integer, Integer> indexes);
 
-    void clearTextAttributes();
+    void clearMarkedText(Pair<Integer, Integer> indexes);
+
+    void resetTextAttributesOfSelectedComponent();
 }
