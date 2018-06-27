@@ -1,18 +1,17 @@
 package com.penapereira.cipher.view.swing.search;
 
 import java.awt.event.ActionEvent;
-import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 
 public class SearchNextActionListener extends AbstractSearchActionListener {
 
-    public SearchNextActionListener(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
-        super(searchPanel, datamodel);
+    public SearchNextActionListener(SearchPanel searchPanel) {
+        super(searchPanel);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        datamodel.clearMarkedText(searchMonitor.getCurrent());
-        datamodel.markText(searchMonitor.getNext());
-        renderCurrentIndex();
+        if (getSearchPanel().getSearchMonitor().getMatches() != 0) {
+            getSearchPanel().renderNext();
+        }
     }
 }

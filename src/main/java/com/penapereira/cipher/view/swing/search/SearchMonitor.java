@@ -38,7 +38,6 @@ public class SearchMonitor extends Observable {
     public synchronized Pair<Integer, Integer> getPrevious() {
         currentIndex = --currentIndex < 0 ? matches + currentIndex : currentIndex;
         requestNotifyObservers();
-        log.debug("Returning previous search with index {}", currentIndex);
         return searchResults.get(currentIndex);
     }
 

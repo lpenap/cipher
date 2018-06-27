@@ -102,7 +102,7 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
         datamodel.resetTextAttributesOfSelectedComponent();
         SearchMonitor searchMonitor = searchPanel.getSearchMonitor();
         if (searchMonitor.getMatches() != 0) {
-            searchPanel.setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
+            searchPanel.renderCurrentIndex();
             Pair<Integer, Integer> indexes = searchMonitor.getCurrent();
             log.trace("Selecting first search result " + indexes.toString());
             datamodel.markText(indexes);

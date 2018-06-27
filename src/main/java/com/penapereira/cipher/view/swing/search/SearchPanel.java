@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import com.penapereira.cipher.conf.Messages;
+import com.penapereira.cipher.shared.StringUtil;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
@@ -26,12 +27,14 @@ public class SearchPanel extends JPanel {
     private JLabel labelSearchTotal;
     private SwingDatamodelInterface datamodel;
     private SearchMonitor searchMonitor;
+    private StringUtil util;
 
     public SearchPanel(Messages messages, SwingDatamodelInterface datamodel) {
         super();
         this.messages = messages;
         this.datamodel = datamodel;
         this.searchMonitor = new SearchMonitor();
+        this.util = new StringUtil();
 
         setLayout(new BorderLayout(0, 0));
         JPanel eastPanel = new JPanel();
@@ -78,11 +81,11 @@ public class SearchPanel extends JPanel {
         Icon iconClose = IconFontSwing.buildIcon(FontAwesome.TIMES, 16, new Color(80, 80, 80));
 
         JButton btnPrevious = swingUtil.createTransparentButton(iconPrevious, messages.getPrevious());
-        btnPrevious.addActionListener(new SearchPreviousActionListener(this, datamodel));
+        btnPrevious.addActionListener(new SearchPreviousActionListener(this));
         eastPanel.add(btnPrevious);
 
         JButton btnNext = swingUtil.createTransparentButton(iconNext, messages.getNext());
-        btnNext.addActionListener(new SearchNextActionListener(this, datamodel));
+        btnNext.addActionListener(new SearchNextActionListener(this));
         eastPanel.add(btnNext);
 
         JLabel separator = new JLabel("  ");
@@ -130,7 +133,23 @@ public class SearchPanel extends JPanel {
         searchTextField.setSelectionEnd(searchTextField.getText().length());
     }
 
-    public void clearSearchText() {
+    public synchronized void clearSearchText() {
         searchTextField.setText("");
+    }
+
+    protected synchronized void renderCurrentIndex() {
+        setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
+    }
+
+    public synchronized void renderNext() {
+        datamodel.clearMarkedText(searchMonitor.getCurrent());
+        datamodel.markText(searchMonitor.getNext());
+        renderCurrentIndex();
+    }
+
+    public synchronized void renderPrevious() {
+        datamodel.clearMarkedText(searchMonitor.getCurrent());
+        datamodel.markText(searchMonitor.getPrevious());
+        renderCurrentIndex();
     }
 }
