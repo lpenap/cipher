@@ -113,7 +113,8 @@ public class AddDocumentActionListener extends AbstractActionListener {
     }
 
     /**
-     * This will show the dialog wrapped by this class when the action is triggered in the related component.
+     * This will show the dialog wrapped by this class when the 'Add Document' action is triggered in the parent
+     * component.
      */
     @Override
     public void actionPerformed(ActionEvent e) {
