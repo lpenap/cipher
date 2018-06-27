@@ -3,6 +3,7 @@ package com.penapereira.cipher.view.swing.datamodel;
 import java.awt.Font;
 import java.util.List;
 import javax.swing.JComponent;
+import org.springframework.data.util.Pair;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.view.swing.search.SearchAdapter;
 
@@ -40,4 +41,6 @@ public interface SwingDatamodelInterface {
     void addSearchAdapter(SearchAdapter searchAdapter);
 
     JComponent getSelectedChildComponent();
+
+    void selectText(Pair<Integer, Integer> indexes);
 }

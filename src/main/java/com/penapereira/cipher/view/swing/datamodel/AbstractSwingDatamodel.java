@@ -33,17 +33,13 @@ public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface 
 
     protected String documentFont;
     protected int documentFontSize;
-    // protected M datamodel;
-
     protected Font documentContainerFont;
 
     protected AbstractSwingDatamodel() {
         documents = new ArrayList<>();
-        // initArrays();
+        initArrays();
         documentFont = DEFAULT_FONT;
         documentFontSize = DEFAULT_FONT_SIZE;
-        // datamodel = isntanceWrappedDatamodel();
-
         mainComponent = buildMainComponent();
 
     }

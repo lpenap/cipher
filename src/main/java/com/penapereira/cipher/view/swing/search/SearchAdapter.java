@@ -92,5 +92,13 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
         previousSearch = query;
         searchPanel.getLabelSearchFound().setText("  0");
         searchPanel.getLabelSearchTotal().setText(util.padLeft("" + matches, 3, ' '));
+        selectFirst();
+    }
+
+    protected void selectFirst() {
+        SearchMonitor searchMonitor = searchPanel.getSearchMonitor();
+        if (searchMonitor.getMatches() != 0) {
+            datamodel.selectText(searchMonitor.getCurrent());
+        }
     }
 }

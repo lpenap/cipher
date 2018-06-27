@@ -1,5 +1,6 @@
 package com.penapereira.cipher.view.swing.datamodel;
 
+import java.awt.Color;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -35,5 +36,14 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
     @Override
     protected String getTextFromChildComponent(JComponent component) {
         return ((JTextPane) component).getText();
+    }
+
+    @Override
+    public void selectText(Pair<Integer, Integer> indexes) {
+        JTextPane textPane = (JTextPane) getSelectedChildComponent();
+        textPane.setCaretPosition(indexes.getFirst());
+        textPane.setSelectionColor(Color.YELLOW);
+        textPane.setSelectionStart(indexes.getFirst());
+        textPane.setSelectionEnd(indexes.getSecond());
     }
 }
