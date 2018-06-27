@@ -39,22 +39,22 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
     }
 
     @Override
-    protected String getTextFromChildComponent(JComponent component) {
+    protected synchronized String getTextFromChildComponent(JComponent component) {
         return ((JTextPane) component).getText();
     }
 
     @Override
-    protected void setDocumentContainerText(JComponent component, String text) {
+    protected synchronized void setDocumentContainerText(JComponent component, String text) {
         ((JTextPane) component).setText(text);
     }
 
     @Override
-    public void markText(Pair<Integer, Integer> indexes) {
+    public synchronized void markText(Pair<Integer, Integer> indexes) {
         markTextWithAttributes(indexes, util.getAltAttributeSet());
     }
 
     @Override
-    public void clearMarkedText(Pair<Integer, Integer> indexes) {
+    public synchronized void clearMarkedText(Pair<Integer, Integer> indexes) {
         markTextWithAttributes(indexes, util.getDefaultAttributeSet());
     }
 
@@ -67,7 +67,7 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
     }
 
     @Override
-    public void resetTextAttributesOfSelectedComponent() {
+    public synchronized void resetTextAttributesOfSelectedComponent() {
         log.trace("Reseting document style to default");
         JTextPane textPane = (JTextPane) getSelectedChildComponent();
         StyledDocument styledDoc = textPane.getStyledDocument();
