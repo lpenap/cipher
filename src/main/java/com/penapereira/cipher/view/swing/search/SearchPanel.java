@@ -56,7 +56,7 @@ public class SearchPanel extends JPanel {
     }
 
     protected void addSearchResultLabels(JPanel eastPanel) {
-        labelSearchFound = new JLabel("0");
+        labelSearchFound = new JLabel("  0");
         labelSearchFound.setForeground(Color.gray);
         eastPanel.add(labelSearchFound);
 
@@ -64,7 +64,7 @@ public class SearchPanel extends JPanel {
         labelSlash.setForeground(Color.gray);
         eastPanel.add(labelSlash);
 
-        labelSearchTotal = new JLabel("0");
+        labelSearchTotal = new JLabel("  0");
         labelSearchTotal.setForeground(Color.gray);
         eastPanel.add(labelSearchTotal);
 

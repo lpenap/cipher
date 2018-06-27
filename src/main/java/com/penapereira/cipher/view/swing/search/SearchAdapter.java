@@ -10,6 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.penapereira.cipher.shared.StringUtil;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 
 public class SearchAdapter implements KeyListener, ChangeListener, FocusListener {
@@ -19,12 +20,14 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     protected String previousSearch;
     protected SwingDatamodelInterface datamodel;
     private SearchPanel searchPanel;
+    private StringUtil util;
 
     public SearchAdapter(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
         this.searchTextField = searchPanel.getSearchTextField();
         this.searchPanel = searchPanel;
         this.previousSearch = "";
         this.datamodel = datamodel;
+        this.util = new StringUtil();
     }
 
     @Override
@@ -87,7 +90,7 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
         int matches = searchPanel.getSearchMonitor().search(text, query);
         log.trace("{} matches found", matches);
         previousSearch = query;
-        searchPanel.getLabelSearchFound().setText("0");
-        searchPanel.getLabelSearchTotal().setText("" + matches);
+        searchPanel.getLabelSearchFound().setText("  0");
+        searchPanel.getLabelSearchTotal().setText(util.padLeft("" + matches, 3, ' '));
     }
 }
