@@ -19,43 +19,36 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     protected SwingDatamodelInterface datamodel;
     private SearchPanel searchPanel;
     private Timer searchTimer;
-    private int[] ignoredKeys;
     private StringUtil util;
+    private int[] ignoredKeys;
 
     public SearchAdapter(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
         this.searchPanel = searchPanel;
         this.datamodel = datamodel;
         this.searchTimer = new Timer();
-        this.ignoredKeys = new int[] {KeyEvent.VK_UNDEFINED, KeyEvent.VK_ENTER};
         this.util = new StringUtil();
+        this.ignoredKeys = new int[] {KeyEvent.VK_UNDEFINED, KeyEvent.VK_ENTER, KeyEvent.VK_SHIFT};
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        log.trace("Key typed {}", e.getKeyCode());
-        validateKeyAndSearch(e.getKeyCode());
+        validateKeyAndSearch(e, "key typed");
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        log.trace("Key pressed {}", e.getKeyCode());
         switch (e.getKeyCode()) {
             case KeyEvent.VK_ENTER:
-                if (searchPanel.getSearchMonitor().getMatches() != 0) {
-                    log.trace("ENTER pressed, showing next search result");
-                    searchPanel.renderNext();
-                }
+                performNextPreviousEvent(e);
                 break;
             default:
-                validateInputAndPerformSearch();
+                validateKeyAndSearch(e, "key pressed");
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        log.trace("Key released {}", e.getKeyCode());
-
-        validateKeyAndSearch(e.getKeyCode());
+        validateKeyAndSearch(e, "key released");
     }
 
     @Override
@@ -78,18 +71,36 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
         datamodel.resetTextAttributesOfSelectedComponent();
     }
 
-    protected void validateKeyAndSearch(int key) {
-        boolean isKeyIgnored = IntStream.of(ignoredKeys).anyMatch(x -> x == key);
+    protected void validateKeyAndSearch(KeyEvent event, String traceMessage) {
+        log.trace("{} '{}' with modifiers '{}'", traceMessage, event.getKeyCode(),
+                KeyEvent.getKeyModifiersText(event.getModifiers()));
+
+        boolean isKeyIgnored = IntStream.of(ignoredKeys).anyMatch(x -> x == event.getKeyCode());
         if (!isKeyIgnored) {
-            log.trace("Key {} not ignored, searching", key);
             validateInputAndPerformSearch();
+        }
+
+    }
+
+    protected void performNextPreviousEvent(KeyEvent event) {
+        int onmaskPrevious = KeyEvent.SHIFT_DOWN_MASK;
+        int offmaskPrevious = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
+        int offmaskNext = KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
+
+        if ((event.getModifiersEx() & (onmaskPrevious | offmaskPrevious)) == onmaskPrevious) {
+            log.debug("Rendering PREV search result");
+            searchPanel.renderPrevious();
         } else {
-            log.trace("Key {} ignored", key);
+            log.debug("Rendering NEXT search result");
+
+            searchPanel.renderNext();
         }
     }
 
     protected void validateInputAndPerformSearch() {
-        String queryString = util.sanitizeString(searchPanel.getSearchText());
+        String dirtyString = searchPanel.getSearchText();
+        String queryString = util.sanitizeString(dirtyString);
+        log.trace("Sanitized query string: '{}' . Dirty: '{}'", queryString, dirtyString);
         if (queryString.isEmpty()) {
             clearSearch();
         } else {

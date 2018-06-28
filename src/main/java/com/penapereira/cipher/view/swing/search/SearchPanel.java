@@ -139,7 +139,9 @@ public class SearchPanel extends JPanel {
 
     protected synchronized void renderCurrentIndex() {
         synchronized (this.getTreeLock()) {
-            setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
+            if (searchMonitor.getMatches() != 0) {
+                setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
+            }
         }
     }
 
