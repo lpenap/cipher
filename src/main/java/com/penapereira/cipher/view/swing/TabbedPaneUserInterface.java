@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import com.penapereira.cipher.conf.SearchConfiguration;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 import com.penapereira.cipher.view.swing.datamodel.impl.TabbedPaneDatamodel;
 import com.penapereira.cipher.view.swing.search.SearchPanel;
@@ -55,8 +56,8 @@ public class TabbedPaneUserInterface extends AbstractSwingInterface {
     }
 
     @Override
-    protected SearchPanel buildSearchPanel() {
-        return new SearchPanel(messages, datamodel);
+    protected SearchPanel buildSearchPanel(ApplicationContext context) {
+        return new SearchPanel(messages, datamodel, context.getBean(SearchConfiguration.class));
     }
 
 }

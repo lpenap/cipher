@@ -45,7 +45,7 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
         datamodel = buildDatamodel(context);
 
         setTitle(messages.getWindowTitle());
-        addSearchPanel();
+        addSearchPanel(context);
         setSize();
         addWindowListener(new WindowExitListener());
         build(context);
@@ -57,10 +57,10 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
 
     protected abstract void build(ApplicationContext context);
 
-    protected abstract SearchPanel buildSearchPanel();
+    protected abstract SearchPanel buildSearchPanel(ApplicationContext context);
 
-    protected void addSearchPanel() {
-        searchPanel = buildSearchPanel();
+    protected void addSearchPanel(ApplicationContext context) {
+        searchPanel = buildSearchPanel(context);
         getContentPane().add(searchPanel, BorderLayout.NORTH);
     }
 

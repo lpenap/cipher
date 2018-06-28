@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import com.penapereira.cipher.conf.Messages;
+import com.penapereira.cipher.conf.SearchConfiguration;
 import com.penapereira.cipher.shared.StringUtil;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
@@ -28,13 +29,15 @@ public class SearchPanel extends JPanel {
     private SwingDatamodelInterface datamodel;
     private SearchMonitor searchMonitor;
     private StringUtil util;
+    private SearchConfiguration conf;
 
-    public SearchPanel(Messages messages, SwingDatamodelInterface datamodel) {
+    public SearchPanel(Messages messages, SwingDatamodelInterface datamodel, SearchConfiguration searchConf) {
         super();
         this.messages = messages;
         this.datamodel = datamodel;
         this.searchMonitor = new SearchMonitor();
         this.util = new StringUtil();
+        this.conf = searchConf;
 
         setLayout(new BorderLayout(0, 0));
         JPanel eastPanel = new JPanel();
@@ -55,7 +58,7 @@ public class SearchPanel extends JPanel {
     }
 
     protected void addSearchResultLabels(JPanel eastPanel) {
-        labelSearchFound = new JLabel("  0");
+        labelSearchFound = new JLabel();
         labelSearchFound.setForeground(Color.gray);
         eastPanel.add(labelSearchFound);
 
@@ -63,7 +66,7 @@ public class SearchPanel extends JPanel {
         labelSlash.setForeground(Color.gray);
         eastPanel.add(labelSlash);
 
-        labelSearchTotal = new JLabel("  0");
+        labelSearchTotal = new JLabel();
         labelSearchTotal.setForeground(Color.gray);
         eastPanel.add(labelSearchTotal);
 
@@ -71,15 +74,17 @@ public class SearchPanel extends JPanel {
         labelSeparator.setForeground(Color.gray);
         eastPanel.add(labelSeparator);
 
+        resetLabels();
     }
 
     protected void addSearchControlButtons(JPanel eastPanel) {
-        SwingUtil swingUtil = new SwingUtil();
         IconFontSwing.register(FontAwesome.getIconFont());
-        Icon iconPrevious = IconFontSwing.buildIcon(FontAwesome.ANGLE_UP, 20, new Color(80, 80, 80));
-        Icon iconNext = IconFontSwing.buildIcon(FontAwesome.ANGLE_DOWN, 20, new Color(80, 80, 80));
-        Icon iconClose = IconFontSwing.buildIcon(FontAwesome.TIMES, 16, new Color(80, 80, 80));
+        Color gray = new Color(conf.getIconColorR(), conf.getIconColorG(), conf.getIconColorB());
+        Icon iconPrevious = IconFontSwing.buildIcon(FontAwesome.ANGLE_UP, conf.getArrowSize(), gray);
+        Icon iconNext = IconFontSwing.buildIcon(FontAwesome.ANGLE_DOWN, conf.getArrowSize(), gray);
+        Icon iconClose = IconFontSwing.buildIcon(FontAwesome.TIMES, conf.getCloseSize(), gray);
 
+        SwingUtil swingUtil = new SwingUtil();
         JButton btnPrevious = swingUtil.createTransparentButton(iconPrevious, messages.getPrevious());
         btnPrevious.addActionListener(new SearchPreviousActionListener(this));
         eastPanel.add(btnPrevious);
@@ -139,7 +144,7 @@ public class SearchPanel extends JPanel {
 
     protected synchronized void renderCurrentIndex() {
         synchronized (this.getTreeLock()) {
-            setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
+            setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), conf.getPaddingSize(), ' '));
         }
     }
 
@@ -161,8 +166,8 @@ public class SearchPanel extends JPanel {
 
     public synchronized void resetLabels() {
         synchronized (this.getTreeLock()) {
-            setLabelSearchFound("  0");
-            setLabelSearchTotal("  0");
+            setLabelSearchFound("   0");
+            setLabelSearchTotal("   0");
         }
     }
 }
