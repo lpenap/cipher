@@ -55,6 +55,7 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     public void stateChanged(ChangeEvent e) {
         log.trace("Tab changed");
         if (searchPanel.isVisible()) {
+            clearSearch();
             validateInputAndPerformSearch();
         }
     }
@@ -74,25 +75,21 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     protected void validateKeyAndSearch(KeyEvent event, String traceMessage) {
         log.trace("{} '{}' with modifiers '{}'", traceMessage, event.getKeyCode(),
                 KeyEvent.getKeyModifiersText(event.getModifiers()));
-
         boolean isKeyIgnored = IntStream.of(ignoredKeys).anyMatch(x -> x == event.getKeyCode());
         if (!isKeyIgnored) {
             validateInputAndPerformSearch();
         }
-
     }
 
     protected void performNextPreviousEvent(KeyEvent event) {
         int onmaskPrevious = KeyEvent.SHIFT_DOWN_MASK;
         int offmaskPrevious = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
-        int offmaskNext = KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
 
         if ((event.getModifiersEx() & (onmaskPrevious | offmaskPrevious)) == onmaskPrevious) {
             log.debug("Rendering PREV search result");
             searchPanel.renderPrevious();
         } else {
             log.debug("Rendering NEXT search result");
-
             searchPanel.renderNext();
         }
     }

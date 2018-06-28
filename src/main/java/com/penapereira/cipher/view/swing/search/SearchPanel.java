@@ -139,22 +139,24 @@ public class SearchPanel extends JPanel {
 
     protected synchronized void renderCurrentIndex() {
         synchronized (this.getTreeLock()) {
-            if (searchMonitor.getMatches() != 0) {
-                setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
-            }
+            setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
         }
     }
 
     public synchronized void renderNext() {
-        datamodel.clearMarkedText(searchMonitor.getCurrent());
-        datamodel.markText(searchMonitor.getNext());
-        renderCurrentIndex();
+        if (searchMonitor.getMatches() != 0) {
+            datamodel.clearMarkedText(searchMonitor.getCurrent());
+            datamodel.markText(searchMonitor.getNext());
+            renderCurrentIndex();
+        }
     }
 
     public synchronized void renderPrevious() {
-        datamodel.clearMarkedText(searchMonitor.getCurrent());
-        datamodel.markText(searchMonitor.getPrevious());
-        renderCurrentIndex();
+        if (searchMonitor.getMatches() != 0) {
+            datamodel.clearMarkedText(searchMonitor.getCurrent());
+            datamodel.markText(searchMonitor.getPrevious());
+            renderCurrentIndex();
+        }
     }
 
     public synchronized void resetLabels() {
