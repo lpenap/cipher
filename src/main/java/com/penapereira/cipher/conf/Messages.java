@@ -33,5 +33,10 @@ public class Messages {
     private String create;
     private String cancel;
     private String documentTitle;
+    private String documentTitleEmpty;
+    
+    private String next;
+    private String previous;
+    private String closeSearchBar;
     
 }

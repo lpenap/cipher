@@ -26,7 +26,7 @@ public class MainMenuBuilder {
         this.documentController = documentController;
     }
 
-    public void setMainUserInterface(TabbedPaneUserInterface parent) {
+    public void setParentFrame(TabbedPaneUserInterface parent) {
         this.parent = parent;
     }
 
