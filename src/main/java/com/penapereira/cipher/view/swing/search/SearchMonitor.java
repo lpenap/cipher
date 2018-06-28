@@ -13,10 +13,11 @@ import org.springframework.data.util.Pair;
 public class SearchMonitor extends Observable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    protected BufferedReader reader;
-    protected List<Pair<Integer, Integer>> searchResults;
-    protected Integer currentIndex;
-    protected Integer matches;
+    private BufferedReader reader;
+    private List<Pair<Integer, Integer>> searchResults;
+    private Integer currentIndex;
+    private Integer matches;
+    private boolean isTimerRunning;
 
     public SearchMonitor() {
         clearSearch();
@@ -79,7 +80,7 @@ public class SearchMonitor extends Observable {
         return matches;
     }
 
-    protected void processLine(int globalIndex, String line, String query) {
+    private void processLine(int globalIndex, String line, String query) {
         int indexOf = line.indexOf(query);
         while (indexOf != -1) {
             matches++;
@@ -90,8 +91,16 @@ public class SearchMonitor extends Observable {
         }
     }
 
-    protected void requestNotifyObservers() {
+    private void requestNotifyObservers() {
         setChanged();
         notifyObservers();
+    }
+
+    public synchronized boolean isTimerRunning() {
+        return isTimerRunning;
+    }
+
+    public synchronized void setTimerRunning(boolean isTimerRunning) {
+        this.isTimerRunning = isTimerRunning;
     }
 }

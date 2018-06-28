@@ -19,6 +19,7 @@ public class SearchTask extends TimerTask {
         this.searchPanel = searchPanel;
         this.datamodel = datamodel;
         this.util = new StringUtil();
+        searchPanel.getSearchMonitor().setTimerRunning(true);
     }
 
     @Override

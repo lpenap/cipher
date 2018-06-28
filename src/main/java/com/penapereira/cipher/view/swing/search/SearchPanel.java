@@ -152,4 +152,9 @@ public class SearchPanel extends JPanel {
         datamodel.markText(searchMonitor.getPrevious());
         renderCurrentIndex();
     }
+
+    public synchronized void resetLabels() {
+        setLabelSearchFound("  0");
+        setLabelSearchTotal("  0");
+    }
 }

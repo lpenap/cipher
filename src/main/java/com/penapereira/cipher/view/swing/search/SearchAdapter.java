@@ -21,7 +21,7 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     public SearchAdapter(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
         this.searchPanel = searchPanel;
         this.datamodel = datamodel;
-        this.searchTimer = null;
+        this.searchTimer = new Timer();
     }
 
     @Override
@@ -79,25 +79,22 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     }
 
     protected void performSearch() {
-        if (searchTimer != null) {
-            searchTimer.cancel();
-        }
-        resetLabels();
-        searchTimer = new Timer();
-        searchTimer.schedule(new SearchTask(searchPanel, datamodel), 300);
-
+        log.trace("Launching a new SearchTask");
+        searchPanel.resetLabels();
+        resetTimer();
+        searchTimer.schedule(new SearchTask(searchPanel, datamodel), 5000);
     }
 
     protected void clearSearch() {
+        resetTimer();
         datamodel.resetTextAttributesOfSelectedComponent();
         searchPanel.getSearchMonitor().clearSearch();
-        resetLabels();
+        searchPanel.resetLabels();
     }
 
-    protected void resetLabels() {
-        log.trace("Clearing labels");
-        searchPanel.setLabelSearchFound("  0");
-        searchPanel.setLabelSearchTotal("  0");
+    protected void resetTimer() {
+        searchTimer.cancel();
+        searchTimer.purge();
+        searchTimer = new Timer();
     }
-
 }
