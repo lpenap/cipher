@@ -58,19 +58,23 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
         markTextWithAttributes(indexes, util.getDefaultAttributeSet());
     }
 
-    protected void markTextWithAttributes(Pair<Integer, Integer> indexes, AttributeSet atts) {
+    protected synchronized void markTextWithAttributes(Pair<Integer, Integer> indexes, AttributeSet atts) {
         JTextPane textPane = (JTextPane) getSelectedChildComponent();
-        StyledDocument styledDoc = textPane.getStyledDocument();
-        styledDoc.setCharacterAttributes(indexes.getFirst(), indexes.getSecond() - indexes.getFirst(), atts, false);
-        textPane.setCaretPosition(indexes.getFirst());
-        RXTextUtilities.centerLineInScrollPane(textPane);
+        synchronized (textPane.getTreeLock()) {
+            StyledDocument styledDoc = textPane.getStyledDocument();
+            styledDoc.setCharacterAttributes(indexes.getFirst(), indexes.getSecond() - indexes.getFirst(), atts, false);
+            textPane.setCaretPosition(indexes.getFirst());
+            RXTextUtilities.centerLineInScrollPane(textPane);
+        }
     }
 
     @Override
     public synchronized void resetTextAttributesOfSelectedComponent() {
         log.trace("Reseting document style to default");
         JTextPane textPane = (JTextPane) getSelectedChildComponent();
-        StyledDocument styledDoc = textPane.getStyledDocument();
-        styledDoc.setCharacterAttributes(0, styledDoc.getLength(), util.getDefaultAttributeSet(), true);
+        synchronized (textPane.getTreeLock()) {
+            StyledDocument styledDoc = textPane.getStyledDocument();
+            styledDoc.setCharacterAttributes(0, styledDoc.getLength(), util.getDefaultAttributeSet(), true);
+        }
     }
 }

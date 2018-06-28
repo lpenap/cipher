@@ -5,10 +5,12 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Timer;
+import java.util.stream.IntStream;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.penapereira.cipher.shared.StringUtil;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
 
 public class SearchAdapter implements KeyListener, ChangeListener, FocusListener {
@@ -17,39 +19,57 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     protected SwingDatamodelInterface datamodel;
     private SearchPanel searchPanel;
     private Timer searchTimer;
+    private int[] ignoredKeys;
+    private StringUtil util;
 
     public SearchAdapter(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
         this.searchPanel = searchPanel;
         this.datamodel = datamodel;
         this.searchTimer = new Timer();
+        this.ignoredKeys = new int[] {KeyEvent.VK_UNDEFINED, KeyEvent.VK_ENTER};
+        this.util = new StringUtil();
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        checkActionFromKey(e.getKeyCode());
+        log.trace("Key typed {}", e.getKeyCode());
+        validateKeyAndSearch(e.getKeyCode());
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        checkActionFromKey(e.getKeyCode());
-
+        log.trace("Key pressed {}", e.getKeyCode());
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_ENTER:
+                if (searchPanel.getSearchMonitor().getMatches() != 0) {
+                    log.trace("ENTER pressed, showing next search result");
+                    searchPanel.renderNext();
+                }
+                break;
+            default:
+                validateInputAndPerformSearch();
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        checkActionFromKey(e.getKeyCode());
+        log.trace("Key released {}", e.getKeyCode());
+
+        validateKeyAndSearch(e.getKeyCode());
     }
 
     @Override
     public void stateChanged(ChangeEvent e) {
+        log.trace("Tab changed");
         if (searchPanel.isVisible()) {
-            validateAndPerformSearch();
+            validateInputAndPerformSearch();
         }
     }
 
     @Override
     public void focusGained(FocusEvent e) {
-        validateAndPerformSearch();
+        log.trace("Search input text gained focus");
+        validateInputAndPerformSearch();
         searchPanel.selectSearchText();
     }
 
@@ -58,20 +78,19 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
         datamodel.resetTextAttributesOfSelectedComponent();
     }
 
-    protected void checkActionFromKey(int keyCode) {
-        switch (keyCode) {
-            case KeyEvent.VK_ENTER:
-                if (searchPanel.getSearchMonitor().getMatches() != 0) {
-                    searchPanel.renderNext();
-                }
-                break;
-            default:
-                validateAndPerformSearch();
+    protected void validateKeyAndSearch(int key) {
+        boolean isKeyIgnored = IntStream.of(ignoredKeys).anyMatch(x -> x == key);
+        if (!isKeyIgnored) {
+            log.trace("Key {} not ignored, searching", key);
+            validateInputAndPerformSearch();
+        } else {
+            log.trace("Key {} ignored", key);
         }
     }
 
-    protected void validateAndPerformSearch() {
-        if (searchPanel.getSearchText().equals("")) {
+    protected void validateInputAndPerformSearch() {
+        String queryString = util.sanitizeString(searchPanel.getSearchText());
+        if (queryString.isEmpty()) {
             clearSearch();
         } else {
             performSearch();
@@ -79,10 +98,10 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     }
 
     protected void performSearch() {
-        log.trace("Launching a new SearchTask");
+        log.trace("Canceling previous tasks and launching a new SearchTask");
         searchPanel.resetLabels();
         resetTimer();
-        searchTimer.schedule(new SearchTask(searchPanel, datamodel), 5000);
+        searchTimer.schedule(new SearchTask(searchPanel, datamodel), 300);
     }
 
     protected void clearSearch() {

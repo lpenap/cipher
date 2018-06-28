@@ -29,8 +29,10 @@ public class SearchTask extends TimerTask {
         String text = datamodel.getTextFromComponent(datamodel.getSelectedComponent());
         int matches = searchPanel.getSearchMonitor().search(text, query);
         log.trace("{} matches found", matches);
-        searchPanel.setLabelSearchTotal(util.padLeft("" + matches, 3, ' '));
-        selectFirst();
+        synchronized (searchPanel.getTreeLock()) {
+            searchPanel.setLabelSearchTotal(util.padLeft("" + matches, 3, ' '));
+            selectFirst();
+        }
     }
 
     protected void selectFirst() {

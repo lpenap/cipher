@@ -103,11 +103,11 @@ public class SearchPanel extends JPanel {
         datamodel.addSearchAdapter(searchAdapter);
     }
 
-    public SearchMonitor getSearchMonitor() {
+    public synchronized SearchMonitor getSearchMonitor() {
         return searchMonitor;
     }
 
-    public void close() {
+    public synchronized void close() {
         datamodel.resetTextAttributesOfSelectedComponent();
         setVisible(false);
     }
@@ -138,7 +138,9 @@ public class SearchPanel extends JPanel {
     }
 
     protected synchronized void renderCurrentIndex() {
-        setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
+        synchronized (this.getTreeLock()) {
+            setLabelSearchFound(util.padLeft("" + (searchMonitor.getCurrentIndex() + 1), 3, ' '));
+        }
     }
 
     public synchronized void renderNext() {
@@ -154,7 +156,9 @@ public class SearchPanel extends JPanel {
     }
 
     public synchronized void resetLabels() {
-        setLabelSearchFound("  0");
-        setLabelSearchTotal("  0");
+        synchronized (this.getTreeLock()) {
+            setLabelSearchFound("  0");
+            setLabelSearchTotal("  0");
+        }
     }
 }
