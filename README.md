@@ -1,5 +1,6 @@
 # Cipher
 Java AES/RSA Cipher Application to manage in-editor encrypted documents.
+This project is being actively developed right now. Unstability is expected.
 
 ## Requirements
 * Java 8
