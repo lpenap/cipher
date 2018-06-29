@@ -25,7 +25,8 @@ public abstract class SingleInputDialogActionListener extends AbstractActionList
     private final static int MAX_INPUT_SIZE = 20;
     private JTextField textField;
     private JLabel lblErrorMessage;
-    protected JLabel lblTextField;
+    private JLabel lblTextField;
+    private JButton btnOk;
 
     public SingleInputDialogActionListener(DocumentController documentController, Messages messages) {
         super(documentController, messages);
@@ -64,14 +65,14 @@ public abstract class SingleInputDialogActionListener extends AbstractActionList
     }
 
     protected void addButtons(JPanel buttonPanel) {
-        JButton btnCreate = new JButton(messages.getCreate());
-        btnCreate.addActionListener(new ActionListener() {
+        btnOk = new JButton();
+        btnOk.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 okButtonPressed();
             }
         });
-        buttonPanel.add(btnCreate);
+        buttonPanel.add(btnOk);
 
         JButton btnCancel = new JButton(messages.getCancel());
         btnCancel.addActionListener(new ActionListener() {
@@ -125,6 +126,10 @@ public abstract class SingleInputDialogActionListener extends AbstractActionList
         } else {
             lblErrorMessage.setVisible(true);
         }
+    }
+    
+    protected void setOkButtonText(String text) {
+        btnOk.setText(text);
     }
 
     protected void setTextFieldString(String text) {

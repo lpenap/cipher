@@ -19,6 +19,7 @@ public class AddDocumentDelegate extends SingleInputDialogActionListener {
         setTitle(messages.getAddDocumentMenu());
         setTextFieldLabel(messages.getDocumentTitle());
         setErrorText(messages.getDocumentTitleEmpty());
+        setOkButtonText(messages.getCreate());
     }
 
     @Override
