@@ -23,9 +23,7 @@ public class AddDocumentDelegate extends SingleInputDialogActionListener {
     }
 
     @Override
-    protected void actionPerformedDelegate(ActionEvent e) {
-        getTextField().setRequestFocusEnabled(true);
-    }
+    protected void actionPerformedDelegate(ActionEvent e) {}
 
     @Override
     protected void okButtonPressedDelegate(String documentTitle) {

@@ -47,6 +47,16 @@ public abstract class SingleInputDialogActionListener extends AbstractActionList
         lblErrorMessage.setVisible(false);
         setVisible(true);
         actionPerformedDelegate(e);
+        checkTextField();
+    }
+
+    protected void checkTextField() {
+        textField.setRequestFocusEnabled(true);
+        textField.requestFocusInWindow();
+        if (!textField.getText().isEmpty()) {
+            textField.setSelectionStart(0);
+            textField.setSelectionEnd(textField.getText().length());
+        }
     }
 
     @Override
@@ -127,7 +137,7 @@ public abstract class SingleInputDialogActionListener extends AbstractActionList
             lblErrorMessage.setVisible(true);
         }
     }
-    
+
     protected void setOkButtonText(String text) {
         btnOk.setText(text);
     }
