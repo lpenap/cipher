@@ -21,19 +21,19 @@ import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.shared.StringUtil;
 import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
 
-public class AddDocumentActionListener extends AbstractActionListener {
+public class AddDocumentDelegate extends SingleInputDialogActionListener {
 
     private static final long serialVersionUID = 1L;
-    private final Logger log = LoggerFactory.getLogger(AddDocumentActionListener.class);
+    private final Logger log = LoggerFactory.getLogger(AddDocumentDelegate.class);
     public final static int MAX_INPUT_SIZE = 20;
     private JTextField documentTitleTextField;
     private JLabel lblErrorMessage;
 
-    public AddDocumentActionListener(DocumentController documentController, Messages messages) {
+    public AddDocumentDelegate(DocumentController documentController, Messages messages) {
         super(documentController, messages);
     }
 
-    public void build() {
+    protected void buildDelegate() {
         setResizable(false);
         setSize(427, 172);
         setTitle(messages.getAddDocumentMenu());
@@ -117,7 +117,7 @@ public class AddDocumentActionListener extends AbstractActionListener {
      * component.
      */
     @Override
-    public void actionPerformed(ActionEvent e) {
+    protected void actionPerformedDelegate(ActionEvent e) {
         lblErrorMessage.setVisible(false);
         this.setVisible(true);
         documentTitleTextField.setRequestFocusEnabled(true);

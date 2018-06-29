@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.view.swing.listener.AboutActionListener;
-import com.penapereira.cipher.view.swing.listener.AddDocumentActionListener;
+import com.penapereira.cipher.view.swing.listener.AddDocumentDelegate;
 import com.penapereira.cipher.view.swing.listener.DeleteDocumentActionListener;
 import com.penapereira.cipher.view.swing.listener.ExitActionListener;
 import com.penapereira.cipher.view.swing.listener.SaveAllActionListener;
@@ -48,7 +48,7 @@ public class MainMenuBuilder {
         menuBar.add(documentMenu);
 
         JMenuItem menuItemAddDocument = new JMenuItem(messages.getAddDocumentMenu());
-        menuItemAddDocument.addActionListener(new AddDocumentActionListener(documentController, messages));
+        menuItemAddDocument.addActionListener(new AddDocumentDelegate(documentController, messages));
         documentMenu.add(menuItemAddDocument);
 
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
