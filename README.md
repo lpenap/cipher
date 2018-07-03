@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/lpenap/cipher.svg?branch=develop)](https://travis-ci.com/lpenap/cipher)
+Master: [![Build Status](https://travis-ci.com/lpenap/cipher.svg?branch=master)](https://travis-ci.com/lpenap/cipher) Develop: [![Build Status](https://travis-ci.com/lpenap/cipher.svg?branch=develop)](https://travis-ci.com/lpenap/cipher)
+
 # Cipher
 Java AES/RSA Cipher Application to manage in-editor encrypted documents.
 This project is being actively developed right now. Unstability is expected.
