@@ -130,11 +130,13 @@ public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface 
         setDocumentContainerText(child, doc.getText());
         setParentComponentName(parent, doc.getTitle());
         isParentComponentModifiedMap.put(parent, false);
+
     }
 
     @Override
     public void deleteDocument(Document doc) {
-        if (documents.contains(doc)) {
+        Document oldDocument = findById(doc.getId());
+        if (oldDocument != null) {
             Long docId = doc.getId();
             JComponent parent = documentIdToParentMap.get(docId);
             documentIdToParentMap.remove(docId);
@@ -142,8 +144,21 @@ public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface 
             parentToChildComponentMap.remove(parent);
             isParentComponentModifiedMap.remove(parent);
             removeParentComponent(parent);
-            documents.remove(doc);
+            documents.remove(oldDocument);
         }
+    }
+
+    private Document findById(Long id) {
+        Iterator<Document> i = documents.iterator();
+        Document foundDocument = null;
+        while (i.hasNext()) {
+            Document doc = i.next();
+            if (doc.getId() == id) {
+                foundDocument = doc;
+                break;
+            }
+        }
+        return foundDocument;
     }
 
     @Override

@@ -22,7 +22,7 @@ import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
 public abstract class SingleInputDialogActionListener extends AbstractActionListener {
 
     private static final long serialVersionUID = 1L;
-    private final static int MAX_INPUT_SIZE = 20;
+    private final static int MAX_INPUT_SIZE = 40;
     private JTextField textField;
     private JLabel lblErrorMessage;
     private JLabel lblTextField;
