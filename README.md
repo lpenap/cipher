@@ -22,6 +22,8 @@ This project is being actively developed right now. Unstability is expected.
 * lombok
 * slf4j for logging
 * jiconfont + font-awesome
+* junit + mockito for testing
+* Travis CI
 
 ## Run (Development Only)
 * Clone this repo
