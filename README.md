@@ -1,8 +1,7 @@
 
-|         |   |
-|---------|---|
+| Branch  | Building status  |
+|---------|------------------|
 | Master  | [![Build Status](https://travis-ci.com/lpenap/cipher.svg?branch=master)](https://travis-ci.com/lpenap/cipher)  |
-|---------|---|
 | Develop | [![Build Status](https://travis-ci.com/lpenap/cipher.svg?branch=develop)](https://travis-ci.com/lpenap/cipher) |
 
 # Cipher
