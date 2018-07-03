@@ -12,7 +12,7 @@ import lombok.Data;
 public class Messages {
 
     private String windowTitle;
-    
+
     private String cipherMenu;
     private String aboutMenu;
     private List<String> about = new ArrayList<>();
@@ -20,6 +20,7 @@ public class Messages {
 
     private String documentMenu;
     private String addDocumentMenu;
+    private String renameDocumentMenu;
     private String saveAllMenu;
     private String deleteDocumentMenu;
     private String deleteDocumentConfirmPre;
@@ -29,14 +30,16 @@ public class Messages {
     private String setupConfirmMsg;
     private String helpDocumentTitle;
     private List<String> helpDocument = new ArrayList<>();
-    
+
     private String create;
+    private String rename;
     private String cancel;
     private String documentTitle;
+    private String newDocumentTitle;
     private String documentTitleEmpty;
-    
+
     private String next;
     private String previous;
     private String closeSearchBar;
-    
+
 }

@@ -8,9 +8,10 @@ import org.springframework.stereotype.Component;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.view.swing.listener.AboutActionListener;
-import com.penapereira.cipher.view.swing.listener.AddDocumentActionListener;
+import com.penapereira.cipher.view.swing.listener.AddDocumentDelegate;
 import com.penapereira.cipher.view.swing.listener.DeleteDocumentActionListener;
 import com.penapereira.cipher.view.swing.listener.ExitActionListener;
+import com.penapereira.cipher.view.swing.listener.RenameDocumentDelegate;
 import com.penapereira.cipher.view.swing.listener.SaveAllActionListener;
 
 @Component
@@ -32,6 +33,12 @@ public class MainMenuBuilder {
 
     public JMenuBar buildJMenuBar() {
         JMenuBar menuBar = new JMenuBar();
+        buildCipherMenu(menuBar);
+        buildDocumentMenu(menuBar);
+        return menuBar;
+    }
+
+    protected void buildCipherMenu(JMenuBar menuBar) {
         JMenu cipherMenu = new JMenu(messages.getCipherMenu());
         menuBar.add(cipherMenu);
 
@@ -43,25 +50,33 @@ public class MainMenuBuilder {
         JMenuItem menuItemExit = new JMenuItem(messages.getExitMenu());
         menuItemExit.addActionListener(new ExitActionListener());
         cipherMenu.add(menuItemExit);
+    }
 
+    protected void buildDocumentMenu(JMenuBar menuBar) {
         JMenu documentMenu = new JMenu(messages.getDocumentMenu());
         menuBar.add(documentMenu);
 
+        // Add Document
         JMenuItem menuItemAddDocument = new JMenuItem(messages.getAddDocumentMenu());
-        menuItemAddDocument.addActionListener(new AddDocumentActionListener(documentController, messages));
+        menuItemAddDocument.addActionListener(new AddDocumentDelegate(documentController, messages));
         documentMenu.add(menuItemAddDocument);
 
+        // Rename Document
+        JMenuItem menuItemRenameDocument = new JMenuItem(messages.getRenameDocumentMenu());
+        menuItemRenameDocument
+                .addActionListener(new RenameDocumentDelegate(documentController, messages, parent.getDatamodel()));
+        documentMenu.add(menuItemRenameDocument);
+
+        // Save All
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
         menuItemSaveAll.addActionListener(new SaveAllActionListener(documentController, parent.getDatamodel()));
         documentMenu.add(menuItemSaveAll);
 
+        // Delete Document
         JMenuItem menuItemDeleteDocument = new JMenuItem(messages.getDeleteDocumentMenu());
         menuItemDeleteDocument.addActionListener(
                 new DeleteDocumentActionListener(documentController, messages, parent, parent.getDatamodel()));
         documentMenu.addSeparator();
         documentMenu.add(menuItemDeleteDocument);
-
-        return menuBar;
     }
-
 }
