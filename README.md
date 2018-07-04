@@ -5,8 +5,7 @@
 | Develop | [![Build Status](https://travis-ci.com/lpenap/cipher.svg?branch=develop)](https://travis-ci.com/lpenap/cipher) |
 
 # Cipher
-Java AES/RSA Cipher Application to manage in-editor encrypted documents.
-This project is being actively developed right now. Unstability is expected.
+Java AES/RSA Cipher Application to manage encrypted text.
 
 ## Requirements
 * Java 8
@@ -19,10 +18,10 @@ This project is being actively developed right now. Unstability is expected.
 * Java Swing User Interface
 * JPA + Hibernate ORM
 * H2 Database
-* lombok
+* Lombok
 * slf4j for logging
 * jiconfont + font-awesome
-* junit + mockito for testing
+* JUnit + mockito for testing
 * Travis CI
 
 ## Run (Development Only)
