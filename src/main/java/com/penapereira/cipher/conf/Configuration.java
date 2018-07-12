@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import lombok.Data;
 
 /**
- * Class for loading application properties and default values.
+ * Class for loading application properties and their default values.
  * 
  * @author luis
  *
@@ -35,6 +35,7 @@ public class Configuration {
     private int windowWidth = 900;
     private String documentFont = "Courier";
     private int documentFontSize = 16;
+    private int maxDocumentSizeChars = 100000000;
 
     @EventListener(ApplicationReadyEvent.class)
     public void printConfig() {

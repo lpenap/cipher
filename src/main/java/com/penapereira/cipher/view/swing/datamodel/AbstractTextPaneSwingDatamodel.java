@@ -3,18 +3,27 @@ package com.penapereira.cipher.view.swing.datamodel;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
+import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.RXTextUtilities;
 import com.penapereira.cipher.shared.SwingUtil;
+import com.penapereira.cipher.view.swing.component.JTextPaneSizeFilter;
 import com.penapereira.cipher.view.swing.listener.CipherDocumentListener;
 
 public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamodel {
+
+    @Autowired
+    protected AbstractTextPaneSwingDatamodel(Configuration config) {
+        super(config);
+    }
 
     private final Logger log = LoggerFactory.getLogger(AbstractTextPaneSwingDatamodel.class);
     private SwingUtil util;
@@ -27,6 +36,9 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
         CipherDocumentListener documentListener = new CipherDocumentListener(this, doc.getId());
         textPane.setFont(getDocumentContainerFont());
         try {
+            if (styledDoc instanceof AbstractDocument) {
+                ((AbstractDocument) styledDoc).setDocumentFilter(new JTextPaneSizeFilter(getMaxDocumentSizeChars()));
+            }
             styledDoc.insertString(0, doc.getText(), new SwingUtil().getDefaultAttributeSet());
         } catch (BadLocationException e) {
             log.error("Could not insert text from document '" + doc.getTitle()

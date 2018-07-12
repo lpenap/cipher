@@ -4,13 +4,20 @@ import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.view.swing.datamodel.AbstractTextPaneSwingDatamodel;
 import com.penapereira.cipher.view.swing.search.SearchAdapter;
 
 @Component
 public class TabbedPaneDatamodel extends AbstractTextPaneSwingDatamodel {
+
+    @Autowired
+    protected TabbedPaneDatamodel(Configuration config) {
+        super(config);
+    }
 
     protected final String MODIFIED_PREFIX = "* \u2063";
 

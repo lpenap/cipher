@@ -10,36 +10,36 @@ import java.util.Map.Entry;
 import javax.swing.JComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
+import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.model.document.Document;
 import lombok.Data;
 
 @Data
 public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface {
 
-    private final String DEFAULT_FONT = "Courier";
-    private final int DEFAULT_FONT_SIZE = 12;
+    private final int MAX_DOCUMENT_SIZE_CHARS_DEFAULT = 100000000;
 
     private final Logger log = LoggerFactory.getLogger(AbstractSwingDatamodel.class);
-
     protected List<Document> documents;
     protected Map<JComponent, JComponent> parentToChildComponentMap;
-
     protected Map<JComponent, Long> parentToDocumentIdMap;
     protected Map<Long, JComponent> documentIdToParentMap;
     protected Map<JComponent, Boolean> isParentComponentModifiedMap;
-
     protected JComponent mainComponent;
-
     protected String documentFont;
     protected int documentFontSize;
     protected Font documentContainerFont;
+    protected Configuration config;
 
-    protected AbstractSwingDatamodel() {
+    @Autowired
+    protected AbstractSwingDatamodel(Configuration config) {
+        this.config = config;
         documents = new ArrayList<>();
         initArrays();
-        documentFont = DEFAULT_FONT;
-        documentFontSize = DEFAULT_FONT_SIZE;
+        documentFont = config.getDocumentFont();
+        documentFontSize = config.getDocumentFontSize();
         mainComponent = buildMainComponent();
 
     }
@@ -59,6 +59,10 @@ public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface 
     protected abstract void setParentComponentName(JComponent component, String name);
 
     protected abstract void removeParentComponent(JComponent component);
+
+    protected int getMaxDocumentSizeChars() {
+        return Math.min(MAX_DOCUMENT_SIZE_CHARS_DEFAULT, config.getMaxDocumentSizeChars());
+    }
 
     public synchronized void setDocuments(List<Document> documents) {
         this.documents = documents;
