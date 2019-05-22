@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentActionInterface.ActionType;
+import com.penapereira.cipher.model.cloud.CloudService;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.model.document.DocumentService;
 import com.penapereira.cipher.shared.StringUtil;
@@ -18,13 +19,15 @@ public class DocumentController extends Observable {
     protected Configuration config;
     protected DocumentService documentService;
     protected Messages messages;
+    protected CloudService cloudService;
 
     @Autowired
-    public DocumentController(Configuration config, DocumentService documentService, Messages messages) {
+    public DocumentController(Configuration config, DocumentService documentService, CloudService cloudService, Messages messages) {
         super();
         this.config = config;
         this.documentService = documentService;
         this.messages = messages;
+        this.cloudService = cloudService;
     }
 
     public List<Document> getAll() {
