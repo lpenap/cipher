@@ -33,7 +33,7 @@ public class DocumentController extends Observable {
 
     public Document getHelpDocument() {
         return documentService.create(messages.getHelpDocumentTitle(),
-                new StringUtil().listToString(messages.getHelpDocument()));
+                new StringUtil().linesToPage(messages.getHelpDocument()));
     }
 
     public Document save(Document doc) {
@@ -44,7 +44,7 @@ public class DocumentController extends Observable {
 
     public List<Document> saveAll(List<Document> documents) {
         List<Document> savedDocs = documentService.saveAll(documents);
-        requestNotifyObservers(ActionType.UPDATE, savedDocs);
+        requestNotifyObservers(savedDocs);
         return savedDocs;
     }
 
@@ -84,10 +84,9 @@ public class DocumentController extends Observable {
         notifyObservers(new DocumentAction(action, doc));
     }
 
-    private void requestNotifyObservers(ActionType action, List<Document> savedDocs) {
-        Iterator<Document> i = savedDocs.iterator();
-        while (i.hasNext()) {
-            requestNotifyObservers(action, i.next());
+    private void requestNotifyObservers(List<Document> savedDocs) {
+        for (Document savedDoc : savedDocs) {
+            requestNotifyObservers(ActionType.UPDATE, savedDoc);
         }
     }
 }

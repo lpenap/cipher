@@ -1,35 +1,16 @@
 package com.penapereira.cipher.shared;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class StringUtil {
-
-    /**
-     * Implodes a list of Strings into a single one.
-     * 
-     * @param lineSeparator String to append between each element.
-     * @param lines List of Strings to be imploded.
-     * @return The imploded String.
-     */
-    public String listToString(String lineSeparator, List<String> lines) {
-        StringBuilder text = new StringBuilder();
-        Iterator<String> i = lines.iterator();
-        while (i.hasNext()) {
-            text.append(i.next());
-            text.append(lineSeparator);
-        }
-        return text.toString();
-    }
-
     /**
      * Implodes a list of Strings with the system default line separator.
      * 
      * @param lines List of Strings to be imploded.
      * @return The imploded String.
      */
-    public String listToString(List<String> lines) {
-        return listToString(System.getProperty("line.separator"), lines);
+    public String linesToPage(List<String> lines) {
+        return String.join(System.getProperty("line.separator"), lines);
     }
 
     /**
