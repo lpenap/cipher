@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 
 public class SearchPanelDispatcher implements KeyEventDispatcher {
 
-    private SearchPanel searchPanel;
+    private final SearchPanel searchPanel;
 
     public SearchPanelDispatcher(SearchPanel searchPanel) {
         this.searchPanel = searchPanel;
@@ -13,10 +13,10 @@ public class SearchPanelDispatcher implements KeyEventDispatcher {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
-        int onmask = KeyEvent.CTRL_DOWN_MASK;
-        int offmask = KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
+        int onMask = KeyEvent.CTRL_DOWN_MASK;
+        int offMask = KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
 
-        if ((e.getKeyCode() == KeyEvent.VK_F) && ((e.getModifiersEx() & (onmask | offmask)) == onmask)) {
+        if ((e.getKeyCode() == KeyEvent.VK_F) && ((e.getModifiersEx() & (onMask | offMask)) == onMask)) {
             showSearchPanel();
             return true;
         }

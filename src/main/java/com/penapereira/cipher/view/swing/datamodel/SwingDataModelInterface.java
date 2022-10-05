@@ -10,7 +10,7 @@ import com.penapereira.cipher.view.swing.search.SearchAdapter;
 /**
  * Class to wrap a Swing user interface data model for all the documents to be rendered.
  */
-public interface SwingDatamodelInterface {
+public interface SwingDataModelInterface {
 
     void setDocumentContainerFont(Font font);
 
@@ -34,7 +34,7 @@ public interface SwingDatamodelInterface {
 
     JComponent getSelectedComponent();
 
-    void clearDatamodel();
+    void clearDataModel();
 
     void setModifiedNameFor(Long documentId);
 

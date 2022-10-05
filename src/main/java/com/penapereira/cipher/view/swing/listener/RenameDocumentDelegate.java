@@ -6,23 +6,23 @@ import org.slf4j.LoggerFactory;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
-import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 
 public class RenameDocumentDelegate extends SingleInputDialogActionListener {
 
     private static final long serialVersionUID = 1L;
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private SwingDatamodelInterface datamodel;
+    private final SwingDataModelInterface dataModel;
 
     public RenameDocumentDelegate(DocumentController documentController, Messages messages,
-            SwingDatamodelInterface datamodel) {
+            SwingDataModelInterface dataModel) {
         super(documentController, messages);
-        this.datamodel = datamodel;
+        this.dataModel = dataModel;
     }
 
     @Override
     protected void actionPerformedDelegate(ActionEvent e) {
-        Long documentId = datamodel.getDocumentIdFor(datamodel.getSelectedComponent());
+        Long documentId = dataModel.getDocumentIdFor(dataModel.getSelectedComponent());
         Document doc = documentController.get(documentId);
         setTextFieldString(doc.getTitle());
     }
@@ -39,7 +39,7 @@ public class RenameDocumentDelegate extends SingleInputDialogActionListener {
     protected void okButtonPressedDelegate(String documentTitle) {
         if (!documentTitle.isEmpty()) {
             log.info("Renaming document to new title: " + documentTitle);
-            Long documentId = datamodel.getDocumentIdFor(datamodel.getSelectedComponent());
+            Long documentId = dataModel.getDocumentIdFor(dataModel.getSelectedComponent());
             Document doc = documentController.get(documentId);
             doc.setTitle(documentTitle);
             if (doc != null) {

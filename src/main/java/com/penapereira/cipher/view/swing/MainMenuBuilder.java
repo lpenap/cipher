@@ -17,8 +17,8 @@ import com.penapereira.cipher.view.swing.listener.SaveAllActionListener;
 @Component
 public class MainMenuBuilder {
 
-    private Messages messages;
-    private DocumentController documentController;
+    private final Messages messages;
+    private final DocumentController documentController;
     private TabbedPaneUserInterface parent;
 
     @Autowired
@@ -64,18 +64,18 @@ public class MainMenuBuilder {
         // Rename Document
         JMenuItem menuItemRenameDocument = new JMenuItem(messages.getRenameDocumentMenu());
         menuItemRenameDocument
-                .addActionListener(new RenameDocumentDelegate(documentController, messages, parent.getDatamodel()));
+                .addActionListener(new RenameDocumentDelegate(documentController, messages, parent.getDataModel()));
         documentMenu.add(menuItemRenameDocument);
 
         // Save All
         JMenuItem menuItemSaveAll = new JMenuItem(messages.getSaveAllMenu());
-        menuItemSaveAll.addActionListener(new SaveAllActionListener(documentController, parent.getDatamodel()));
+        menuItemSaveAll.addActionListener(new SaveAllActionListener(documentController, parent.getDataModel()));
         documentMenu.add(menuItemSaveAll);
 
         // Delete Document
         JMenuItem menuItemDeleteDocument = new JMenuItem(messages.getDeleteDocumentMenu());
         menuItemDeleteDocument.addActionListener(
-                new DeleteDocumentActionListener(documentController, messages, parent, parent.getDatamodel()));
+                new DeleteDocumentActionListener(documentController, messages, parent, parent.getDataModel()));
         documentMenu.addSeparator();
         documentMenu.add(menuItemDeleteDocument);
     }

@@ -20,7 +20,7 @@ import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.MainUserInterface;
-import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 import com.penapereira.cipher.view.swing.listener.WindowExitListener;
 import com.penapereira.cipher.view.swing.search.SearchPanel;
 import com.penapereira.cipher.view.swing.search.SearchPanelDispatcher;
@@ -29,10 +29,10 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
 
     private static final long serialVersionUID = 1L;
     private final Logger log = LoggerFactory.getLogger(AbstractSwingInterface.class);
-    protected DocumentController documentController;
-    protected Messages messages;
-    protected Configuration config;
-    protected SwingDatamodelInterface datamodel;
+    protected final DocumentController documentController;
+    protected final Messages messages;
+    protected final Configuration config;
+    protected final SwingDataModelInterface dataModel;
     protected SearchPanel searchPanel;
 
     @Autowired
@@ -42,7 +42,7 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
         documentController = context.getBean(DocumentController.class);
         messages = context.getBean(Messages.class);
         config = context.getBean(Configuration.class);
-        datamodel = buildDatamodel(context);
+        dataModel = buildDataModel(context);
 
         setTitle(messages.getWindowTitle());
         addSearchPanel(context);
@@ -53,7 +53,7 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
 
     protected abstract void displayAllDocuments();
 
-    protected abstract SwingDatamodelInterface buildDatamodel(ApplicationContext context);
+    protected abstract SwingDataModelInterface buildDataModel(ApplicationContext context);
 
     protected abstract void build(ApplicationContext context);
 
@@ -66,7 +66,7 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
 
     @Override
     public boolean init() {
-        datamodel
+        dataModel
                 .setDocumentContainerFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
         documentController.addObserver(this);
         List<Document> documents = documentController.getAll();
@@ -101,7 +101,7 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
     @Override
     public void update(Observable o, Object arg) {
         log.debug("Update request received from controller");
-        if (arg != null && arg instanceof DocumentActionInterface) {
+        if (arg instanceof DocumentActionInterface) {
             DocumentActionInterface action = (DocumentActionInterface) arg;
             Document doc = action.getDocument();
             switch (action.getAction()) {
@@ -122,17 +122,17 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
 
     private void updateDocument(Document doc) {
         log.debug("*UPDATE* document '{}' ", doc.getTitle());
-        datamodel.updateDocument(doc);
+        dataModel.updateDocument(doc);
     }
 
     private void deleteDocument(Document doc) {
         log.debug("*DELETE* document '{}' ", doc.getTitle());
-        datamodel.deleteDocument(doc);
+        dataModel.deleteDocument(doc);
     }
 
     private void addDocument(Document doc) {
         log.debug("*ADD* document '{}' ", doc.getTitle());
-        datamodel.addDocument(doc);
+        dataModel.addDocument(doc);
     }
 
     private void initializeWelcomeDocument() {
@@ -149,8 +149,8 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
         // setSize(500, 500);
     }
 
-    public SwingDatamodelInterface getDatamodel() {
-        return datamodel;
+    public SwingDataModelInterface getDataModel() {
+        return dataModel;
     }
 
     protected DocumentController getDocumentController() {

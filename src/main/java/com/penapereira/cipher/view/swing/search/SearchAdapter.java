@@ -11,20 +11,20 @@ import javax.swing.event.ChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.penapereira.cipher.shared.StringUtil;
-import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 
 public class SearchAdapter implements KeyListener, ChangeListener, FocusListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    protected SwingDatamodelInterface datamodel;
-    private SearchPanel searchPanel;
+    protected final SwingDataModelInterface dataModel;
+    private final SearchPanel searchPanel;
     private Timer searchTimer;
-    private StringUtil util;
-    private int[] ignoredKeys;
+    private final StringUtil util;
+    private final int[] ignoredKeys;
 
-    public SearchAdapter(SearchPanel searchPanel, SwingDatamodelInterface datamodel) {
+    public SearchAdapter(SearchPanel searchPanel, SwingDataModelInterface dataModel) {
         this.searchPanel = searchPanel;
-        this.datamodel = datamodel;
+        this.dataModel = dataModel;
         this.searchTimer = new Timer();
         this.util = new StringUtil();
         this.ignoredKeys = new int[] {KeyEvent.VK_UNDEFINED, KeyEvent.VK_ENTER, KeyEvent.VK_SHIFT};
@@ -37,12 +37,10 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_ENTER:
-                performNextPreviousEvent(e);
-                break;
-            default:
-                validateKeyAndSearch(e, "key pressed");
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            performNextPreviousEvent(e);
+        } else {
+            validateKeyAndSearch(e, "key pressed");
         }
     }
 
@@ -69,7 +67,7 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
 
     @Override
     public void focusLost(FocusEvent e) {
-        datamodel.resetTextAttributesOfSelectedComponent();
+        dataModel.resetTextAttributesOfSelectedComponent();
     }
 
     protected void validateKeyAndSearch(KeyEvent event, String traceMessage) {
@@ -82,10 +80,10 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
     }
 
     protected void performNextPreviousEvent(KeyEvent event) {
-        int onmaskPrevious = KeyEvent.SHIFT_DOWN_MASK;
-        int offmaskPrevious = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
+        int onMaskPrevious = KeyEvent.SHIFT_DOWN_MASK;
+        int offMaskPrevious = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
 
-        if ((event.getModifiersEx() & (onmaskPrevious | offmaskPrevious)) == onmaskPrevious) {
+        if ((event.getModifiersEx() & (onMaskPrevious | offMaskPrevious)) == onMaskPrevious) {
             log.debug("Rendering PREV search result");
             searchPanel.renderPrevious();
         } else {
@@ -109,12 +107,12 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
         log.trace("Canceling previous tasks and launching a new SearchTask");
         searchPanel.resetLabels();
         resetTimer();
-        searchTimer.schedule(new SearchTask(searchPanel, datamodel), 300);
+        searchTimer.schedule(new SearchTask(searchPanel, dataModel), 300);
     }
 
     protected void clearSearch() {
         resetTimer();
-        datamodel.resetTextAttributesOfSelectedComponent();
+        dataModel.resetTextAttributesOfSelectedComponent();
         searchPanel.getSearchMonitor().clearSearch();
         searchPanel.resetLabels();
     }

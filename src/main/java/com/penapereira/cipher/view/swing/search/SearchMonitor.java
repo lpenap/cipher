@@ -13,7 +13,6 @@ import org.springframework.data.util.Pair;
 public class SearchMonitor extends Observable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private BufferedReader reader;
     private List<Pair<Integer, Integer>> searchResults;
     private Integer currentIndex;
     private Integer matches;
@@ -60,7 +59,7 @@ public class SearchMonitor extends Observable {
 
     public synchronized int search(String text, String query) {
         clearSearch();
-        reader = new BufferedReader(new StringReader(text));
+        BufferedReader reader = new BufferedReader(new StringReader(text));
         try {
             String line = reader.readLine();
             int currentIndex = 0;

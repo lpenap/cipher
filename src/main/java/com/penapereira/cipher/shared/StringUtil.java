@@ -36,9 +36,7 @@ public class StringUtil {
         if (size > str.length()) {
             StringBuilder result = new StringBuilder(size);
             int paddingSize = size - str.length();
-            for (int i = 0; i < paddingSize; i++) {
-                result.append(pad);
-            }
+            result.append(String.valueOf(pad).repeat(paddingSize));
             result.append(str);
             str = result.toString();
         }

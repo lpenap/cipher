@@ -15,12 +15,12 @@ import com.penapereira.cipher.model.document.Document;
 import lombok.Data;
 
 @Data
-public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface {
+public abstract class AbstractSwingDataModel implements SwingDataModelInterface {
 
     private final String DEFAULT_FONT = "Courier";
     private final int DEFAULT_FONT_SIZE = 12;
 
-    private final Logger log = LoggerFactory.getLogger(AbstractSwingDatamodel.class);
+    private final Logger log = LoggerFactory.getLogger(AbstractSwingDataModel.class);
 
     protected List<Document> documents;
     protected Map<JComponent, JComponent> parentToChildComponentMap;
@@ -35,7 +35,7 @@ public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface 
     protected int documentFontSize;
     protected Font documentContainerFont;
 
-    protected AbstractSwingDatamodel() {
+    protected AbstractSwingDataModel() {
         documents = new ArrayList<>();
         initArrays();
         documentFont = DEFAULT_FONT;
@@ -73,16 +73,14 @@ public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface 
     }
 
     protected void build() {
-        clearDatamodel();
+        clearDataModel();
         initArrays();
-        Iterator<Document> i = documents.iterator();
-        while (i.hasNext()) {
-            Document doc = i.next();
-            addDocumentDatamodel(doc);
+        for (Document doc : documents) {
+            addDocumentDataModel(doc);
         }
     }
 
-    protected void addDocumentDatamodel(Document doc) {
+    protected void addDocumentDataModel(Document doc) {
         Pair<JComponent, JComponent> parentChild = buildDocumentContainerHierarchy(doc);
         JComponent parent = parentChild.getFirst();
         JComponent child = parentChild.getSecond();
@@ -97,9 +95,7 @@ public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface 
 
     protected JComponent findParentOf(JComponent child) {
         JComponent decoratorFound = null;
-        Iterator<Entry<JComponent, JComponent>> i = parentToChildComponentMap.entrySet().iterator();
-        while (i.hasNext()) {
-            Entry<JComponent, JComponent> entry = i.next();
+        for (Entry<JComponent, JComponent> entry : parentToChildComponentMap.entrySet()) {
             if (entry.getValue() == child) {
                 decoratorFound = entry.getKey();
                 break;
@@ -168,7 +164,7 @@ public abstract class AbstractSwingDatamodel implements SwingDatamodelInterface 
 
     public synchronized void addDocument(Document doc) {
         documents.add(doc);
-        addDocumentDatamodel(doc);
+        addDocumentDataModel(doc);
     }
 
     @Override

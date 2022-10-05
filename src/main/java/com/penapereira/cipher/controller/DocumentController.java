@@ -15,9 +15,9 @@ import com.penapereira.cipher.shared.StringUtil;
 @Component
 public class DocumentController extends Observable {
 
-    protected Configuration config;
-    protected DocumentService documentService;
-    protected Messages messages;
+    protected final Configuration config;
+    protected final DocumentService documentService;
+    protected final Messages messages;
 
     @Autowired
     public DocumentController(Configuration config, DocumentService documentService, Messages messages) {

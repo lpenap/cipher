@@ -7,7 +7,7 @@ import javax.swing.text.PlainDocument;
 public class JTextFieldLimit extends PlainDocument {
 
     private static final long serialVersionUID = 1L;
-    protected int limit;
+    protected final int limit;
 
     public JTextFieldLimit(int limit) {
         super();

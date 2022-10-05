@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import com.penapereira.cipher.conf.SearchConfiguration;
-import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
-import com.penapereira.cipher.view.swing.datamodel.impl.TabbedPaneDatamodel;
+import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
+import com.penapereira.cipher.view.swing.datamodel.impl.TabbedPaneDataModel;
 import com.penapereira.cipher.view.swing.search.SearchPanel;
 
 @Component
@@ -17,7 +17,6 @@ public class TabbedPaneUserInterface extends AbstractSwingInterface {
 
     private static final long serialVersionUID = 1L;
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final String uiName = "TabbedPane Swing UI";
 
     JTabbedPane tabbedPane;
 
@@ -27,8 +26,8 @@ public class TabbedPaneUserInterface extends AbstractSwingInterface {
     }
 
     @Override
-    protected SwingDatamodelInterface buildDatamodel(ApplicationContext context) {
-        return context.getBean(TabbedPaneDatamodel.class);
+    protected SwingDataModelInterface buildDataModel(ApplicationContext context) {
+        return context.getBean(TabbedPaneDataModel.class);
     }
 
     @Override
@@ -36,15 +35,15 @@ public class TabbedPaneUserInterface extends AbstractSwingInterface {
         MainMenuBuilder menuBuilder = context.getBean(MainMenuBuilder.class);
         menuBuilder.setParentFrame(this);
         setJMenuBar(menuBuilder.buildJMenuBar());
-        tabbedPane = (JTabbedPane) getDatamodel().getMainComponent();
+        tabbedPane = (JTabbedPane) getDataModel().getMainComponent();
         getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
 
     @Override
     protected void displayAllDocuments() {
         log.debug("Refreshing all documents");
-        getDatamodel().setDocuments(getDocumentController().getAll());
-        tabbedPane = (JTabbedPane) getDatamodel().getMainComponent();
+        getDataModel().setDocuments(getDocumentController().getAll());
+        tabbedPane = (JTabbedPane) getDataModel().getMainComponent();
         if (tabbedPane.getTabCount() > 0) {
             tabbedPane.setSelectedIndex(0);
         }
@@ -52,12 +51,12 @@ public class TabbedPaneUserInterface extends AbstractSwingInterface {
 
     @Override
     public String getUserInterfaceName() {
-        return uiName;
+        return "TabbedPane Swing UI";
     }
 
     @Override
     protected SearchPanel buildSearchPanel(ApplicationContext context) {
-        return new SearchPanel(messages, datamodel, context.getBean(SearchConfiguration.class));
+        return new SearchPanel(messages, dataModel, context.getBean(SearchConfiguration.class));
     }
 
 }

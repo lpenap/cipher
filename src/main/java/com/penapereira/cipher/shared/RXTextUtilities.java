@@ -4,6 +4,7 @@ import java.awt.Container;
 import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
@@ -27,7 +28,7 @@ public class RXTextUtilities {
     /*
      * Attempt to center the line containing the caret at the center of the scroll pane.
      *
-     * @param component the text component in the sroll pane
+     * @param component the text component in the scroll pane
      */
     public static void centerLineInScrollPane(JTextComponent component) {
         Container container = SwingUtilities.getAncestorOfClass(JViewport.class, component);
@@ -36,15 +37,15 @@ public class RXTextUtilities {
             return;
 
         try {
-            Rectangle r = component.modelToView(component.getCaretPosition());
+            Rectangle2D r = component.modelToView2D(component.getCaretPosition());
             JViewport viewport = (JViewport) container;
             int extentHeight = viewport.getExtentSize().height;
             int viewHeight = viewport.getViewSize().height;
 
-            int y = Math.max(0, r.y - ((extentHeight - r.height) / 2));
+            double y = Math.max(0, r.getY() - ((extentHeight - r.getHeight()) / 2));
             y = Math.min(y, viewHeight - extentHeight);
 
-            viewport.setViewPosition(new Point(0, y));
+            viewport.setViewPosition(new Point(0, (int) y));
         } catch (BadLocationException ble) {
         }
     }
@@ -60,16 +61,16 @@ public class RXTextUtilities {
 
         FontMetrics fm = component.getFontMetrics(component.getFont());
         int characterWidth = fm.stringWidth("0");
-        int column = 0;
+        double column = 0;
 
         try {
-            Rectangle r = component.modelToView(component.getCaretPosition());
-            int width = r.x - component.getInsets().left;
+            Rectangle2D r = component.modelToView2D(component.getCaretPosition());
+            double width = r.getX() - component.getInsets().left;
             column = width / characterWidth;
         } catch (BadLocationException ble) {
         }
 
-        return column + 1;
+        return (int) (column + 1);
     }
 
     /*

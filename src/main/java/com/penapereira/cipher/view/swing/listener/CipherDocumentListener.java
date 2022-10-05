@@ -6,16 +6,16 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 
 public class CipherDocumentListener implements DocumentListener, FocusListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private Long documentId;
-    private SwingDatamodelInterface datamodel;
+    private final Long documentId;
+    private final SwingDataModelInterface dataModel;
 
-    public CipherDocumentListener(SwingDatamodelInterface datamodel, Long documentId) {
-        this.datamodel = datamodel;
+    public CipherDocumentListener(SwingDataModelInterface dataModel, Long documentId) {
+        this.dataModel = dataModel;
         this.documentId = documentId;
     }
 
@@ -32,7 +32,7 @@ public class CipherDocumentListener implements DocumentListener, FocusListener {
     }
 
     protected void setModified() {
-        datamodel.setModifiedNameFor(documentId);
+        dataModel.setModifiedNameFor(documentId);
     }
 
     @Override

@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class SearchConfiguration {
 
-    private long keyPressedThresholdMilis;
+    private long keyPressedThresholdMillis;
     private int arrowSize;
     private int closeSize;
     private int iconColorR;

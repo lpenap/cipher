@@ -9,27 +9,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
-import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 
 public class SaveAllActionListener extends AbstractActionListener implements ActionListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final long serialVersionUID = 1L;
-    private SwingDatamodelInterface datamodel;
+    private final SwingDataModelInterface dataModel;
 
-    public SaveAllActionListener(DocumentController documentController, SwingDatamodelInterface datamodel) {
+    public SaveAllActionListener(DocumentController documentController, SwingDataModelInterface dataModel) {
         super(documentController);
-        this.datamodel = datamodel;
+        this.dataModel = dataModel;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         log.debug("Saving all documents...");
         List<Document> documents = new ArrayList<>();
-        for (int i = 0; i < datamodel.getComponentCount(); i++) {
-            JComponent component = datamodel.getComponentAt(i);
-            String text = datamodel.getTextFromComponent(component);
-            Long documentId = datamodel.getDocumentIdFor(component);
+        for (int i = 0; i < dataModel.getComponentCount(); i++) {
+            JComponent component = dataModel.getComponentAt(i);
+            String text = dataModel.getTextFromComponent(component);
+            Long documentId = dataModel.getDocumentIdFor(component);
             Document doc = documentController.get(documentId);
             doc.setText(text);
             documents.add(doc);

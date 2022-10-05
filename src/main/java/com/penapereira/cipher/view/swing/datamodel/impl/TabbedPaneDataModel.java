@@ -6,11 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import com.penapereira.cipher.model.document.Document;
-import com.penapereira.cipher.view.swing.datamodel.AbstractTextPaneSwingDatamodel;
+import com.penapereira.cipher.view.swing.datamodel.AbstractTextPaneSwingDataModel;
 import com.penapereira.cipher.view.swing.search.SearchAdapter;
 
 @Component
-public class TabbedPaneDatamodel extends AbstractTextPaneSwingDatamodel {
+public class TabbedPaneDataModel extends AbstractTextPaneSwingDataModel {
 
     protected final String MODIFIED_PREFIX = "* \u2063";
 
@@ -36,8 +36,8 @@ public class TabbedPaneDatamodel extends AbstractTextPaneSwingDatamodel {
     }
 
     @Override
-    public synchronized void clearDatamodel() {
-        ((JTabbedPane) getMainComponent()).removeAll();
+    public synchronized void clearDataModel() {
+        getMainComponent().removeAll();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class TabbedPaneDatamodel extends AbstractTextPaneSwingDatamodel {
     @Override
     public synchronized Integer addToMainComponent(JComponent parent, Document doc) {
         parent.setName(doc.getTitle());
-        ((JTabbedPane) getMainComponent()).add(doc.getTitle(), parent);
+        getMainComponent().add(doc.getTitle(), parent);
         return getComponentIndex(parent);
     }
 
@@ -87,7 +87,7 @@ public class TabbedPaneDatamodel extends AbstractTextPaneSwingDatamodel {
 
     @Override
     protected void removeParentComponent(JComponent component) {
-        ((JTabbedPane) getMainComponent()).remove(component);
+        getMainComponent().remove(component);
     }
 
     @Override

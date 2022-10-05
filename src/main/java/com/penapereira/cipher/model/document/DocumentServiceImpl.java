@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DocumentServiceImpl implements DocumentService {
 
-    protected DocumentRepository documentRepository;
+    protected final DocumentRepository documentRepository;
 
     @Autowired
     public DocumentServiceImpl(DocumentRepository documentRepository) {

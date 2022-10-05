@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 public class CloseActionListener implements ActionListener {
 
-    private SearchPanel searchPanel;
+    private final SearchPanel searchPanel;
 
     public CloseActionListener(SearchPanel searchPanel) {
         this.searchPanel = searchPanel;

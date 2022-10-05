@@ -9,19 +9,19 @@ import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
-import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 
 public class DeleteDocumentActionListener extends AbstractActionListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final long serialVersionUID = 1L;
-    private SwingDatamodelInterface datamodel;
-    private JFrame parent;
+    private final SwingDataModelInterface dataModel;
+    private final JFrame parent;
 
     public DeleteDocumentActionListener(DocumentController documentController, Messages messages, JFrame parent,
-            SwingDatamodelInterface datamodel) {
+            SwingDataModelInterface dataModel) {
         super(documentController, messages);
-        this.datamodel = datamodel;
+        this.dataModel = dataModel;
         this.parent = parent;
     }
 
@@ -47,8 +47,8 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
     }
 
     protected Long getSelectedDocumentId() {
-        JComponent selectedComponent = datamodel.getSelectedComponent();
-        return datamodel.getDocumentIdFor(selectedComponent);
+        JComponent selectedComponent = dataModel.getSelectedComponent();
+        return dataModel.getDocumentIdFor(selectedComponent);
     }
 
     protected Document getSelectedDocument() {

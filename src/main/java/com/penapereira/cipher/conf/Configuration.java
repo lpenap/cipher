@@ -15,6 +15,7 @@ import lombok.Data;
  * @author luis
  *
  */
+@SuppressWarnings("SpellCheckingInspection")
 @Component
 @ConfigurationProperties(prefix = "cipher")
 @Data

@@ -12,7 +12,7 @@ import com.penapereira.cipher.conf.SearchConfiguration;
 import com.penapereira.cipher.shared.StringUtil;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
-import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
+import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 
@@ -26,15 +26,15 @@ public class SearchPanel extends JPanel {
     private final Messages messages;
     private JLabel labelSearchFound;
     private JLabel labelSearchTotal;
-    private final SwingDatamodelInterface datamodel;
+    private final SwingDataModelInterface dataModel;
     private final SearchMonitor searchMonitor;
     private final StringUtil util;
     private final SearchConfiguration conf;
 
-    public SearchPanel(Messages messages, SwingDatamodelInterface datamodel, SearchConfiguration searchConf) {
+    public SearchPanel(Messages messages, SwingDataModelInterface dataModel, SearchConfiguration searchConf) {
         super();
         this.messages = messages;
-        this.datamodel = datamodel;
+        this.dataModel = dataModel;
         this.searchMonitor = new SearchMonitor();
         this.util = new StringUtil();
         this.conf = searchConf;
@@ -102,10 +102,10 @@ public class SearchPanel extends JPanel {
     }
 
     protected void addSearchAdapter() {
-        SearchAdapter searchAdapter = new SearchAdapter(this, datamodel);
+        SearchAdapter searchAdapter = new SearchAdapter(this, dataModel);
         searchTextField.addKeyListener(searchAdapter);
         searchTextField.addFocusListener(searchAdapter);
-        datamodel.addSearchAdapter(searchAdapter);
+        dataModel.addSearchAdapter(searchAdapter);
     }
 
     public synchronized SearchMonitor getSearchMonitor() {
@@ -113,7 +113,7 @@ public class SearchPanel extends JPanel {
     }
 
     public synchronized void close() {
-        datamodel.resetTextAttributesOfSelectedComponent();
+        dataModel.resetTextAttributesOfSelectedComponent();
         setVisible(false);
     }
 
@@ -150,16 +150,16 @@ public class SearchPanel extends JPanel {
 
     public synchronized void renderNext() {
         if (searchMonitor.getMatches() != 0) {
-            datamodel.clearMarkedText(searchMonitor.getCurrent());
-            datamodel.markText(searchMonitor.getNext());
+            dataModel.clearMarkedText(searchMonitor.getCurrent());
+            dataModel.markText(searchMonitor.getNext());
             renderCurrentIndex();
         }
     }
 
     public synchronized void renderPrevious() {
         if (searchMonitor.getMatches() != 0) {
-            datamodel.clearMarkedText(searchMonitor.getCurrent());
-            datamodel.markText(searchMonitor.getPrevious());
+            dataModel.clearMarkedText(searchMonitor.getCurrent());
+            dataModel.markText(searchMonitor.getPrevious());
             renderCurrentIndex();
         }
     }

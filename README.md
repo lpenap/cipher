@@ -14,13 +14,12 @@ Java AES/RSA Cipher Application to manage encrypted text.
 ## Technology overview
 * Java 8
 * Gradle 4.5.1
-* Springboot 2.0.2 (headless)
+* Spring Boot 2.0.2 (headless)
 * Java Swing User Interface
 * JPA + Hibernate ORM
 * H2 Database
 * Lombok
 * slf4j for logging
-* jiconfont + font-awesome
 * JUnit + mockito for testing
 * Travis CI
 

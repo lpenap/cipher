@@ -14,9 +14,9 @@ import com.penapereira.cipher.shared.RXTextUtilities;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.swing.listener.CipherDocumentListener;
 
-public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamodel {
+public abstract class AbstractTextPaneSwingDataModel extends AbstractSwingDataModel {
 
-    private final Logger log = LoggerFactory.getLogger(AbstractTextPaneSwingDatamodel.class);
+    private final Logger log = LoggerFactory.getLogger(AbstractTextPaneSwingDataModel.class);
     private SwingUtil util;
 
     @Override
@@ -58,11 +58,11 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
         markTextWithAttributes(indexes, util.getDefaultAttributeSet());
     }
 
-    protected synchronized void markTextWithAttributes(Pair<Integer, Integer> indexes, AttributeSet atts) {
+    protected synchronized void markTextWithAttributes(Pair<Integer, Integer> indexes, AttributeSet attributeSet) {
         JTextPane textPane = (JTextPane) getSelectedChildComponent();
         synchronized (textPane.getTreeLock()) {
             StyledDocument styledDoc = textPane.getStyledDocument();
-            styledDoc.setCharacterAttributes(indexes.getFirst(), indexes.getSecond() - indexes.getFirst(), atts, false);
+            styledDoc.setCharacterAttributes(indexes.getFirst(), indexes.getSecond() - indexes.getFirst(), attributeSet, false);
             textPane.setCaretPosition(indexes.getFirst());
             RXTextUtilities.centerLineInScrollPane(textPane);
         }
@@ -70,7 +70,7 @@ public abstract class AbstractTextPaneSwingDatamodel extends AbstractSwingDatamo
 
     @Override
     public synchronized void resetTextAttributesOfSelectedComponent() {
-        log.trace("Reseting document style to default");
+        log.trace("Reset document style to default");
         JTextPane textPane = (JTextPane) getSelectedChildComponent();
         synchronized (textPane.getTreeLock()) {
             StyledDocument styledDoc = textPane.getStyledDocument();
