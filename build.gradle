@@ -1,48 +1,38 @@
-buildscript {
-	ext {
-		springBootVersion = '2.0.2.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+plugins {
+	id 'org.springframework.boot' version '2.7.4'
+	id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+	id 'java'
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
 
-group = 'com.penapereira'
-version = '0.1'
-sourceCompatibility = 1.8
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
 
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	//compile('org.springframework.boot:spring-boot-starter-data-redis')
-	//compile('org.springframework.boot:spring-boot-starter-mail')
-	compile('org.springframework.boot:spring-boot-starter-validation')
-	//compile('org.springframework.session:spring-session-data-redis')
-	//runtime('org.springframework.boot:spring-boot-devtools')
-	//compile('commons-cli:commons-cli:1.4')
-	compile 'com.jgoodies:jgoodies-forms:1.9.0'
-	compile 'com.github.jiconfont:jiconfont-swing:1.0.1'
-	compile 'com.github.jiconfont:jiconfont-font_awesome:4.7.0.0'
-	runtime('com.h2database:h2')
-	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
-	compileOnly('org.projectlombok:lombok')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'com.github.jiconfont:jiconfont:1.0.0'
+	implementation 'com.github.jiconfont:jiconfont-swing:1.0.1'
+	implementation 'com.github.jiconfont:jiconfont-font_awesome:4.7.0.1'
+	implementation 'jgoodies:forms:1.0.5'
+
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.h2database:h2'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-test {
-    testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat "full"
-    }
+tasks.named('test') {
+	useJUnitPlatform()
 }

@@ -16,6 +16,6 @@ public class Document {
 
     protected String title;
 
-    @Column(length = Integer.MAX_VALUE)
+    @Column(length = 1000000000)
     protected String text;
 }

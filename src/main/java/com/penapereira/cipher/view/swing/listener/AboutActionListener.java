@@ -3,7 +3,7 @@ package com.penapereira.cipher.view.swing.listener;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.shared.StringUtil;
 import com.penapereira.cipher.shared.SwingUtil;
-import jiconfont.icons.FontAwesome;
+import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

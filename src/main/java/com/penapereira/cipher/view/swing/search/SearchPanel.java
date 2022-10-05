@@ -13,7 +13,7 @@ import com.penapereira.cipher.shared.StringUtil;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
 import com.penapereira.cipher.view.swing.datamodel.SwingDatamodelInterface;
-import jiconfont.icons.FontAwesome;
+import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 
 public class SearchPanel extends JPanel {
@@ -23,13 +23,13 @@ public class SearchPanel extends JPanel {
     private final int SEARCH_INPUT_TEXT_COLUMNS = 20;
 
     private JTextField searchTextField;
-    private Messages messages;
+    private final Messages messages;
     private JLabel labelSearchFound;
     private JLabel labelSearchTotal;
-    private SwingDatamodelInterface datamodel;
-    private SearchMonitor searchMonitor;
-    private StringUtil util;
-    private SearchConfiguration conf;
+    private final SwingDatamodelInterface datamodel;
+    private final SearchMonitor searchMonitor;
+    private final StringUtil util;
+    private final SearchConfiguration conf;
 
     public SearchPanel(Messages messages, SwingDatamodelInterface datamodel, SearchConfiguration searchConf) {
         super();
