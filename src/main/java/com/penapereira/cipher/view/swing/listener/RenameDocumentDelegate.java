@@ -23,7 +23,7 @@ public class RenameDocumentDelegate extends SingleInputDialogActionListener {
     @Override
     protected void actionPerformedDelegate(ActionEvent e) {
         Long documentId = dataModel.getDocumentIdFor(dataModel.getSelectedComponent());
-        Document doc = documentController.get(documentId);
+        Document doc = documentController.get(documentId).get();
         setTextFieldString(doc.getTitle());
     }
 
@@ -40,11 +40,10 @@ public class RenameDocumentDelegate extends SingleInputDialogActionListener {
         if (!documentTitle.isEmpty()) {
             log.info("Renaming document to new title: " + documentTitle);
             Long documentId = dataModel.getDocumentIdFor(dataModel.getSelectedComponent());
-            Document doc = documentController.get(documentId);
-            doc.setTitle(documentTitle);
-            if (doc != null) {
+            documentController.get(documentId).ifPresent(doc-> {
+                doc.setTitle(documentTitle);
                 documentController.save(doc);
-            }
+            });
         }
     }
 }

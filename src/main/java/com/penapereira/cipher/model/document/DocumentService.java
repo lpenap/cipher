@@ -1,6 +1,7 @@
 package com.penapereira.cipher.model.document;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DocumentService {
 
@@ -10,7 +11,7 @@ public interface DocumentService {
 
     Document save(Document doc);
 
-    Document findById(Long id);
+    Optional<Document> findById(Long id);
 
     void deleteById(Long id);
 

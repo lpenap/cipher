@@ -1,6 +1,8 @@
 package com.penapereira.cipher.model.document;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,8 +40,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Document findById(Long id) {
-        return documentRepository.findById(id).get();
+    public Optional<Document> findById(Long id) {
+        return documentRepository.findById(id);
     }
 
     @Override

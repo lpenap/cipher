@@ -30,7 +30,7 @@ public class SaveAllActionListener extends AbstractActionListener implements Act
             JComponent component = dataModel.getComponentAt(i);
             String text = dataModel.getTextFromComponent(component);
             Long documentId = dataModel.getDocumentIdFor(component);
-            Document doc = documentController.get(documentId);
+            Document doc = documentController.get(documentId).get();
             doc.setText(text);
             documents.add(doc);
         }

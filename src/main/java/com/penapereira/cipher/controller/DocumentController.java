@@ -3,6 +3,8 @@ package com.penapereira.cipher.controller;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.penapereira.cipher.conf.Configuration;
@@ -55,16 +57,8 @@ public class DocumentController extends Observable {
         return newDoc;
     }
 
-    public Document get(Long documentId) {
+    public Optional<Document> get(Long documentId) {
         return documentService.findById(documentId);
-    }
-
-    public void delete(Long documentId) {
-        if (documentId != null) {
-            Document doc = documentService.findById(documentId);
-            documentService.deleteById(documentId);
-            requestNotifyObservers(ActionType.DELETE, doc);
-        }
     }
 
     public void delete(Document doc) {

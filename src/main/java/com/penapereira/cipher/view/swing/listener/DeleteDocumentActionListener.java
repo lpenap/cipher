@@ -1,15 +1,16 @@
 package com.penapereira.cipher.view.swing.listener;
 
-import java.awt.event.ActionEvent;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.shared.SwingUtil;
 import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.Optional;
 
 public class DeleteDocumentActionListener extends AbstractActionListener {
 
@@ -19,7 +20,7 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
     private final JFrame parent;
 
     public DeleteDocumentActionListener(DocumentController documentController, Messages messages, JFrame parent,
-            SwingDataModelInterface dataModel) {
+                                        SwingDataModelInterface dataModel) {
         super(documentController, messages);
         this.dataModel = dataModel;
         this.parent = parent;
@@ -27,13 +28,11 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Document selectedDoc = getSelectedDocument();
-        if (selectedDoc == null) {
-            log.warn("Selected document is null, refreshing all documents.");
-            documentController.requestNotifyObservers();
-        } else {
-            confirmDeletion(selectedDoc);
-        }
+        getSelectedDocument().ifPresentOrElse(doc -> confirmDeletion(doc),
+                () -> {
+                    log.warn("Selected document is null, refreshing all documents.");
+                    documentController.requestNotifyObservers();
+                });
     }
 
     private void confirmDeletion(Document doc) {
@@ -51,15 +50,13 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
         return dataModel.getDocumentIdFor(selectedComponent);
     }
 
-    protected Document getSelectedDocument() {
+    protected Optional<Document> getSelectedDocument() {
         Document selectedDocument = null;
         Long documentId = getSelectedDocumentId();
-        if (documentId != null) {
-            selectedDocument = documentController.get(documentId);
-        }
-        return selectedDocument;
+        return documentController.get(documentId);
     }
 
     @Override
-    protected void build() {}
+    protected void build() {
+    }
 }
