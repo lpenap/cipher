@@ -3,7 +3,7 @@ package com.penapereira.cipher.view.swing.listener;
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
-import com.penapereira.cipher.shared.SwingUtil;
+import com.penapereira.cipher.util.SwingUtil;
 import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

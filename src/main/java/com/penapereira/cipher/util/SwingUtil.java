@@ -1,4 +1,4 @@
-package com.penapereira.cipher.shared;
+package com.penapereira.cipher.util;
 
 import java.awt.Color;
 import java.awt.Component;

@@ -4,7 +4,7 @@ import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
-import com.penapereira.cipher.shared.StringUtil;
+import com.penapereira.cipher.util.StringUtil;
 import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 
 public class SearchTask extends TimerTask {

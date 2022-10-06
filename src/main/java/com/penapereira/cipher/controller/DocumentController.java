@@ -1,6 +1,5 @@
 package com.penapereira.cipher.controller;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Optional;
@@ -12,7 +11,7 @@ import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentActionInterface.ActionType;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.model.document.DocumentService;
-import com.penapereira.cipher.shared.StringUtil;
+import com.penapereira.cipher.util.StringUtil;
 
 @Component
 public class DocumentController extends Observable {

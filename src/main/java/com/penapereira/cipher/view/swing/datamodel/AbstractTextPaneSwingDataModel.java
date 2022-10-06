@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import com.penapereira.cipher.model.document.Document;
-import com.penapereira.cipher.shared.RXTextUtilities;
-import com.penapereira.cipher.shared.SwingUtil;
+import com.penapereira.cipher.util.RXTextUtilities;
+import com.penapereira.cipher.util.SwingUtil;
 import com.penapereira.cipher.view.swing.listener.CipherDocumentListener;
 
 public abstract class AbstractTextPaneSwingDataModel extends AbstractSwingDataModel {

@@ -10,7 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.penapereira.cipher.shared.StringUtil;
+import com.penapereira.cipher.util.StringUtil;
 import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 
 public class SearchAdapter implements KeyListener, ChangeListener, FocusListener {

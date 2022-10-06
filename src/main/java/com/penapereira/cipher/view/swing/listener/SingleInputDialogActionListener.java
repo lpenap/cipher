@@ -2,14 +2,13 @@ package com.penapereira.cipher.view.swing.listener;
 
 import com.penapereira.cipher.conf.Messages;
 import com.penapereira.cipher.controller.DocumentController;
-import com.penapereira.cipher.shared.StringUtil;
+import com.penapereira.cipher.util.StringUtil;
 import com.penapereira.cipher.view.swing.component.JTextFieldLimit;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 

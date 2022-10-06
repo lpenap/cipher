@@ -1,9 +1,8 @@
-package com.penapereira.cipher.shared;
+package com.penapereira.cipher.util;
 
 import java.awt.Container;
 import java.awt.FontMetrics;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;

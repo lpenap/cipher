@@ -1,8 +1,8 @@
 package com.penapereira.cipher.view.swing.listener;
 
 import com.penapereira.cipher.conf.Messages;
-import com.penapereira.cipher.shared.StringUtil;
-import com.penapereira.cipher.shared.SwingUtil;
+import com.penapereira.cipher.util.StringUtil;
+import com.penapereira.cipher.util.SwingUtil;
 import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import org.slf4j.Logger;
