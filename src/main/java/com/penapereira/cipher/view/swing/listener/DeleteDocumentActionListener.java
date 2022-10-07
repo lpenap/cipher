@@ -28,10 +28,10 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getSelectedDocument().ifPresentOrElse(doc -> confirmDeletion(doc),
+        getSelectedDocument().ifPresentOrElse(this::confirmDeletion,
                 () -> {
                     log.warn("Selected document is null, refreshing all documents.");
-                    documentController.requestNotifyObservers();
+                    documentController.fireUpdateAll();
                 });
     }
 

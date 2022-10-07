@@ -10,6 +10,4 @@ public interface MainUserInterface {
 
     String getUserInterfaceName();
 
-    void update(Observable o, Object arg);
-
 }

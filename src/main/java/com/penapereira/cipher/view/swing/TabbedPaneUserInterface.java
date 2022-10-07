@@ -1,6 +1,7 @@
 package com.penapereira.cipher.view.swing;
 
 import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
 import javax.swing.JTabbedPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,5 +59,4 @@ public class TabbedPaneUserInterface extends AbstractSwingInterface {
     protected SearchPanel buildSearchPanel(ApplicationContext context) {
         return new SearchPanel(messages, dataModel, context.getBean(SearchConfiguration.class));
     }
-
 }

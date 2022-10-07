@@ -6,9 +6,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Entity
 @Data
-public class Document {
+public class Document implements Serializable {
 
     @Id
     @GeneratedValue

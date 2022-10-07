@@ -5,17 +5,20 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JFrame;
+
+import com.penapereira.cipher.controller.ActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import com.penapereira.cipher.conf.Configuration;
 import com.penapereira.cipher.conf.Messages;
-import com.penapereira.cipher.controller.DocumentActionInterface;
 import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.util.SwingUtil;
@@ -25,7 +28,7 @@ import com.penapereira.cipher.view.swing.listener.WindowExitListener;
 import com.penapereira.cipher.view.swing.search.SearchPanel;
 import com.penapereira.cipher.view.swing.search.SearchPanelDispatcher;
 
-public abstract class AbstractSwingInterface extends JFrame implements MainUserInterface, Observer {
+public abstract class AbstractSwingInterface extends JFrame implements MainUserInterface, PropertyChangeListener {
 
     private static final long serialVersionUID = 1L;
     private final Logger log = LoggerFactory.getLogger(AbstractSwingInterface.class);
@@ -34,6 +37,9 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
     protected final Configuration config;
     protected final SwingDataModelInterface dataModel;
     protected SearchPanel searchPanel;
+
+    @Autowired
+    ActionType actionType;
 
     @Autowired
     public AbstractSwingInterface(ApplicationContext context) {
@@ -68,7 +74,6 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
     public boolean init() {
         dataModel
                 .setDocumentContainerFont(new Font(config.getDocumentFont(), Font.PLAIN, config.getDocumentFontSize()));
-        documentController.addObserver(this);
         List<Document> documents = documentController.getAll();
         log.debug("Initializing main user interface...");
         boolean isInitCompleted = true;
@@ -92,32 +97,11 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
         log.debug("Launching user interface...");
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
                 .addKeyEventDispatcher(new SearchPanelDispatcher(searchPanel));
-        this.setVisible(true);
-    }
 
-    /**
-     * Update method from Observer pattern invoked every time a document is modified (created, updated, deleted)
-     */
-    @Override
-    public void update(Observable o, Object arg) {
-        log.debug("Update request received from controller");
-        if (arg instanceof DocumentActionInterface) {
-            DocumentActionInterface action = (DocumentActionInterface) arg;
-            Document doc = action.getDocument();
-            switch (action.getAction()) {
-                case ADD:
-                    addDocument(doc);
-                    break;
-                case DELETE:
-                    deleteDocument(doc);
-                    break;
-                case UPDATE:
-                    updateDocument(doc);
-                    break;
-            }
-        } else {
-            displayAllDocuments();
-        }
+        log.debug("Registering swing UI as property change listener in the document controller...");
+        documentController.addPropertyChangeListener(this);
+
+        this.setVisible(true);
     }
 
     private void updateDocument(Document doc) {
@@ -155,5 +139,28 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
 
     protected DocumentController getDocumentController() {
         return documentController;
+    }
+
+
+    /**
+     * propertyChange method from Observer/Listener pattern invoked every time a document is modified (created,
+     * updated, deleted)
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        String actionName = evt.getPropertyName();
+        log.debug("Received event \"" + actionName + "\"" );
+        if (actionType.ADD.equals(actionName)) {
+            addDocument((Document) evt.getNewValue());
+        }
+        if (actionType.DELETE.equals(actionName)) {
+            deleteDocument((Document) evt.getOldValue());
+        }
+        if (actionType.UDPATE.equals(actionName)) {
+            updateDocument((Document) evt.getNewValue());
+        }
+        if (actionType.UPDATE_ALL.equals(actionName)) {
+            displayAllDocuments();
+        }
     }
 }
