@@ -33,4 +33,6 @@ public interface CipherInterface {
             InvalidAlgorithmParameterException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException;
 
+    void setIvParameterSpec(IvParameterSpec ivParameterSpec);
+
 }

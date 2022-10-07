@@ -18,13 +18,14 @@ import java.security.spec.KeySpec;
 import java.util.Base64;
 
 abstract class AbstractCipher implements CipherInterface {
+    protected IvParameterSpec ivParameterSpec;
+
     public SecretKey getKeyFromPassword(String password, String salt) throws NoSuchAlgorithmException,
             InvalidKeySpecException {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
-        SecretKey secret = new SecretKeySpec(factory.generateSecret(spec)
+        return new SecretKeySpec(factory.generateSecret(spec)
                 .getEncoded(), "AES");
-        return secret;
     }
 
     public IvParameterSpec generateIv() {
@@ -53,5 +54,9 @@ abstract class AbstractCipher implements CipherInterface {
         byte[] plainText = cipher.doFinal(Base64.getDecoder()
                 .decode(cipherText));
         return new String(plainText);
+    }
+
+    public void setIvParameterSpec(IvParameterSpec ivParameterSpec) {
+        this.ivParameterSpec = ivParameterSpec;
     }
 }
