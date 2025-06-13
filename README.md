@@ -8,13 +8,13 @@
 Java AES/RSA Cipher Application to manage encrypted text.
 
 ## Requirements
-* Java 8
-* Gradle (provided by wrapper) 4.5.1
+* Java 21
+* Gradle (provided by wrapper) 8.14.2
 
 ## Technology overview
-* Java 8
-* Gradle 4.5.1
-* Spring Boot 2.0.2 (headless)
+* Java 21
+* Gradle 8.14.2
+* Spring Boot 3.5.0 (headless)
 * Java Swing User Interface
 * JPA + Hibernate ORM
 * H2 Database
