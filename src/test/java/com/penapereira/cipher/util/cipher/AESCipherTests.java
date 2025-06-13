@@ -3,6 +3,8 @@ package com.penapereira.cipher.util.cipher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import com.penapereira.cipher.view.swing.TabbedPaneUserInterface;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -17,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 public class AESCipherTests {
+    @MockBean
+    private TabbedPaneUserInterface ui;
     @Autowired
     CipherInterface aesCipher;
 

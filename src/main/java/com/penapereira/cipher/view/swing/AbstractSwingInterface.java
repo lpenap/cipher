@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
+import java.awt.GraphicsEnvironment;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -127,7 +128,12 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
 
     protected void setSize() {
         setResizable(true);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screenSize;
+        if (GraphicsEnvironment.isHeadless()) {
+            screenSize = new Dimension(config.getWindowWidth(), 800);
+        } else {
+            screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        }
         int width = Math.min(config.getWindowWidth(), (int) screenSize.getWidth() / 2);
         setSize(width, (int) screenSize.getHeight() - 100);
         // setSize(500, 500);

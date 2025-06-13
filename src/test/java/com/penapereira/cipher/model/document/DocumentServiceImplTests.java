@@ -1,7 +1,6 @@
 package com.penapereira.cipher.model.document;
 
 import com.penapereira.cipher.CipherApplication;
-import com.penapereira.cipher.HeadlessSpringBootContextLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import com.penapereira.cipher.view.swing.TabbedPaneUserInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
-@ContextConfiguration(classes = CipherApplication.class, loader = HeadlessSpringBootContextLoader.class)
+@SpringBootTest(properties = "spring.main.headless=true")
+@ContextConfiguration(classes = CipherApplication.class)
 public class DocumentServiceImplTests {
 
     @MockBean
     DocumentRepository documentRepositoryMock;
+
+    @MockBean
+    TabbedPaneUserInterface ui;
 
     @Autowired
     private DocumentService documentService;
