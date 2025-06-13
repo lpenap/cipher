@@ -36,7 +36,7 @@ public interface SwingDataModelInterface {
 
     void clearDataModel();
 
-    void setModifiedNameFor(Long documentId);
+    void setModified(Long documentId);
 
     void addSearchAdapter(SearchAdapter searchAdapter);
 

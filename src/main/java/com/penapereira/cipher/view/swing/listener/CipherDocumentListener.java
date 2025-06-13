@@ -32,7 +32,7 @@ public class CipherDocumentListener implements DocumentListener, FocusListener {
     }
 
     protected void setModified() {
-        dataModel.setModifiedNameFor(documentId);
+        dataModel.setModified(documentId);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class CipherDocumentListener implements DocumentListener, FocusListener {
 
     @Override
     public void focusGained(FocusEvent e) {}
-
+    
     @Override
     public void focusLost(FocusEvent e) {}
 }
