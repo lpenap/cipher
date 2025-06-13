@@ -65,7 +65,7 @@ public class TabbedPaneDataModel extends AbstractTextPaneSwingDataModel {
     }
 
     @Override
-    public void setModifiedNameFor(Long documentId) {
+    public void setModified(Long documentId) {
         JComponent parentComponent = findParentOf(documentId);
         int parentComponentIndex = getComponentIndex(parentComponent);
         if (!isParentComponentModified(parentComponent)) {
