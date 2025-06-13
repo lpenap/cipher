@@ -1,8 +1,4 @@
-
-| Branch  | Building status  |
-|---------|------------------|
-| Master  | [![Build Status](https://travis-ci.com/lpenap/cipher.svg?branch=master)](https://travis-ci.com/lpenap/cipher)  |
-| Develop | [![Build Status](https://travis-ci.com/lpenap/cipher.svg?branch=develop)](https://travis-ci.com/lpenap/cipher) |
+[![Build and Test](https://github.com/lpenap/cipher/actions/workflows/ci.yml/badge.svg)](https://github.com/lpenap/cipher/actions/workflows/ci.yml)
 
 # Cipher
 Java AES/RSA Cipher Application to manage encrypted text.
