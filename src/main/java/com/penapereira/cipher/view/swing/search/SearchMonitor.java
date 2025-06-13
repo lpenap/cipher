@@ -5,12 +5,13 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 
-public class SearchMonitor extends Observable {
+import com.penapereira.cipher.util.patterns.observer.AbstractSubject;
+
+public class SearchMonitor extends AbstractSubject {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private List<Pair<Integer, Integer>> searchResults;
@@ -75,7 +76,7 @@ public class SearchMonitor extends Observable {
                     + "This does not means the document file is damaged, "
                     + "but that search operation could read the text from memory.");
         }
-        requestNotifyObservers();
+        notifyMyObservers();
         return matches;
     }
 
@@ -90,9 +91,9 @@ public class SearchMonitor extends Observable {
         }
     }
 
-    private void requestNotifyObservers() {
+    protected void notifyMyObservers() {
         setChanged();
-        notifyObservers();
+        requestNotifyObservers();
     }
 
     public synchronized boolean isTimerRunning() {

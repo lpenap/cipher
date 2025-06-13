@@ -9,8 +9,6 @@ import java.awt.GraphicsEnvironment;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import javax.swing.JFrame;
 
 import com.penapereira.cipher.controller.ActionType;
@@ -78,16 +76,21 @@ public abstract class AbstractSwingInterface extends JFrame implements MainUserI
         List<Document> documents = documentController.getAll();
         log.debug("Initializing main user interface...");
         boolean isInitCompleted = true;
+        boolean shouldDisplayAllDocuments = false;
 
         if (documents.isEmpty()) {
             if (new SwingUtil(this).confirm(messages.getSetupConfirmTitle(), messages.getSetupConfirmMsg())) {
                 initializeWelcomeDocument();
+                shouldDisplayAllDocuments = true;
             } else {
                 log.info("User didn't want to continue. Exiting...");
                 isInitCompleted = false;
             }
         } else {
             log.debug("Documents repository has {} document(s), proceeding to render them...", documents.size());
+            shouldDisplayAllDocuments = true;
+        }
+        if (shouldDisplayAllDocuments) {
             displayAllDocuments();
         }
         return isInitCompleted;

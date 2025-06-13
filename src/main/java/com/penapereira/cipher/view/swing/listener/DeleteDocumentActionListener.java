@@ -51,7 +51,6 @@ public class DeleteDocumentActionListener extends AbstractActionListener {
     }
 
     protected Optional<Document> getSelectedDocument() {
-        Document selectedDocument = null;
         Long documentId = getSelectedDocumentId();
         return documentController.get(documentId);
     }

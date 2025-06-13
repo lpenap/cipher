@@ -1,7 +1,6 @@
 package com.penapereira.cipher.view.swing.listener;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
@@ -11,7 +10,7 @@ import com.penapereira.cipher.controller.DocumentController;
 import com.penapereira.cipher.model.document.Document;
 import com.penapereira.cipher.view.swing.datamodel.SwingDataModelInterface;
 
-public class SaveAllActionListener extends AbstractActionListener implements ActionListener {
+public class SaveAllActionListener extends AbstractActionListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final long serialVersionUID = 1L;

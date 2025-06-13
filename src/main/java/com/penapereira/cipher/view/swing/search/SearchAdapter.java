@@ -72,7 +72,7 @@ public class SearchAdapter implements KeyListener, ChangeListener, FocusListener
 
     protected void validateKeyAndSearch(KeyEvent event, String traceMessage) {
         log.trace("{} '{}' with modifiers '{}'", traceMessage, event.getKeyCode(),
-                KeyEvent.getKeyModifiersText(event.getModifiers()));
+                KeyEvent.getModifiersExText(event.getModifiersEx()));
         boolean isKeyIgnored = IntStream.of(ignoredKeys).anyMatch(x -> x == event.getKeyCode());
         if (!isKeyIgnored) {
             validateInputAndPerformSearch();
